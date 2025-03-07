@@ -5,6 +5,8 @@ using SK.Solution.Client.Pages;
 using SK.Solution.Components;
 using SK.Solution.Components.Account;
 using SK.Solution.Data;
+using SK.Solution.Repository;
+using SK.Solution.Repository.IRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
