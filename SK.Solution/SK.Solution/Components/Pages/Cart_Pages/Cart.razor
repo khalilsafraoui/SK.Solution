@@ -5,6 +5,8 @@
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject IJSRuntime _JSRuntime
 @inject IShoppingCartRepository ShoppingCartRepository;
+@inject IOrderRepository OrderRepository;
+@inject NavigationManager _NavigationManager
 @attribute [Authorize]
 <PageTitle>Cart</PageTitle>
 @if (IsProcessing)
@@ -173,7 +175,15 @@ else
 
 	private async Task ProcessOrderCreation()
 	{
-		
+        IsProcessing = true;
+        await Task.Yield();
+        order.OrderDetails = OrderServices.ConvertShoppingCartListToOrderDetails(shoppingCarts.ToList());
+        var result = await OrderRepository.CreateAsync(order);
+        if (result != null)
+        {
+            await ShoppingCartRepository.ClearCartAsync(order.UserId);
+            _NavigationManager.NavigateTo($"/order/confirmation/{result.Id}");
+        }
 	}
 
 }
