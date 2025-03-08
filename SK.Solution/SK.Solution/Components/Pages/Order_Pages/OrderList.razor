@@ -1,0 +1,117 @@
+﻿@page "/order/list"
+@using Microsoft.AspNetCore.Authorization
+@using SK.Solution.Utility
+@using System.Security.Claims
+@rendermode InteractiveServer
+@inject IOrderRepository _OrderRepository
+@inject NavigationManager _NavigationManager
+@attribute [Authorize]
+
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 m-4">
+
+        <div class="card-header bg-black bg-gradient m-lg-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2"> Orders</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row pb-3" hidden>
+                <div class="col-12 text-end">
+                    <a href="/category/create" class="btn btn-lg btn-secondary" style="width:250px"><i class="bi bi-plus-square"></i> Add New Category</a>
+                </div>
+            </div>
+            @if (Orders.Any())
+            {
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                            <th>Order Total</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cat in Orders)
+                        {
+                            <tr>
+                                <td> @cat.Id</td>
+                                <td> @cat.Name</td>
+                                <td> @cat.PhoneNumber</td>
+                                <td> @cat.Email</td>
+                                <td> @cat.OrderTotal.ToString("C")</td>
+                                <td> @cat.OrderDate</td>
+                                <td> @cat.Status</td>
+                                <td>
+                                    <a href="@($"/order/details/{cat.Id}")" class="btn btn-primary"> <i class="bi bi-pencil-square"></i> Details</a>
+
+                                </td>
+                            </tr>
+
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+    </div>
+}
+
+@code {
+    public bool IsProcessing { get; set; } = true;
+    private IEnumerable<Order> Orders { get; set; } = new List<Order>();
+
+    public bool? IsAdmin { get; set; } = true;
+    public string? UserId { get; set; }
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadOrders();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadOrders()
+    {
+        IsProcessing = true;
+        StateHasChanged();
+        await CheckAuthorization();
+        if (IsAdmin == true)
+            Orders = await _OrderRepository.GetAllAsync();
+        else
+            Orders = await _OrderRepository.GetAllAsync(UserId);
+    }
+
+    private async Task CheckAuthorization()
+    {
+        if (authenticationStateTask is not null)
+        {
+            var authState = await authenticationStateTask;
+            var user = authState.User;
+
+            IsAdmin = user?.IsInRole(RoleType.Admin);
+            UserId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+    }
+}
+
