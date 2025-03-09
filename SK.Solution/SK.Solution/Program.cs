@@ -31,6 +31,16 @@ builder.Services.AddAuthentication(options =>
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
+    .AddMicrosoftAccount(microsoftOptions =>
+    {
+        microsoftOptions.ClientId = "8c0470e8-9b70-4bfa-b777-8b5647734245";//uilder.Configuration["Authentication:Microsoft:ClientId"];
+        microsoftOptions.ClientSecret = "ajU8Q~z5m0fWTHklvWL6POKhImocWueNZbxC8cTQ"; // builder.Configuration["Authentication:Microsoft:ClientSecret"];
+    })
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = "1072238982017-3ultbmigjh001uht8o19kla00ga0g7o4.apps.googleusercontent.com";// builder.Configuration["Authentication:Google:ClientId"];
+        googleOptions.ClientSecret = "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"; // builder.Configuration["Authentication:Google:ClientSecret"];
+    })
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
