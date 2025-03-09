@@ -6,6 +6,7 @@
 @inject IProductRepository ProductRepository;
 @inject ICategoryRepository CategoryRepository;
 @inject IShoppingCartRepository ShoppingCartRepository;
+@inject SharedStateService _SharedStateService
 <PageTitle>Home</PageTitle>
 @if (IsProcessing)
 {
@@ -167,10 +168,12 @@ else
         else
         {
             //add product to cart
-            var cart = await ShoppingCartRepository.UpdateCartAsync(user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value,product.Id,1);
+            var userId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            var cart = await ShoppingCartRepository.UpdateCartAsync(userId, product.Id, 1);
             if (cart != null)
             {
                 await _JSRuntime.ToastrSuccess("Product added to cart successfully!");
+                _SharedStateService.TotalCartCount = await ShoppingCartRepository.GetTotalCartCountAsync(userId);
             }
             else
             {

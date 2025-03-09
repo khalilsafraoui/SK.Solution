@@ -24,6 +24,17 @@ namespace SK.Solution.Repository
             return await _context.ShoppingCarts.Where(x => x.UserId == userId).Include(u => u.Product).ToListAsync();
         }
 
+        public async Task<int> GetTotalCartCountAsync(string? userId)
+        {
+            int cartCount = 0;
+            var cartItems = await _context.ShoppingCarts.Where(x => x.UserId == userId).ToListAsync();
+            if (cartItems != null)
+            {
+                cartCount = cartItems.Sum(x => x.Count);
+            }
+            return cartCount;
+        }
+
         public async Task<bool> UpdateCartAsync(string userId, int productId, int updateBy)
         {
             if (string.IsNullOrEmpty(userId)) return false;
