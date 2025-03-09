@@ -34,8 +34,8 @@ else
                         <ValidationMessage For="@(()=> product.Name)"/>
                     </div>
                     <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="product.Description" class="form-control" id="Description" DisplayName="Description" />
                         <label for="Description">Description</label>
+                        <RadzenHtmlEditor @bind-Value=product.Description style="height: 450px;" UploadUrl="upload/image" />
                         <ValidationMessage For="@(()=> product.Description)" />
                     </div>
 
