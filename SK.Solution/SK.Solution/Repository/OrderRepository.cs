@@ -34,12 +34,21 @@ namespace SK.Solution.Repository
             return await _context.Orders.Include(o => o.OrderDetails).FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
-        public async Task<Order> UpdateStatusAsync(int orderId, string status)
+        public Task<Order> GetBySessionIdAsync(string sessionId)
+        {
+            return _context.Orders.FirstOrDefaultAsync(o => o.SessionId == sessionId);
+        }
+
+        public async Task<Order> UpdateStatusAsync(int orderId, string status, string paymentIntentId)
         {
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
             if (order != null)
             {
                 order.Status = status;
+                if(!string.IsNullOrEmpty(paymentIntentId))
+                {
+                    order.PaymentIntentId = paymentIntentId;
+                }
                 await _context.SaveChangesAsync();
             }
             return order;

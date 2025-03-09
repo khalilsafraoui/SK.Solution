@@ -8,6 +8,7 @@
 @inject IOrderRepository OrderRepository;
 @inject NavigationManager _NavigationManager
 @inject SharedStateService _SharedStateService
+@inject PaymentService _PaymentService
 @attribute [Authorize]
 <PageTitle>Cart</PageTitle>
 @if (IsProcessing)
@@ -180,12 +181,14 @@ else
         IsProcessing = true;
         await Task.Yield();
         order.OrderDetails = OrderServices.ConvertShoppingCartListToOrderDetails(shoppingCarts.ToList());
-        var result = await OrderRepository.CreateAsync(order);
-        if (result != null)
-        {
-            await ShoppingCartRepository.ClearCartAsync(order.UserId);
-            _NavigationManager.NavigateTo($"/order/confirmation/{result.Id}");
-        }
+        
+        var session =  _PaymentService.CreateStripeCheckoutSession(order);
+        order.SessionId = session.Id;
+        
+		
+		var result = await OrderRepository.CreateAsync(order);
+        _NavigationManager.NavigateTo(session.Url);
+        
 	}
 
 }

@@ -65,8 +65,8 @@ else
                     <div class="col-7 text-end">
                         @if (order.Status != OrderStatus.StatusCancelled && order.Status != OrderStatus.StatusCompleted && IsAdmin == true)
                         {
-                            <button class="btn btn-danger m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusCancelled)">Cancelled</button>
-                            @if (order.Status == OrderStatus.StatusPending)
+                            <button class="btn btn-danger m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusCancelled)">Cancel Order</button>
+                            @if (order.Status == OrderStatus.StatusPending || order.Status == OrderStatus.StatusApproved)
                             {
                                 <button class="btn btn-primary m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusReadyForPickUp)">Ready for Pickup</button>
                             }
@@ -109,7 +109,7 @@ else
 
     private async Task UpdateOrderStatus(string status)
     {
-        await _OrderRepository.UpdateStatusAsync(order.Id,status);
+        await _OrderRepository.UpdateStatusAsync(order.Id,status,"");
         await _JSRuntime.ToastrSuccess("Order Status Updated Successfully");
         StateHasChanged();
     }
