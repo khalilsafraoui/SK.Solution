@@ -1,0 +1,208 @@
+﻿@page "/note/list"
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer
+@inject INoteCategoryRepository _INoteCategoryRepository
+@inject INoteRepository _INoteRepository
+@inject IJSRuntime _IJSRuntime
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@attribute [Authorize]
+
+<PageTitle>Notes</PageTitle>
+
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <BsModal OnModalConfirmation="ConfirmDelete_Click"
+             ButtonBootsrapStyle="btn-danger"
+             ButtonText="Delete"
+             Title="Are you sure you want to delete this Note?">
+    </BsModal>
+    <div class="card shadow border-0 m-4">
+
+        <div class="card-header bg-black bg-gradient m-lg-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2"> Notes</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-end gap-3 pb-3 flex-wrap">
+                <button class="btn btn-lg btn-secondary d-flex align-items-center" @onclick="ToggleLanguage" style="width: 250px;">
+                    <i class="bi bi-translate me-2"></i> @(IsEnglish ? "Switch to FR" : "Switch to EN")
+                </button>
+
+                <a href="/note/create" class="btn btn-lg btn-primary d-flex align-items-center" style="width: 250px;">
+                    <i class="bi bi-plus-square me-2"></i> Add New Note
+                </a>
+
+                <a href="/notecategory" class="btn btn-lg btn-info d-flex align-items-center text-white" style="width: 250px;">
+                    <i class="bi bi-folder me-2"></i> Categories
+                </a>
+            </div>
+
+            <RadzenGrid>
+                <div class="container mt-4">
+                    <div class="row">
+                        <!-- Left Column: Categories -->
+                        <div class="col-md-3">
+                            <div class="list-group mb-3">
+                                <h5 class="text-primary">Categories</h5>
+                                @foreach (var category in _categories)
+                                {
+                                    <button class="list-group-item list-group-item-action"
+                                    @onclick="() => SelectCategory(category)">
+                                        @category.Name
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Middle Column: Titles -->
+                        <div class="col-md-3">
+                            <div class="list-group">
+                                <h5 class="text-primary">Titles</h5>
+                                @foreach (var item in FilteredTitles)
+                                {
+                                    <button class="list-group-item list-group-item-action"
+                                    @onclick="() => SelectTitle(item)">
+                                        @item.Title
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Display Description (Wider & Scrollable) -->
+                        <div class="col-md-6">
+                            @if (SelectedTitle != null)
+                            {
+                                <div class="card shadow-sm" style="height: 800px; overflow-y: auto;">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5>@SelectedTitle.Title</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        @if (IsEnglish)
+                                        {
+                                            <p>@((MarkupString)@SelectedTitle.DescriptionEn)</p>
+                                        }
+                                        else
+                                        {
+                                            <p>@((MarkupString)@SelectedTitle.Description)</p>
+                                        }
+                                       
+                                    </div>
+                                    <div class="card-footer text-lg-end">
+                                        <a href="note/update/@SelectedTitle.Id" class="btn btn-primary">Edit</a>
+                                        <button class="btn btn-danger" @onclick="()=>HandleDelete(SelectedTitle.Id)">Delete</button>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Select a title to view details</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </RadzenGrid>
+        </div>
+
+    </div>
+
+}
+
+@code {
+
+    public bool IsProcessing { get; set; } = true; 
+    public bool IsEnglish { get; set; } = false;
+    private int DeleteNoteID { get; set; } = 0;
+    private IEnumerable<NoteCategory> _categories = new List<NoteCategory>();
+    private NoteCategory SelectedCategory;
+
+    private IEnumerable<Note> _notes = new List<Note>();
+
+
+    private List<Note> FilteredTitles => _notes.Where(t => t?.NoteCategory?.Name == SelectedCategory?.Name).OrderBy( u=>u.DisplayOrdre).ToList();
+
+    private Note SelectedTitle;
+
+    private string UserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        UserId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+    }
+
+    private void SelectCategory(NoteCategory category)
+    {
+        SelectedCategory = category;
+        SelectedTitle = null; // Reset title selection
+    }
+
+    private void SelectTitle(Note title)
+    {
+        SelectedTitle = title;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadNoteAndCategoryList();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadNoteAndCategoryList()
+    {
+
+        _notes = await _INoteRepository.GetNotesAsync(UserId);
+
+        _categories = await _INoteCategoryRepository.GetCategoriesAsync(UserId);
+    }
+
+    private void ToggleLanguage()
+    {
+        IsEnglish = !IsEnglish;
+    }
+
+    private async Task HandleDelete(int id)
+    {
+        DeleteNoteID = id;
+        await _IJSRuntime.InvokeVoidAsync("ShowConfirmationModal");
+    }
+
+    private async Task ConfirmDelete_Click(bool isConfirmed)
+    {
+        IsProcessing = true;
+        await _IJSRuntime.InvokeVoidAsync("HideConfirmationModal");
+        if (isConfirmed && DeleteNoteID != 0)
+        {
+            var result = await _INoteRepository.DeleteAsync(DeleteNoteID);
+            if (result)
+            {
+                await _IJSRuntime.ToastrSuccess("Note Delete Successfully");
+                SelectedTitle = null;
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError("Note Delete InSuccessfully");
+            }
+            await LoadNoteAndCategoryList();
+
+        }
+        DeleteNoteID = 0;
+        IsProcessing = false;
+    }
+}
