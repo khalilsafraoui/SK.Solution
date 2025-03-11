@@ -18,12 +18,30 @@
             <NavBar></NavBar>
             
         }
-        <AuthorizeView Roles="@RoleType.Admin">
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        <AuthorizeView Roles="@RoleType.Admin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <a class="nav-link p-2" href="Account/Manage">
+                        <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name
+                    </a>
+                </div>
+                <div class="nav-item px-3">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="" />
+                        <button type="submit" class="nav-link">
+                            <span class="bi bi-arrow-bar-left text-black" aria-hidden="true"></span> Logout
+                        </button>
+                    </form>
+                </div>
+            </Authorized>
+            
+        
+            
+        
         </AuthorizeView>
-      
+        </div>
 
         
             @Body
