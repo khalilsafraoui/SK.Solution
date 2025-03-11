@@ -9,52 +9,76 @@
 </div>
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
+        <!-- Home -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="" Match="NavLinkMatch.All">
+                <i class="bi bi-house-door-fill-nav-menu"></i> <span>Home</span>
             </NavLink>
         </div>
 
+        <!-- Parameters Section (with Submenus) -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2" href="/category" Match="NavLinkMatch.All">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Categories
+            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse" href="#parametersMenu">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-gear-fill-nav-menu"></i> <span>Parameters</span>
+                </span>
+                <i class="bi bi-chevron-down-nav-menu"></i>
+            </a>
+            <div class="collapse ps-3" id="parametersMenu">
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/category">
+                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories</span>
+                </NavLink>
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/settings">
+                    <i class="bi bi-sliders-nav-menu"></i> <span>Settings</span>
+                </NavLink>
+            </div>
+        </div>
+
+        <!-- Products -->
+        <div class="nav-item px-3">
+            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/product">
+                <i class="bi bi-box-seam-nav-menu"></i> <span>Products</span>
             </NavLink>
         </div>
 
+        <!-- Cart -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2" href="/product" Match="NavLinkMatch.All">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Products
+            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="cart">
+                <i class="bi bi-cart3-nav-menu"></i> <span>Cart</span>
             </NavLink>
         </div>
 
+        <!-- Orders -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2" href="cart" Match="NavLinkMatch.All">
-                <span class="bi bi-cart3" aria-hidden="true"></span> Cart
+            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/order/list">
+                <i class="bi bi-card-list-nav-menu"></i> <span>Orders</span>
             </NavLink>
         </div>
 
+        <!-- Notes -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2" href="/order/list" Match="NavLinkMatch.All">
-                <span class="bi bi-card-list-fill-nav-menu" aria-hidden="true"></span> Orders
-            </NavLink>
+            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse" href="#notesMenu">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-journal-text-nav-menu"></i> <span>Notes Managment</span>
+                </span>
+                <i class="bi bi-chevron-down-nav-menu"></i>
+            </a>
+            <div class="collapse ps-3" id="notesMenu">
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/note/list" Match="NavLinkMatch.All">
+                    <i class="bi bi-journal-text-nav-menu"></i> <span>Notes</span>
+                </NavLink>
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/notecategory" Match="NavLinkMatch.All">
+                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories</span>
+                </NavLink>
+            </div>
         </div>
-
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2" href="/note/list" Match="NavLinkMatch.All">
-                <span class="bi bi-card-list-fill-nav-menu" aria-hidden="true"></span> Notes
-            </NavLink>
+            
         </div>
-
-       @*  <div class="nav-item px-3">
-            <NavLink class="nav-link p-2" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div> *@
-
-      
     </nav>
 </div>
 
