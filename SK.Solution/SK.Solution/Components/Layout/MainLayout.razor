@@ -18,9 +18,10 @@
             <NavBar></NavBar>
             
         }
-        <div class="top-row px-4">
+       
         <AuthorizeView Roles="@RoleType.Admin">
             <Authorized>
+                 <div class="top-row px-4">
                 <div class="nav-item px-3">
                     <a class="nav-link p-2" href="Account/Manage">
                         <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name
@@ -35,13 +36,14 @@
                         </button>
                     </form>
                 </div>
+                </div>
             </Authorized>
             
         
             
         
         </AuthorizeView>
-        </div>
+        
 
         
             @Body

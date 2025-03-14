@@ -1,17 +1,18 @@
 ﻿@inherits LayoutComponentBase
 @layout AccountLayout
 
-<h1>Manage your account</h1>
 
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
+
+<RadzenCard class="shadow-sm p-4 border rounded-3">
+    <h2 class="mb-3">Change your account settings</h2>
+    <hr class="mb-4" />
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-3 mb-3">
             <ManageNavMenu />
         </div>
         <div class="col-md-9">
             @Body
         </div>
     </div>
-</div>
+</RadzenCard>
+

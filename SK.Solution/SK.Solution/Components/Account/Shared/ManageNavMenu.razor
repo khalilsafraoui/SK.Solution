@@ -3,29 +3,44 @@
 
 @inject SignInManager<ApplicationUser> SignInManager
 
-<ul class="nav nav-pills flex-column">
-    <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage" Match="NavLinkMatch.All">Profile</NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/Email">Email</NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/ChangePassword">Password</NavLink>
-    </li>
-    @if (hasExternalLogins)
-    {
+<RadzenCard class="shadow-sm p-3 border rounded-3">
+    <ul class="nav nav-pills flex-column">
         <li class="nav-item">
-            <NavLink class="nav-link" href="Account/Manage/ExternalLogins">External logins</NavLink>
+            <NavLink class="nav-link d-flex align-items-center" href="Account/Manage" Match="NavLinkMatch.All">
+                <RadzenIcon Icon="account_circle" class="me-2" /> Profile
+            </NavLink>
         </li>
-    }
-    <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/TwoFactorAuthentication">Two-factor authentication</NavLink>
-    </li>
-    <li class="nav-item">
-        <NavLink class="nav-link" href="Account/Manage/PersonalData">Personal data</NavLink>
-    </li>
-</ul>
+        <li class="nav-item">
+            <NavLink class="nav-link d-flex align-items-center" href="Account/Manage/Email">
+                <RadzenIcon Icon="email" class="me-2" /> Email
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link d-flex align-items-center" href="Account/Manage/ChangePassword">
+                <RadzenIcon Icon="lock" class="me-2" /> Password
+            </NavLink>
+        </li>
+        @if (hasExternalLogins)
+        {
+            <li class="nav-item">
+                <NavLink class="nav-link d-flex align-items-center" href="Account/Manage/ExternalLogins">
+                    <RadzenIcon Icon="login" class="me-2" /> External logins
+                </NavLink>
+            </li>
+        }
+        <li class="nav-item">
+            <NavLink class="nav-link d-flex align-items-center" href="Account/Manage/TwoFactorAuthentication">
+                <RadzenIcon Icon="security" class="me-2" /> Two-factor authentication
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link d-flex align-items-center" href="Account/Manage/PersonalData">
+                <RadzenIcon Icon="person" class="me-2" /> Personal data
+            </NavLink>
+        </li>
+    </ul>
+</RadzenCard>
+
 
 @code {
     private bool hasExternalLogins;

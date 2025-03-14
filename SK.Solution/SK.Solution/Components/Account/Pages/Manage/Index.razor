@@ -11,27 +11,33 @@
 
 <PageTitle>Profile</PageTitle>
 
-<h3>Profile</h3>
+<h3 class="mb-4">Profile</h3>
 <StatusMessage />
 
-<div class="row">
+<div class="row justify-content-start">
     <div class="col-md-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
-                <label for="username" class="form-label">Username</label>
-            </div>
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
-                <label for="phone-number" class="form-label">Phone number</label>
-                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
-        </EditForm>
+        <RadzenCard class="shadow-sm p-4">
+            <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" role="alert" />
+
+                <div class="form-floating mb-3">
+                    <input type="text" value="@username" class="form-control" placeholder="Please choose your username." disabled />
+                    <label for="username" class="form-label">Username</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
+                    <label for="phone-number" class="form-label">Phone number</label>
+                    <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+                </div>
+
+                <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="save" class="w-100">Save</RadzenButton>
+            </EditForm>
+        </RadzenCard>
     </div>
 </div>
+
 
 @code {
     private ApplicationUser user = default!;

@@ -11,58 +11,56 @@
 @inject IdentityRedirectManager RedirectManager
 
 <PageTitle>Log in</PageTitle>
-
 <div class="mt-5" style="height:100%">
     <div class="h-100 d-flex align-items-center justify-content-center">
-        <div class="card bg-light" style="min-width: 28rem;">
-            <div class="card-body">
-                <h5 class="card-title text-center display-6">Sign In</h5>
+        <div class="card shadow-lg border-0 rounded-4" style="width: 28rem;">
+            <div class="card-body p-5">
+                <h2 class="card-title text-center fw-bold mb-4">Welcome Back</h2>
+
                 <StatusMessage Message="@errorMessage" />
+
                 <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                     <DataAnnotationsValidator />
-                    
-                    <hr />
                     <ValidationSummary class="text-danger" role="alert" />
+
                     <div class="form-floating mb-3">
-                        <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <InputText @bind-Value="Input.Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                         <label for="email" class="form-label">Email</label>
                         <ValidationMessage For="() => Input.Email" class="text-danger" />
                     </div>
+
                     <div class="form-floating mb-3">
-                        <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <InputText type="password" @bind-Value="Input.Password" class="form-control form-control-lg" autocomplete="current-password" aria-required="true" placeholder="password" />
                         <label for="password" class="form-label">Password</label>
                         <ValidationMessage For="() => Input.Password" class="text-danger" />
                     </div>
-                    <div class="checkbox mb-3">
-                        <label class="form-label">
-                            <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
+
+                    <div class="form-check d-flex align-items-center mb-3">
+                        <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" id="rememberMe" />
+                        <label class="form-check-label ms-2" for="rememberMe">
                             Remember me
                         </label>
                     </div>
-                    <div>
-                        <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
-                    </div>
-                    <div class="row">
-                        <div class="col-6 pt-2">
-                            <a href="Account/ForgotPassword">Forgot your password?</a>
-                        </div>
-                       
-                        <div class="col-6 pt-2 text-end">
-                            <a href="Account/ResendEmailConfirmation">Resend email confirmation</a>
-                        </div>
+
+                    <button type="submit" class="w-100 btn btn-lg btn-primary fw-bold rounded-3">Log in</button>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="Account/ForgotPassword" class="text-decoration-none">Forgot password?</a>
+                        <a href="Account/ResendEmailConfirmation" class="text-decoration-none">Resend confirmation</a>
                     </div>
                 </EditForm>
 
-                <br />
+                <hr class="my-4">
+
                 <ExternalLoginPicker />
-                <hr />
-                <p class="text-center mt-2">
-                    <small class="text-muted text-center">
-                        Don't have an account? <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Sign Up</a>
+
+                <p class="text-center mt-3">
+                    <small class="text-muted">
+                        Don't have an account?
+                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))" class="fw-bold text-decoration-none">Sign Up</a>
                     </small>
                 </p>
-               
-             </div>
+            </div>
         </div>
     </div>
 </div>
