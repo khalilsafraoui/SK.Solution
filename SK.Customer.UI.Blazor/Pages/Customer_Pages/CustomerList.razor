@@ -1,0 +1,93 @@
+﻿@page "/customerlist"
+
+@rendermode InteractiveServer
+@inject IMediator Mediator
+
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@inject NavigationManager _NavigationManager
+@attribute [Authorize]
+
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 m-4">
+
+        <div class="card-header bg-black bg-gradient m-lg-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2"> Customers</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row pb-3">
+                <div class="col-12 text-end">
+                    <a href="/customer/create" class="btn btn-lg btn-secondary" style="width:250px"><i class="bi bi-plus-square"></i> Add New Customer</a>
+                </div>
+            </div>
+            @if (customers.Any())
+            {
+                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@customers" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" >
+                    <Columns>
+                        <RadzenDataGridColumn Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" />
+                        @*  <RadzenDataGridColumn Title="Photo" Frozen="true" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
+                            <Template Context="data">
+                                <RadzenImage Path="@data.Photo" class="rz-gravatar" AlternateText="@(data.FirstName + " " + data.LastName)" />
+                            </Template>
+                        </RadzenDataGridColumn> *@
+                        <RadzenDataGridColumn Property="FirstName" Title="First Name" Width="120px" />
+                        <RadzenDataGridColumn Property="LastName" Title="Last Name" Width="120px" />
+                        <RadzenDataGridColumn Property="PhoneNumber" Title="Phone Number" Width="120px" />
+                        <RadzenDataGridColumn Property="Email" Title="Email" Width="160px" />
+                        <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
+                            <Template Context="customer">
+                                <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo($"/customer/update/{customer.Id}"))" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </div>
+
+    </div>
+}
+@code {
+    public bool IsProcessing { get; set; } = true;
+    private List<CustomerDto>? customers;
+
+    // OnInitializedAsync is called when the page is initialized
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Sending GetAllCustomersQuery to the mediator
+                var query = new GetAllCustomersQuery();
+                customers = await Mediator.Send(query);
+                IsProcessing = false;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that may occur
+                Console.WriteLine($"Error fetching customers: {ex.Message}");
+            }
+           
+        }
+    }
+}
+

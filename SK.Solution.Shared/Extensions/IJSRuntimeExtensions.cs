@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace SK.Solution.Services.Extensions
+namespace SK.Solution.Shared.Extensions
 {
     public static class IJSRuntimeExtensions
     {
@@ -14,7 +14,7 @@ namespace SK.Solution.Services.Extensions
             await jSRuntime.InvokeVoidAsync("showToastr", "error", message);
         }
 
-        public static async Task ToastrSuccessWithDelay(this IJSRuntime jSRuntime, string message,int delay = 2000)
+        public static async Task ToastrSuccessWithDelay(this IJSRuntime jSRuntime, string message, int delay = 2000)
         {
             await jSRuntime.InvokeVoidAsync("showToastr", "success", message);
             await Task.Delay(delay);

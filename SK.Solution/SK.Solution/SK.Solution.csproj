@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SK.Customer.Application\SK.Customer.Application.csproj" />
+    <ProjectReference Include="..\..\SK.Customer.UI.Blazor\SK.Customer.UI.Blazor.csproj" />
+    <ProjectReference Include="..\..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
     <ProjectReference Include="..\SK.Solution.Client\SK.Solution.Client.csproj" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.8" />
@@ -21,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Services\Extensions\" />
     <Folder Include="ViewModels\" />
     <Folder Include="wwwroot\images\product\" />
   </ItemGroup>

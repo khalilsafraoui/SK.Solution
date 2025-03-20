@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
+using SK.Customer.Application.Interfaces;
+using SK.Customer.Infrastructure.Persistence;
+using SK.Customer.Infrastructure.Repositories;
+using SK.Customer.UI.Blazor;
 using SK.Solution.Client.Pages;
 using SK.Solution.Components;
 using SK.Solution.Components.Account;
@@ -10,6 +14,8 @@ using SK.Solution.Repository;
 using SK.Solution.Repository.IRepository;
 using SK.Solution.Services;
 using Stripe;
+using Stripe.TestHelpers;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +36,13 @@ builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<INoteCategoryRepository, NoteCategoryRepository>();
 builder.Services.AddSingleton<SharedStateService>();
 builder.Services.AddScoped<PaymentService>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly(), typeof(SK.Customer.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly));
+#region Customer Module
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddCustomerModuleServices(builder.Configuration);  // Register services from the Customers module
+
+#endregion
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -50,6 +63,9 @@ builder.Services.AddAuthentication(options =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString), ServiceLifetime.Transient);
+
+
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -83,7 +99,8 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(SK.Solution.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(SK.Solution.Client._Imports).Assembly)
+    .AddAdditionalAssemblies(typeof(SK.Customer.UI.Blazor._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
