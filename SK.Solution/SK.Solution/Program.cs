@@ -2,11 +2,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
-using SK.Customer.Application.Interfaces;
-using SK.Customer.Infrastructure.Persistence;
-using SK.Customer.Infrastructure.Repositories;
 using SK.Customer.UI.Blazor;
-using SK.Solution.Client.Pages;
+using SK.Inventory.UI.Blazor;
 using SK.Solution.Components;
 using SK.Solution.Components.Account;
 using SK.Solution.Data;
@@ -14,7 +11,6 @@ using SK.Solution.Repository;
 using SK.Solution.Repository.IRepository;
 using SK.Solution.Services;
 using Stripe;
-using Stripe.TestHelpers;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,10 +32,16 @@ builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<INoteCategoryRepository, NoteCategoryRepository>();
 builder.Services.AddSingleton<SharedStateService>();
 builder.Services.AddScoped<PaymentService>();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly(), typeof(SK.Customer.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly));
-#region Customer Module
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()
+    , typeof(SK.Customer.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
+    , typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly
+    , typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
+    ));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+#region Module
+
 builder.Services.AddCustomerModuleServices(builder.Configuration);  // Register services from the Customers module
+builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register services from the Inventory module
 
 #endregion
 
@@ -100,7 +102,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(SK.Solution.Client._Imports).Assembly)
-    .AddAdditionalAssemblies(typeof(SK.Customer.UI.Blazor._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(SK.Customer.UI.Blazor._Imports).Assembly)
+    .AddAdditionalAssemblies(typeof(SK.Inventory.UI.Blazor._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();

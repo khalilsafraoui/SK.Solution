@@ -1,0 +1,101 @@
+﻿@page "/categoryV2/create"
+@page "/categoryV2/update/{id:int}"
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject NavigationManager _NavigationManager
+@inject IJSRuntime _IJSRuntime
+@if (IsProcessing)
+{
+    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 m-4">
+
+        <div class="card-header bg-black bg-gradient m-lg-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2"> @(Id>0? "Edit":"Add") Category</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <EditForm Model="category" FormName="CategoryUpsertForm" OnValidSubmit="UpsertCategory">
+                <DataAnnotationsValidator/>
+                <div class="border p-3 mt-4">
+                    <div class="form-floating py-3 col-12">
+                        <InputText @bind-Value="category.Name" class="form-control" id="Name" DisplayName="Name"/>
+                        <label for="Name">Name</label>
+                        <ValidationMessage For="@(()=> category.Name)"/>
+                    </div>
+                    <div class="row mt-3">
+                       <div class="col-6 col-md-3">
+                           <button type="submit" class="btn btn-primary form-control" disabled="@IsProcessing">
+                               <i class="bi bi-save"></i> Save
+                           </button>
+                      </div>
+                        <div class="col-6 col-md-3">
+                            <a href="categoryV2" class="btn btn-secondary form-control" disabled="@IsProcessing">
+                                <i class="bi bi-arrow-bar-left"></i> Back to List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+            
+        </div>
+
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public bool IsProcessing { get; set; } = true;
+    [SupplyParameterFromForm(FormName = "CategoryUpsertForm")]
+    private CategoryDto category { get; set; } = new CategoryDto();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            await LoadCategory();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCategory()
+    {
+        if (Id > 0)
+        {
+            var query = new GetCategoryByIdQuery(Id);
+            category = await Mediator.Send(query);
+        }
+    }
+
+    private async Task UpsertCategory()
+    {
+        IsProcessing = true;
+        if(category.Id > 0)
+        {
+            var command = new UpdateCategoryCommand(category);
+            await Mediator.Send(command);
+            await _IJSRuntime.ToastrSuccessWithDelay("Category Updated Successfully");
+        }
+        else
+        {
+            var command = new CreateCategoryCommand(category);
+            await Mediator.Send(command);
+            await _IJSRuntime.ToastrSuccessWithDelay("Category Created Successfully");
+        }
+        IsProcessing = false;
+        _NavigationManager.NavigateTo("categoryV2");
+    }
+}
