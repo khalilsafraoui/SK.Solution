@@ -1,0 +1,40 @@
+﻿@page "/order/confirmation/{session_id}"
+
+@inject PaymentService _paymentService
+@inject IMediator Mediator
+
+@if (IsProcessing)
+{
+	<div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+		<img src="/images/loading.gif" alt="loading">
+	</div>
+}
+else
+{
+ <div class="text-center">
+	 <h1 class="pt-4 text-center">You are one step  closer.</h1>
+	 <p>Your order is confirmed! Please note your order ID for any questions.</p>
+        <p>Order ID : <b>@order.Id</b></p>
+	 <hr />
+        <img src="/images/lawn_leaf.jpg" width="40%" alt="Order Confirmed" class="img-fluid" />
+		<hr />
+ </div>	
+}
+
+@code {
+    [Parameter]
+	public string session_id { get; set; }
+	private bool IsProcessing { get; set; } = true;
+    private OrderDto order { get; set; } = new OrderDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+		order = await _paymentService.CheckPaymentStatusAndUpdateOrderAsync(session_id);
+        if (order.Status == OrderStatus.StatusApproved)
+        {
+            var command = new ClearCartCommand(order.UserId);
+            await Mediator.Send(command);
+        }
+        IsProcessing = false;
+    }
+}

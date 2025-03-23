@@ -9,7 +9,6 @@ using SK.Solution.Components.Account;
 using SK.Solution.Data;
 using SK.Solution.Repository;
 using SK.Solution.Repository.IRepository;
-using SK.Solution.Services;
 using Stripe;
 using System.Reflection;
 
@@ -24,14 +23,9 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<INoteCategoryRepository, NoteCategoryRepository>();
-builder.Services.AddSingleton<SharedStateService>();
-builder.Services.AddScoped<PaymentService>();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()
     , typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly
@@ -40,7 +34,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.G
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 #region Module
 
-builder.Services.AddCustomerModuleServices(builder.Configuration);  // Register services from the Customers module
+builder.Services.AddCrmModuleServices(builder.Configuration);  // Register services from the Customers module
 builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register services from the Inventory module
 
 #endregion

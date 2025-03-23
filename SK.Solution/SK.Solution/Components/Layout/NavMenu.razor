@@ -18,45 +18,23 @@
             </NavLink>
         </div>
 
-        <!-- Parameters Section (with Submenus) -->
-        <div class="nav-item px-3">
-            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
-               data-bs-toggle="collapse" href="#parametersMenu">
-                <span class="d-flex align-items-center gap-2">
-                    <i class="bi bi-gear-fill-nav-menu"></i> <span>Parameters</span>
-                </span>
-                <i class="bi bi-chevron-down-nav-menu"></i>
-            </a>
-            <div class="collapse ps-3" id="parametersMenu">
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/category">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories</span>
-                </NavLink>
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/settings">
-                    <i class="bi bi-sliders-nav-menu"></i> <span>Settings</span>
-                </NavLink>
-            </div>
-        </div>
+        
 
         <!-- Products -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/product">
-                <i class="bi bi-box-seam-nav-menu"></i> <span>Products</span>
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
             <a class="nav-link p-2 d-flex justify-content-between align-items-center"
-               data-bs-toggle="collapse" href="#notesMenu">
+               data-bs-toggle="collapse" href="#inventoryMenu">
                 <span class="d-flex align-items-center gap-2">
                     <i class="bi bi-journal-text-nav-menu"></i> <span>Inventory</span>
                 </span>
                 <i class="bi bi-chevron-down-nav-menu"></i>
             </a>
-            <div class="collapse ps-3" id="notesMenu">
+            <div class="collapse ps-3" id="inventoryMenu">
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/productV2" Match="NavLinkMatch.All">
-                    <i class="bi bi-box-seam-nav-menu"></i> <span>Product V2</span>
+                    <i class="bi bi-box-seam-nav-menu"></i> <span>Product</span>
                 </NavLink>
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/categoryV2" Match="NavLinkMatch.All">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories V2</span>
+                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories</span>
                 </NavLink>
             </div>
         </div>
@@ -69,17 +47,23 @@
 
         <!-- Orders -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/order/list">
-                <i class="bi bi-card-list-nav-menu"></i> <span>Orders</span>
-            </NavLink>
+            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse" href="#crmMenu">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-journal-text-nav-menu"></i> <span>CRM</span>
+                </span>
+                <i class="bi bi-chevron-down-nav-menu"></i>
+            </a>
+            <div class="collapse ps-3" id="crmMenu">
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/customerlist" Match="NavLinkMatch.All">
+                    <i class="bi bi-box-seam-nav-menu"></i> <span>Customers</span>
+                </NavLink>
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/orderV2/list" Match="NavLinkMatch.All">
+                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Orders</span>
+                </NavLink>
+            </div>
         </div>
-
-        <!-- Customers -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/customerlist">
-                <i class="bi bi-card-list-nav-menu"></i> <span>Customers</span>
-            </NavLink>
-        </div>
+        
 
         <!-- Notes -->
         <div class="nav-item px-3">
@@ -96,6 +80,23 @@
                 </NavLink>
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/notecategory" Match="NavLinkMatch.All">
                     <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories</span>
+                </NavLink>
+            </div>
+        </div>
+
+        <!-- Parameters Section (with Submenus) -->
+        <div class="nav-item px-3">
+            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse" href="#parametersMenu">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-gear-fill-nav-menu"></i> <span>Parameters</span>
+                </span>
+                <i class="bi bi-chevron-down-nav-menu"></i>
+            </a>
+            <div class="collapse ps-3" id="parametersMenu">
+                
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/settings">
+                    <i class="bi bi-sliders-nav-menu"></i> <span>Settings</span>
                 </NavLink>
             </div>
         </div>

@@ -1,6 +1,9 @@
-﻿@inject AuthenticationStateProvider _AuthenticationStateProvider
+﻿@using MediatR
+@using SK.CRM.Application.Features.ShoppingCart.Queries
+@using SK.CRM.UI.Blazor.Services
+@inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject SharedStateService _SharedStateService
-@inject IShoppingCartRepository _ShoppingCartRepository
+@inject IMediator Mediator
 @rendermode InteractiveServer
 <nav class="navbar navbar-expand-md navbar-dark bg-dark pb-4 pt-4">
 	<div class="container-fluid">
@@ -20,12 +23,12 @@
 					</NavLink>
 				</li>
 				<li class="nav-item mx-2">
-					<NavLink class="nav-link" href="cart">
+					<NavLink class="nav-link" href="cartV2">
 						<span class="bi bi-cart3" aria-hidden="true"></span> Cart(@_SharedStateService.TotalCartCount)
 					</NavLink>
 				</li>
 				<li class="nav-item mx-2">
-					<NavLink class="nav-link" href="/order/list">
+					<NavLink class="nav-link" href="/orderV2/list">
 						<span class="bi bi-card-list" aria-hidden="true"></span> Order List
 					</NavLink>
 				</li>
@@ -81,8 +84,9 @@
 	{
 		var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
 		var user = authState.User;
+        var query = new GetTotalCartCountQuery(user?.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value);
 		_SharedStateService.TotalCartCount = 
-			await _ShoppingCartRepository.GetTotalCartCountAsync(user?.FindFirst(u=> u.Type.Contains("nameidentifier"))?.Value);
+			await Mediator.Send(query);
 		var test = _SharedStateService.TotalCartCount;
 	}
 

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SK.CRM.Domain\SK.CRM.Domain.csproj" />
+    <ProjectReference Include="..\SK.Inventory.Application\SK.Inventory.Application.csproj" />
   </ItemGroup>
 
 </Project>
