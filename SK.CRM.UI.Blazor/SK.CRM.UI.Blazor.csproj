@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.13" />
+    <PackageReference Include="Radzen.Blazor" Version="6.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SK.CRM.Application\SK.CRM.Application.csproj" />
+    <ProjectReference Include="..\SK.CRM.Infrastructure\SK.CRM.Infrastructure.csproj" />
+    <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

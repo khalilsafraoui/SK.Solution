@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SK.Customer.Application\SK.Customer.Application.csproj" />
-    <ProjectReference Include="..\..\SK.Customer.UI.Blazor\SK.Customer.UI.Blazor.csproj" />
+    <ProjectReference Include="..\..\SK.CRM.Application\SK.CRM.Application.csproj" />
+    <ProjectReference Include="..\..\SK.CRM.UI.Blazor\SK.CRM.UI.Blazor.csproj" />
     <ProjectReference Include="..\..\SK.Inventory.UI.Blazor\SK.Inventory.UI.Blazor.csproj" />
     <ProjectReference Include="..\..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
     <ProjectReference Include="..\SK.Solution.Client\SK.Solution.Client.csproj" />

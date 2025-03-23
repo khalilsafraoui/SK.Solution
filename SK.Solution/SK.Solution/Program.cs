@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
-using SK.Customer.UI.Blazor;
+using SK.CRM.UI.Blazor;
 using SK.Inventory.UI.Blazor;
 using SK.Solution.Components;
 using SK.Solution.Components.Account;
@@ -33,7 +33,7 @@ builder.Services.AddScoped<INoteCategoryRepository, NoteCategoryRepository>();
 builder.Services.AddSingleton<SharedStateService>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()
-    , typeof(SK.Customer.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
+    , typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
     ));
@@ -102,7 +102,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(SK.Solution.Client._Imports).Assembly)
-    .AddAdditionalAssemblies(typeof(SK.Customer.UI.Blazor._Imports).Assembly)
+    .AddAdditionalAssemblies(typeof(SK.CRM.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Inventory.UI.Blazor._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.

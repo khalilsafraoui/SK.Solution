@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -17,9 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SK.CRM.Infrastructure\SK.CRM.Infrastructure.csproj" />
-    <ProjectReference Include="..\SK.Inventory.Application\SK.Inventory.Application.csproj" />
-    <ProjectReference Include="..\SK.Inventory.Domain\SK.Inventory.Domain.csproj" />
+    <ProjectReference Include="..\SK.CRM.Application\SK.CRM.Application.csproj" />
+    <ProjectReference Include="..\SK.CRM.Domain\SK.CRM.Domain.csproj" />
   </ItemGroup>
 
 </Project>
