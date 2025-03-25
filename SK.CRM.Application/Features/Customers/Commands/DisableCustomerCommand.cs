@@ -4,19 +4,19 @@ using SK.CRM.Application.Interfaces;
 
 namespace SK.CRM.Application.Features.Customers.Commands
 {
-    public sealed record DeleteCustomerCommand(Guid CustomerId) : IRequest<bool>;
+    public sealed record DisableCustomerCommand(Guid CustomerId) : IRequest<bool>;
 
 
-    public class DeleteCustomerCommandHandler : IRequestHandler<DeleteCustomerCommand, bool>
+    public class DisableCustomerCommandHandler : IRequestHandler<DisableCustomerCommand, bool>
     {
         private readonly ICustomerRepository _customerRepository;
 
-        public DeleteCustomerCommandHandler(ICustomerRepository customerRepository)
+        public DisableCustomerCommandHandler(ICustomerRepository customerRepository)
         {
             _customerRepository = customerRepository;
         }
 
-        public async Task<bool> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DisableCustomerCommand request, CancellationToken cancellationToken)
         {
             var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
             if (customer == null)
@@ -24,7 +24,7 @@ namespace SK.CRM.Application.Features.Customers.Commands
                 return false; // Or throw an exception if preferred
             }
 
-            await _customerRepository.DeleteAsync(request.CustomerId);
+            await _customerRepository.DisableCustomerAsync(request.CustomerId);
             return true;
         }
     }

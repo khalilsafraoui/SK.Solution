@@ -20,7 +20,7 @@ namespace SK.CRM.Application.Features.Customers.Queries
 
         public async Task<List<CustomerDto>> Handle(GetAllCustomersQuery request, CancellationToken cancellationToken)
         {
-            var customers = await _customerRepository.GetAllAsync();
+            var customers = await _customerRepository.GetAllCustomersAsync();
             if(!customers.Any())
             {
                 return new List<CustomerDto>();

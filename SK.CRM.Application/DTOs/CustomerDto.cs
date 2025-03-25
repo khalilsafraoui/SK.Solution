@@ -8,5 +8,11 @@
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
+
+        public string? UserId { get; set; }
+
+        public bool IsProspect { get; set; } = false;
+
+        public bool IsDisabled { get; set; } = false;
     }
 }

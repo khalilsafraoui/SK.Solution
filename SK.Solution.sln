@@ -31,6 +31,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.Inventory.Infrastructure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.Inventory.UI.Blazor", "SK.Inventory.UI.Blazor\SK.Inventory.UI.Blazor.csproj", "{C66D7F0C-5545-40EC-9BBC-B2B0EA07CA7E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RabbitMqDocker", "RabbitMqDocker", "{CF748B27-45FB-486F-8BEA-CEE56A7B99EA}"
+	ProjectSection(SolutionItems) = preProject
+		rabbitmq.dockerfile = rabbitmq.dockerfile
+		readme.txt = readme.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

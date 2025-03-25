@@ -14,6 +14,11 @@
   <ItemGroup>
     <ProjectReference Include="..\SK.CRM.Domain\SK.CRM.Domain.csproj" />
     <ProjectReference Include="..\SK.Inventory.Application\SK.Inventory.Application.csproj" />
+    <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Customers\Events\" />
   </ItemGroup>
 
 </Project>

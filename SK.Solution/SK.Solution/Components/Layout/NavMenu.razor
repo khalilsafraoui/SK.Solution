@@ -20,7 +20,7 @@
 
         
 
-        <!-- Products -->
+        <!-- Inventory -->
         <div class="nav-item px-3">
             <a class="nav-link p-2 d-flex justify-content-between align-items-center"
                data-bs-toggle="collapse" href="#inventoryMenu">
@@ -38,28 +38,25 @@
                 </NavLink>
             </div>
         </div>
-        <!-- Cart -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="cart">
-                <i class="bi bi-cart3-nav-menu"></i> <span>Cart</span>
-            </NavLink>
-        </div>
 
-        <!-- Orders -->
+        <!-- CRM -->
         <div class="nav-item px-3">
             <a class="nav-link p-2 d-flex justify-content-between align-items-center"
                data-bs-toggle="collapse" href="#crmMenu">
                 <span class="d-flex align-items-center gap-2">
-                    <i class="bi bi-journal-text-nav-menu"></i> <span>CRM</span>
+                    <i class="bi bi-person-lines-fill-nav-menu"></i> <span>CRM</span>
                 </span>
                 <i class="bi bi-chevron-down-nav-menu"></i>
             </a>
             <div class="collapse ps-3" id="crmMenu">
+                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/prospectlist" Match="NavLinkMatch.All">
+                    <i class="bi bi-people-nav-menu"></i> <span>Prospects</span>
+                </NavLink>
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/customerlist" Match="NavLinkMatch.All">
-                    <i class="bi bi-box-seam-nav-menu"></i> <span>Customers</span>
+                    <i class="bi bi-people-fill-nav-menu"></i> <span>Customers</span>
                 </NavLink>
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/orderV2/list" Match="NavLinkMatch.All">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Orders</span>
+                    <i class="bi bi-receipt-nav-menu"></i> <span>Orders</span>
                 </NavLink>
             </div>
         </div>
