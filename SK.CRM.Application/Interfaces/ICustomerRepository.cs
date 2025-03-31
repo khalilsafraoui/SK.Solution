@@ -10,5 +10,7 @@ namespace SK.CRM.Application.Interfaces
         Task<List<Customer>> GetAllCustomersAsync();
 
         Task<bool> DisableCustomerAsync(Guid customerId);
+
+        Task<Customer> GetCustomerByIdAsync(Guid id);
     }
 }

@@ -17,6 +17,7 @@ namespace SK.CRM.UI.Blazor
 
             // Register Specific Repository
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

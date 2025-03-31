@@ -14,12 +14,12 @@ namespace SK.CRM.Infrastructure.Repositories
 
         public async Task<List<Customer>> GetAllProspectAsync()
         {
-            return await _context.Customers.Where(x=>x.IsProspect == true).ToListAsync();
+            return await _context.Customers.Include(y => y.Addresses).AsNoTracking().Where(x=>x.IsProspect == true).ToListAsync();
         }
 
         public async Task<List<Customer>> GetAllCustomersAsync()
         {
-            return await _context.Customers.Where(x => x.IsProspect == false).ToListAsync();
+            return await _context.Customers.Include(y => y.Addresses).AsNoTracking().Where(x => x.IsProspect == false).ToListAsync();
         }
 
         public async Task<bool> DisableCustomerAsync(Guid customerId)
@@ -29,6 +29,11 @@ namespace SK.CRM.Infrastructure.Repositories
                     .ExecuteUpdate(setters => setters.SetProperty(e => e.IsDisabled, true));
             if(rowsAffected == 0) return false;
             return true;
+        }
+
+        public async Task<Customer> GetCustomerByIdAsync(Guid id)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
         }
     }
 }

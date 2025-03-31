@@ -1,4 +1,6 @@
-﻿namespace SK.CRM.Application.DTOs
+﻿using SK.CRM.Domain.Entities;
+
+namespace SK.CRM.Application.DTOs
 {
     public class CustomerDto
     {
@@ -14,5 +16,7 @@
         public bool IsProspect { get; set; } = false;
 
         public bool IsDisabled { get; set; } = false;
+
+        public ICollection<AddressDto> Addresses { get; set; } = new List<AddressDto>();
     }
 }

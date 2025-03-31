@@ -20,7 +20,7 @@ namespace SK.CRM.Application.Features.Customers.Queries
 
         public async Task<CustomerDto?> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
         {
-            var customer = await _customerRepository.GetByIdAsync(request.Id);
+            var customer = await _customerRepository.GetCustomerByIdAsync(request.Id);
             return customer is null ? null : _mapper.Map<CustomerDto>(customer);
         }
     }

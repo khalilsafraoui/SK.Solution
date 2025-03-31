@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SK.CRM.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using SK.CRM.Infrastructure.Persistence;
 namespace SK.CRM.Infrastructure.Migrations
 {
     [DbContext(typeof(CrmDbContext))]
-    partial class CrmDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250327105532_DeleteOrderId")]
+    partial class DeleteOrderId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,7 +173,7 @@ namespace SK.CRM.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OrderId")
+                    b.Property<Guid?>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Price")
@@ -227,13 +230,9 @@ namespace SK.CRM.Infrastructure.Migrations
 
             modelBuilder.Entity("SK.CRM.Domain.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("SK.CRM.Domain.Entities.Order", "Order")
+                    b.HasOne("SK.CRM.Domain.Entities.Order", null)
                         .WithMany("OrderDetails")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
+                        .HasForeignKey("OrderId");
                 });
 
             modelBuilder.Entity("SK.CRM.Domain.Entities.Customer", b =>

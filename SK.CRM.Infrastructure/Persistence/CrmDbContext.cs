@@ -8,6 +8,7 @@ namespace SK.CRM.Infrastructure.Persistence
         public CrmDbContext(DbContextOptions<CrmDbContext> options) : base(options) { }
 
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
@@ -18,6 +19,14 @@ namespace SK.CRM.Infrastructure.Persistence
             modelBuilder.Entity<Customer>().HasKey(c => c.Id);
             modelBuilder.Entity<Order>().HasKey(c => c.Id);
             modelBuilder.Entity<OrderDetail>().HasKey(c => c.Id);
+            modelBuilder.Entity<Address>().HasKey(c => c.Id);
+            modelBuilder.Entity<Address>()
+                        .Property(a => a.Latitude)
+                        .HasColumnType("decimal(9,6)");
+
+            modelBuilder.Entity<Address>()
+                        .Property(a => a.Longitude)
+                        .HasColumnType("decimal(9,6)");
         }
     }
 }

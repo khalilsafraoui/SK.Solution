@@ -4,6 +4,7 @@
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager
 @inject IJSRuntime _IJSRuntime
+
 @if (IsProcessing)
 {
     <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -17,78 +18,96 @@ else
         <div class="card-header bg-black bg-gradient m-lg-0 py-3">
             <div class="row">
                 <div class="col-12 text-center">
-                    <h2 class="text-white py-2"> @(Id!=null? "Edit":"Add") Customer</h2>
+                    <h2 class="text-white py-2"> @(Id != null ? "Edit" : "Add") Customer</h2>
                 </div>
             </div>
         </div>
 
         <div class="card-body p-4">
-            <EditForm Model="customer" FormName="CustomerUpsertForm" OnValidSubmit="UpsertCustomer">
-                <DataAnnotationsValidator/>
-                <div class="border p-3 mt-4">
+            <RadzenSteps Change="@OnChange" CanChange="@CanChange">
+                <Steps>
+                    <RadzenStepsItem Text="General Information">
+                        <EditForm Model="customer" FormName="CustomerUpsertForm" OnValidSubmit="UpsertCustomer">
+                            <DataAnnotationsValidator />
+                            <div class="border p-3 mt-4">
 
-                    <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="customer.FirstName" class="form-control" id="FirstName" DisplayName="FirstName" />
-                        <label for="FirstName">FirstName</label>
-                        <ValidationMessage For="@(()=> customer.FirstName)" />
-                    </div>
+                                <!-- Customer Fields -->
+                                <div class="form-floating py-3 col-12">
+                                    <InputText @bind-Value="customer.FirstName" class="form-control" id="FirstName" DisplayName="FirstName" />
+                                    <label for="FirstName">FirstName</label>
+                                    <ValidationMessage For="@(() => customer.FirstName)" />
+                                </div>
 
-                    <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="customer.LastName" class="form-control" id="LastName" DisplayName="LastName" />
-                        <label for="LastName">LastName</label>
-                        <ValidationMessage For="@(()=> customer.LastName)" />
-                    </div>
-                    <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="customer.PhoneNumber" class="form-control" id="PhoneNumber" DisplayName="PhoneNumber" />
-                        <label for="PhoneNumber">PhoneNumber</label>
-                        <ValidationMessage For="@(()=> customer.PhoneNumber)" />
-                    </div>
-                    <div class="form-floating py-3 col-12">
-                        <InputText @bind-Value="customer.Email" class="form-control" id="Email" DisplayName="Email" />
-                        <label for="Email">Email</label>
-                        <ValidationMessage For="@(()=> customer.Email)" />
-                    </div>
-                    <div class="row mt-3">
-                       <div class="col-6 col-md-3">
-                           <button type="submit" class="btn btn-primary form-control" disabled="@IsProcessing">
-                               <i class="bi bi-save"></i> Save
-                           </button>
-                      </div>
-                        <div class="col-6 col-md-3">
-                            <a href="customerlist" class="btn btn-secondary form-control" disabled="@IsProcessing">
-                                <i class="bi bi-arrow-bar-left"></i> Back to List
-                            </a>
-                        </div>
-                    </div>
+                                <div class="form-floating py-3 col-12">
+                                    <InputText @bind-Value="customer.LastName" class="form-control" id="LastName" DisplayName="LastName" />
+                                    <label for="LastName">LastName</label>
+                                    <ValidationMessage For="@(() => customer.LastName)" />
+                                </div>
+
+                                <div class="form-floating py-3 col-12">
+                                    <InputText @bind-Value="customer.Email" class="form-control" id="Email" DisplayName="Email" />
+                                    <label for="Email">Email</label>
+                                    <ValidationMessage For="@(() => customer.Email)" />
+                                </div>
+
+
+
+                                <!-- Submit and Back Buttons -->
+                                <div class="row mt-3">
+                                    <div class="col-6 col-md-3">
+                                        <button type="submit" class="btn btn-primary form-control" disabled="@IsProcessing">
+                                            <i class="bi bi-save"></i> Save
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </EditForm>
+                    </RadzenStepsItem>
+                    <RadzenStepsItem Text="Addresses">
+                        <_Address Addresses="@addresses" OnAddressSave="UpsertAddress" OnAddressDeleted="DeleteAddress"></_Address>
+                    </RadzenStepsItem>
+
+                </Steps>
+            </RadzenSteps>
+            <!-- Submit and Back Buttons -->
+            <div class="row mt-3">
+                <div class="col-6 col-md-3">
+                    <a href="customerlist" class="btn btn-secondary form-control" disabled="@IsProcessing">
+                        <i class="bi bi-arrow-bar-left"></i> Back to List
+                    </a>
                 </div>
-            </EditForm>
-            
+            </div>
+
         </div>
 
     </div>
 }
 
-
 @code {
     [Parameter]
     public string? Id { get; set; }
+
+
 
     public bool IsProcessing { get; set; } = true;
     [SupplyParameterFromForm(FormName = "CustomerUpsertForm")]
     private CustomerDto customer { get; set; } = new CustomerDto();
 
+    private List<AddressDto> addresses { get; set; } = new List<AddressDto>();
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-
-            await LoadCategory();
+            await LoadCastomers();
+            await LoadAddresses();
             IsProcessing = false;
             StateHasChanged();
         }
     }
 
-    private async Task LoadCategory()
+    private async Task LoadCastomers()
     {
         if (Id != null)
         {
@@ -97,12 +116,20 @@ else
         }
     }
 
+    private async Task LoadAddresses()
+    {
+        if (customer.Id != null)
+        {
+            var query = new GetCustomerAddressesQuery(customer.Id);
+            addresses = await Mediator.Send(query);
+        }
+    }
+
     private async Task UpsertCustomer()
     {
         IsProcessing = true;
-        if(Id != null)
+        if (Id != null)
         {
-           
             var query = new UpdateCustomerCommand(customer);
             await Mediator.Send(query);
             await _IJSRuntime.ToastrSuccess("Customer Updated Successfully");
@@ -114,6 +141,57 @@ else
             await _IJSRuntime.ToastrSuccessWithDelay("Customer Created Successfully");
         }
         IsProcessing = false;
-        _NavigationManager.NavigateTo("customerlist");
+
     }
+
+    private async Task UpsertAddress(AddressDto addressDto)
+    {
+
+        if (addressDto.Id != Guid.Empty)
+        {
+            var query = new UpdateCustomerAddressCommand(addressDto);
+            await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("Address Updated Successfully");
+        }
+        else
+        {
+            var query = new CreateCustomerAddressCommand(customer.Id, addressDto);
+            await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccessWithDelay("Address Created Successfully");
+        }
+        await LoadAddresses();
+        StateHasChanged();
+    }
+
+    private async Task DeleteAddress(Guid AddressId)
+    {
+
+
+        var query = new DeleteCustomerAddressCommand(AddressId);
+        bool IsDeleted = await Mediator.Send(query);
+        if (IsDeleted)
+        {
+            await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
+        }
+        else
+        {
+            await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
+        }
+        
+        
+        await LoadAddresses();
+        StateHasChanged();
+    }
+
+    private void OnChange()
+    {
+      
+    }
+
+    private async Task CanChange(StepsCanChangeEventArgs args)
+    {
+       
+    }
+
+   
 }

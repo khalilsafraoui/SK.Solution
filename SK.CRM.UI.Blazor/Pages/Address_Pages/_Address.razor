@@ -1,0 +1,239 @@
+﻿@rendermode InteractiveServer
+<h5>Address Information</h5>
+
+@foreach (var address in Addresses)
+{
+    <div class="border p-3 mt-3 rounded shadow-sm position-relative">
+
+        <button type="button" class="btn btn-link position-absolute top-0 end-0 m-2" @onclick="() => ToggleAddress(address)">
+            @(IsExpanded(address) ? "▲" : "▼")
+        </button>
+
+        @if (IsExpanded(address))
+        {
+            <EditForm Model="address" OnValidSubmit="()=>UpsertAddress(address)">
+                <DataAnnotationsValidator />
+
+                <div class="p-4">
+                    <div class="row">
+                        <div class="form-floating py-3 col-md-4">
+                            <InputSelect @bind-Value="address.CountryId" class="form-select" id="Country">
+                                <option value="">Select a country</option>
+                                @foreach (var country in Countries)
+                                {
+                                    <option value="@country.Key">@country.Value</option>
+                                }
+                            </InputSelect>
+                            <label for="Country">Country</label>
+                            <ValidationMessage For="@(() => address.CountryId)" />
+                        </div>
+
+                        <div class="form-floating py-3 col-md-4">
+                            <InputSelect @bind-Value="address.StateId" class="form-select" id="State">
+                                <option value="">Select a state</option>
+                                @foreach (var state in States)
+                                {
+                                    <option value="@state.Key">@state.Value</option>
+                                }
+                            </InputSelect>
+                            <label for="State">State</label>
+                            <ValidationMessage For="@(() => address.StateId)" />
+                        </div>
+
+                        <div class="form-floating py-3 col-md-4">
+                            <InputSelect @bind-Value="address.CityId" class="form-select" id="City">
+                                <option value="">Select a city</option>
+                                @foreach (var city in Cities)
+                                {
+                                    <option value="@city.Key">@city.Value</option>
+                                }
+                            </InputSelect>
+                            <label for="City">City</label>
+                            <ValidationMessage For="@(() => address.CityId)" />
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="form-floating py-3 col-md-6">
+                            <InputText @bind-Value="address.Street" class="form-control" id="Street" />
+                            <label for="Street">Street</label>
+                            <ValidationMessage For="@(() => address.Street)" />
+                        </div>
+
+                        <div class="form-floating py-3 col-md-6">
+                            <InputText @bind-Value="address.ZipCode" class="form-control" id="ZipCode" />
+                            <label for="ZipCode">Zip Code</label>
+                            <ValidationMessage For="@(() => address.ZipCode)" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Address Flags -->
+                        <div class="form-check py-3 col-md-4" >
+                            <InputCheckbox @bind-Value="address.IsDeliveryAddress" id="IsDeliveryAddress" />
+                            <label class="form-check-label" for="IsDeliveryAddress">Is Delivery Address</label>
+                        </div>
+
+                        <div class="form-check py-3 col-md-4">
+                            <InputCheckbox @bind-Value="address.IsBillingAddress" id="IsBillingAddress" @oninput="(e) => SetOnlyOneBillingAddress(e,address)" />
+                            <label class="form-check-label" for="IsBillingAddress">Is Billing Address</label>
+                        </div>
+
+                        <div class="form-check py-3 col-md-4">
+                            <InputCheckbox @bind-Value="address.IsDefault" id="IsDefault" @oninput="(e) => SetOnlyOneDefaultAddress(e,address)" disabled="@(address.IsDefault)" />
+                            <label class="form-check-label" for="IsDefault">Set as Default Address</label>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Submit and Back Buttons -->
+                <div class="row mt-3">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-primary form-control">
+                            <i class="bi bi-save"></i> Save
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="customerlist" class="btn btn-danger form-control">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <div>
+                <strong>@address.Street</strong><br />
+                @(address.CityId is not null ? Cities.GetValueOrDefault(address.CityId): "" ),
+                @(address.StateId is not null ? States.GetValueOrDefault(address.StateId) : ""),
+                @(address.CountryId is not null ? Countries.GetValueOrDefault(address.CountryId) : ""),
+                @address.ZipCode
+            </div>
+        }
+        @if (!IsExpanded(address))
+        {
+            <div class="d-flex justify-content-end mt-3">
+                <button type="button" class="btn btn-danger" @onclick="() => RemoveAddress(address)" title="Delete">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        }
+    </div>
+}
+
+<!-- Button to Add Another Address -->
+<div class="form-floating py-3 col-12">
+    <button type="button" class="btn btn-success" @onclick="AddNewAddress">
+        <i class="bi bi-plus"></i> Add New Address
+    </button>
+</div>
+
+@code {
+
+    [Parameter]
+    public ICollection<AddressDto> Addresses { get; set; }
+
+    [Parameter]
+    public EventCallback<AddressDto> OnAddressSave { get; set; }
+
+    [Parameter]
+    public EventCallback<Guid> OnAddressDeleted { get; set; }
+
+    Dictionary<string, string> Countries = new Dictionary<string, string>
+    {
+            { "BL", "Belgium" },
+    };
+
+    Dictionary<string, string> States = new Dictionary<string, string>
+    {
+            { "NA", "Namur" },
+    };
+
+    Dictionary<string, string> Cities = new Dictionary<string, string>
+    {
+            { "NA", "Namur" },
+    };
+    private void AddNewAddress()
+    {
+        var address = new AddressDto();
+        if (!Addresses.Any())
+        {
+            address.IsDefault = true;
+            Addresses.Add(address);
+        }
+        else
+        {
+            Addresses.Add(address); // Add a new empty address to the list
+        }
+        ToggleAddress(address);
+    }
+
+    // Ensure only one billing address is selected
+    private void SetOnlyOneBillingAddress(ChangeEventArgs e, AddressDto selectedAddress)
+    {
+        if (Addresses.Count > 1)
+        {
+            if (e.Value is bool isBilling && isBilling)
+            {
+                foreach (var address in Addresses)
+                {
+                    if (address != selectedAddress)
+                    {
+                        address.IsBillingAddress = false;
+                    }
+                }
+            }
+        }
+    }
+
+    // Ensure only one default address is selected
+    private void SetOnlyOneDefaultAddress(ChangeEventArgs e, AddressDto selectedAddress)
+    {
+        // if (Addresses.Count > 1)
+        // {
+        //     if (e.Value is bool isDefault && isDefault)
+        //     {
+        //         foreach (var address in Addresses)
+        //         {
+        //             if (address != selectedAddress)
+        //             {
+        //                 address.IsDefault = false;
+        //             }
+        //         }
+        //     }
+        // }
+    }
+
+    private HashSet<AddressDto> ExpandedAddresses = new(); // To track which ones are expanded
+
+    private void ToggleAddress(AddressDto address)
+    {
+
+        if (ExpandedAddresses.Contains(address))
+            ExpandedAddresses.Remove(address);
+        else
+        {
+            ExpandedAddresses.Clear();
+            ExpandedAddresses.Add(address);
+        }
+
+    }
+
+    private async void RemoveAddress(AddressDto addressDto)
+    {
+        await OnAddressDeleted.InvokeAsync(addressDto.Id);
+    }
+
+    private bool IsExpanded(AddressDto address) => ExpandedAddresses.Contains(address);
+
+   
+
+    private async Task UpsertAddress(AddressDto addressDto)
+    {
+        await OnAddressSave.InvokeAsync(addressDto);
+    }
+
+
+}

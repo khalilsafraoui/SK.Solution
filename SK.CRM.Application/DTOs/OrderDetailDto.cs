@@ -7,7 +7,7 @@ namespace SK.CRM.Application.DTOs
     {
         public Guid Id { get; set; }
 
-        public int OrderId { get; set; }
+        public Guid OrderId { get; set; }
 
         public OrderDto Order { get; set; }
 
