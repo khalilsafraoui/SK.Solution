@@ -7,20 +7,20 @@ using SK.CRM.Domain.Entities;
 
 namespace SK.CRM.Application.Features.Customers.Commands
 {
-    public sealed record UpdateCustomerCommand(CustomerDto Customer) : IRequest<CustomerDto>;
+    public sealed record UpdateCustomerGeneralInformationsCommand(CustomerGeneralInformationsDto Customer) : IRequest<CustomerGeneralInformationsDto>;
 
-    public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, CustomerDto>
+    public class UpdateCustomerGeneralInformationsCommandHandler : IRequestHandler<UpdateCustomerGeneralInformationsCommand, CustomerGeneralInformationsDto>
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
 
-        public UpdateCustomerCommandHandler(ICustomerRepository customerRepository, IMapper mapper)
+        public UpdateCustomerGeneralInformationsCommandHandler(ICustomerRepository customerRepository, IMapper mapper)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
         }
 
-        public async Task<CustomerDto> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<CustomerGeneralInformationsDto> Handle(UpdateCustomerGeneralInformationsCommand request, CancellationToken cancellationToken)
         {
             var customer = await _customerRepository.GetByIdAsync(request.Customer.Id)
                             ?? throw new NotFoundException(nameof(Customer), request.Customer.Id);
@@ -33,7 +33,7 @@ namespace SK.CRM.Application.Features.Customers.Commands
                 throw new ApplicationException("Failed to update customer.");
             }
 
-            return _mapper.Map<CustomerDto>(customer);
+            return _mapper.Map<CustomerGeneralInformationsDto>(customer);
         }
     }
 

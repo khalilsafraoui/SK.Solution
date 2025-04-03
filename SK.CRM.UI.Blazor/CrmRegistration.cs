@@ -26,7 +26,7 @@ namespace SK.CRM.UI.Blazor
             // Database Configuration
             var customerConnectionString = configuration.GetConnectionString("CrmConnection") ?? throw new InvalidOperationException("Connection string 'CrmConnection' not found.");
             services.AddDbContext<CrmDbContext>(options =>
-                options.UseSqlServer(customerConnectionString));
+                options.UseSqlServer(customerConnectionString), ServiceLifetime.Transient);
         }
     }
 }

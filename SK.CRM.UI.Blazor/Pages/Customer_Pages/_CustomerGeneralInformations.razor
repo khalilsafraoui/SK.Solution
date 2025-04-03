@@ -1,0 +1,105 @@
+﻿@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject NavigationManager _NavigationManager
+
+@if (IsProcessing)
+{
+    <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">General Informations</RadzenText>
+    <EditForm Model="customer" OnValidSubmit="UpsertCustomer">
+        <DataAnnotationsValidator />
+        <div class="border p-3 mt-4">
+
+            <!-- Customer Fields -->
+            <div class="form-floating py-3 col-12">
+                <InputText @bind-Value="customer.FirstName" class="form-control" id="FirstName" DisplayName="FirstName" />
+                <label for="FirstName">FirstName</label>
+                <ValidationMessage For="@(() => customer.FirstName)" />
+            </div>
+
+            <div class="form-floating py-3 col-12">
+                <InputText @bind-Value="customer.LastName" class="form-control" id="LastName" DisplayName="LastName" />
+                <label for="LastName">LastName</label>
+                <ValidationMessage For="@(() => customer.LastName)" />
+            </div>
+
+            <div class="form-floating py-3 col-12">
+                <InputText @bind-Value="customer.PhoneNumber" class="form-control" id="PhoneNumber" DisplayName="PhoneNumber" />
+                <label for="PhoneNumber">PhoneNumber</label>
+                <ValidationMessage For="@(()=> customer.PhoneNumber)" />
+            </div>
+
+            <div class="form-floating py-3 col-12">
+                <InputText @bind-Value="customer.Email" class="form-control" id="Email" DisplayName="Email" />
+                <label for="Email">Email</label>
+                <ValidationMessage For="@(() => customer.Email)" />
+            </div>
+
+
+
+            <!-- Submit and Back Buttons -->
+            <div class="row mt-3">
+                <div class="col-6 col-md-1 ms-auto">
+                    <button type="submit" class="btn btn-primary form-control" disabled="@IsProcessing">
+                        <i class="bi bi-save"></i> Save
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public string? CustomerId { get; set; }
+
+    public CustomerGeneralInformationsDto customer { get; set; } = new CustomerGeneralInformationsDto();
+    public bool IsProcessing { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadCastomer();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCastomer()
+    {
+        if (!string.IsNullOrWhiteSpace(CustomerId))
+        {
+            var query = new GetCustomerGeneralInformationsByIdQuery(Guid.Parse(CustomerId));
+            customer = await Mediator.Send(query);
+        }
+    }
+
+    private async Task UpsertCustomer()
+    {
+        IsProcessing = true;
+        if (customer.Id != Guid.Empty)
+        {
+            var query = new UpdateCustomerGeneralInformationsCommand(customer);
+            await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("Customer Updated Successfully");
+        }
+        else
+        {
+            var query = new CreateCustomerGeneralInformationsCommand(customer);
+            customer = await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("Customer Created Successfully");
+            _NavigationManager.NavigateTo($"/customer/update/{customer.Id}");
+        }
+        IsProcessing = false;
+
+    }
+
+}

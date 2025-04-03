@@ -10,6 +10,7 @@ namespace SK.CRM.Application.MappingProfiles
         public CrmMappingProfile()
         {
             CreateMap<Customer, CustomerDto>().ReverseMap(); // Map between Customer and CustomerDTO
+            CreateMap<Customer, CustomerGeneralInformationsDto>().ReverseMap(); // Map between Customer and CustomerDTO
             CreateMap<Order, OrderDto>().ReverseMap(); // Map between Order and OrderDto
             CreateMap<OrderDetail, OrderDetailDto>().ReverseMap();  // Map between OrderDetail and OrderDetailDto
             CreateMap<ShoppingCart, ShoppingCartDto>().ReverseMap(); // Map between ShoppingCart and ShoppingCartDto

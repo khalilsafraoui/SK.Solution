@@ -1,7 +1,13 @@
 ﻿@rendermode InteractiveServer
-<h5>Address Information</h5>
-
-@foreach (var address in Addresses)
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">Addresses</RadzenText>
+ <div class="border p-3 mt-4">
+<!-- Button to Add Another Address -->
+<div class="form-floating py-3 col-12">
+    <button type="button" class="btn btn-light" title="Add new Address" data-toggle="tooltip" data-placement="right" @onclick="AddNewAddress">
+        <i class="bi bi-plus"></i>
+    </button>
+</div>
+@foreach (var address in Addresses.Reverse())
 {
     <div class="border p-3 mt-3 rounded shadow-sm position-relative">
 
@@ -89,13 +95,13 @@
                 </div>
                 <!-- Submit and Back Buttons -->
                 <div class="row mt-3">
-                    <div class="col-6 col-md-3">
+                        <div class="col-6 col-md-1  ms-auto">
                         <button type="submit" class="btn btn-primary form-control">
                             <i class="bi bi-save"></i> Save
                         </button>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <a href="customerlist" class="btn btn-danger form-control">
+                    <div class="col-6 col-md-1 ">
+                        <a class="btn btn-danger form-control" @onclick="() => RemoveAddress(address)">
                             <i class="bi bi-trash"></i> Delete
                         </a>
                     </div>
@@ -112,23 +118,11 @@
                 @address.ZipCode
             </div>
         }
-        @if (!IsExpanded(address))
-        {
-            <div class="d-flex justify-content-end mt-3">
-                <button type="button" class="btn btn-danger" @onclick="() => RemoveAddress(address)" title="Delete">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        }
+       
     </div>
 }
-
-<!-- Button to Add Another Address -->
-<div class="form-floating py-3 col-12">
-    <button type="button" class="btn btn-success" @onclick="AddNewAddress">
-        <i class="bi bi-plus"></i> Add New Address
-    </button>
 </div>
+
 
 @code {
 
@@ -223,7 +217,10 @@
 
     private async void RemoveAddress(AddressDto addressDto)
     {
-        await OnAddressDeleted.InvokeAsync(addressDto.Id);
+        if (addressDto.Id != Guid.Empty)
+            await OnAddressDeleted.InvokeAsync(addressDto.Id);
+        else
+            Addresses.Remove(addressDto);
     }
 
     private bool IsExpanded(AddressDto address) => ExpandedAddresses.Contains(address);

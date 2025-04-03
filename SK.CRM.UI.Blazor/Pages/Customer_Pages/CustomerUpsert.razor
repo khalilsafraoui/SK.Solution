@@ -13,6 +13,13 @@
 }
 else
 {
+
+    <div class="rz-m-6">
+        <RadzenBreadCrumb>
+            <RadzenBreadCrumbItem Path="/customerlist" Text="Customers" />
+            <RadzenBreadCrumbItem Icon="add" Text=@(Id != null ? "Edit" : "Add") />
+        </RadzenBreadCrumb>
+    </div>
     <div class="card shadow border-0 m-4">
 
         <div class="card-header bg-black bg-gradient m-lg-0 py-3">
@@ -24,60 +31,20 @@ else
         </div>
 
         <div class="card-body p-4">
-            <RadzenSteps Change="@OnChange" CanChange="@CanChange">
-                <Steps>
-                    <RadzenStepsItem Text="General Information">
-                        <EditForm Model="customer" FormName="CustomerUpsertForm" OnValidSubmit="UpsertCustomer">
-                            <DataAnnotationsValidator />
-                            <div class="border p-3 mt-4">
+           
 
-                                <!-- Customer Fields -->
-                                <div class="form-floating py-3 col-12">
-                                    <InputText @bind-Value="customer.FirstName" class="form-control" id="FirstName" DisplayName="FirstName" />
-                                    <label for="FirstName">FirstName</label>
-                                    <ValidationMessage For="@(() => customer.FirstName)" />
-                                </div>
-
-                                <div class="form-floating py-3 col-12">
-                                    <InputText @bind-Value="customer.LastName" class="form-control" id="LastName" DisplayName="LastName" />
-                                    <label for="LastName">LastName</label>
-                                    <ValidationMessage For="@(() => customer.LastName)" />
-                                </div>
-
-                                <div class="form-floating py-3 col-12">
-                                    <InputText @bind-Value="customer.Email" class="form-control" id="Email" DisplayName="Email" />
-                                    <label for="Email">Email</label>
-                                    <ValidationMessage For="@(() => customer.Email)" />
-                                </div>
-
-
-
-                                <!-- Submit and Back Buttons -->
-                                <div class="row mt-3">
-                                    <div class="col-6 col-md-3">
-                                        <button type="submit" class="btn btn-primary form-control" disabled="@IsProcessing">
-                                            <i class="bi bi-save"></i> Save
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </EditForm>
-                    </RadzenStepsItem>
-                    <RadzenStepsItem Text="Addresses">
-                        <_Address Addresses="@addresses" OnAddressSave="UpsertAddress" OnAddressDeleted="DeleteAddress"></_Address>
-                    </RadzenStepsItem>
-
-                </Steps>
-            </RadzenSteps>
-            <!-- Submit and Back Buttons -->
-            <div class="row mt-3">
-                <div class="col-6 col-md-3">
-                    <a href="customerlist" class="btn btn-secondary form-control" disabled="@IsProcessing">
-                        <i class="bi bi-arrow-bar-left"></i> Back to List
-                    </a>
-                </div>
-            </div>
+            <RadzenTabs Change=@OnChange TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    <RadzenTabsItem Text="General Informations">
+                        <_CustomerGeneralInformations CustomerId="@Id"></_CustomerGeneralInformations>
+                        
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Addresses" Disabled="@(string.IsNullOrWhiteSpace(Id))">
+                        <_CustomerAddresses CustomerId="@Id"></_CustomerAddresses>
+                    </RadzenTabsItem>
+                    
+                </Tabs>
+            </RadzenTabs>
 
         </div>
 
@@ -90,98 +57,10 @@ else
 
 
 
-    public bool IsProcessing { get; set; } = true;
-    [SupplyParameterFromForm(FormName = "CustomerUpsertForm")]
-    private CustomerDto customer { get; set; } = new CustomerDto();
-
-    private List<AddressDto> addresses { get; set; } = new List<AddressDto>();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadCastomers();
-            await LoadAddresses();
-            IsProcessing = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadCastomers()
-    {
-        if (Id != null)
-        {
-            var query = new GetCustomerByIdQuery(Guid.Parse(Id));
-            customer = await Mediator.Send(query);
-        }
-    }
-
-    private async Task LoadAddresses()
-    {
-        if (customer.Id != null)
-        {
-            var query = new GetCustomerAddressesQuery(customer.Id);
-            addresses = await Mediator.Send(query);
-        }
-    }
-
-    private async Task UpsertCustomer()
-    {
-        IsProcessing = true;
-        if (Id != null)
-        {
-            var query = new UpdateCustomerCommand(customer);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Customer Updated Successfully");
-        }
-        else
-        {
-            var query = new CreateCustomerCommand(customer);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccessWithDelay("Customer Created Successfully");
-        }
-        IsProcessing = false;
-
-    }
-
-    private async Task UpsertAddress(AddressDto addressDto)
-    {
-
-        if (addressDto.Id != Guid.Empty)
-        {
-            var query = new UpdateCustomerAddressCommand(addressDto);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Address Updated Successfully");
-        }
-        else
-        {
-            var query = new CreateCustomerAddressCommand(customer.Id, addressDto);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccessWithDelay("Address Created Successfully");
-        }
-        await LoadAddresses();
-        StateHasChanged();
-    }
-
-    private async Task DeleteAddress(Guid AddressId)
-    {
-
-
-        var query = new DeleteCustomerAddressCommand(AddressId);
-        bool IsDeleted = await Mediator.Send(query);
-        if (IsDeleted)
-        {
-            await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
-        }
-        else
-        {
-            await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
-        }
-        
-        
-        await LoadAddresses();
-        StateHasChanged();
-    }
+    public bool IsProcessing { get; set; } = false;
+    
+    
+   
 
     private void OnChange()
     {
