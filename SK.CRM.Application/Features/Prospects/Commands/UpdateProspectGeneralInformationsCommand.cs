@@ -5,22 +5,22 @@ using SK.CRM.Application.Exceptions;
 using SK.CRM.Application.Interfaces;
 using SK.CRM.Domain.Entities;
 
-namespace SK.CRM.Application.Features.Prospects.Commands
+namespace SK.CRM.Application.Features.Customers.Commands
 {
-    public sealed record UpdateProspectGeneralInformationsCommand(ProspectGeneralInformationsDto Customer) : IRequest<ProspectGeneralInformationsDto>;
+    public sealed record UpdateCustomerGeneralInformationsCommand(CustomerGeneralInformationsDto Customer) : IRequest<CustomerGeneralInformationsDto>;
 
-    public class UpdateProspectGeneralInformationsCommandHandler : IRequestHandler<UpdateProspectGeneralInformationsCommand, ProspectGeneralInformationsDto>
+    public class UpdateCustomerGeneralInformationsCommandHandler : IRequestHandler<UpdateCustomerGeneralInformationsCommand, CustomerGeneralInformationsDto>
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
 
-        public UpdateProspectGeneralInformationsCommandHandler(ICustomerRepository customerRepository, IMapper mapper)
+        public UpdateCustomerGeneralInformationsCommandHandler(ICustomerRepository customerRepository, IMapper mapper)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
         }
 
-        public async Task<ProspectGeneralInformationsDto> Handle(UpdateProspectGeneralInformationsCommand request, CancellationToken cancellationToken)
+        public async Task<CustomerGeneralInformationsDto> Handle(UpdateCustomerGeneralInformationsCommand request, CancellationToken cancellationToken)
         {
             var customer = await _customerRepository.GetByIdAsync(request.Customer.Id)
                             ?? throw new NotFoundException(nameof(Customer), request.Customer.Id);
@@ -30,10 +30,10 @@ namespace SK.CRM.Application.Features.Prospects.Commands
             var updated = await _customerRepository.UpdateAsync(customer);
             if (!updated)
             {
-                throw new ApplicationException("Failed to update Prospect.");
+                throw new ApplicationException("Failed to update customer.");
             }
 
-            return _mapper.Map<ProspectGeneralInformationsDto>(customer);
+            return _mapper.Map<CustomerGeneralInformationsDto>(customer);
         }
     }
 

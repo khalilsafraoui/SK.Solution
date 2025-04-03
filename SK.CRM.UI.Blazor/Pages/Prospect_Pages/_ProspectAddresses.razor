@@ -1,0 +1,68 @@
+﻿@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+
+<_Address Addresses="@addresses" OnAddressSave="UpsertAddress" OnAddressDeleted="DeleteAddress"></_Address>
+
+@code {
+
+    [Parameter]
+    public string? ProspectId { get; set; }
+    private List<AddressDto> addresses { get; set; } = new List<AddressDto>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadAddresses();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadAddresses()
+    {
+        if (!string.IsNullOrWhiteSpace(ProspectId))
+        {
+            var query = new GetProspectAddressesQuery(Guid.Parse(ProspectId));
+            addresses = await Mediator.Send(query);
+        }
+    }
+
+    private async Task UpsertAddress(AddressDto addressDto)
+    {
+
+        if (addressDto.Id != Guid.Empty)
+        {
+            var query = new UpdateProspectAddressCommand(addressDto);
+            await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("Address Updated Successfully");
+        }
+        else
+        {
+            var query = new CreateProspectAddressCommand(Guid.Parse(ProspectId), addressDto);
+            await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("Address Created Successfully");
+        }
+
+        await LoadAddresses();
+        StateHasChanged();
+    }
+
+    private async Task DeleteAddress(Guid AddressId)
+    {
+        var query = new DeleteProspectAddressCommand(AddressId);
+        bool IsDeleted = await Mediator.Send(query);
+        if (IsDeleted)
+        {
+            await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
+        }
+        else
+        {
+            await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
+        }
+
+        await LoadAddresses();
+        StateHasChanged();
+    }
+
+}
