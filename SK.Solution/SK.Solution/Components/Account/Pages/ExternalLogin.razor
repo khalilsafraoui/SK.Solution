@@ -4,9 +4,11 @@
 @using System.Security.Claims
 @using System.Text
 @using System.Text.Encodings.Web
+@using MediatR
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using SK.Solution.Data
+@using SK.Solution.Shared.Events
 @using SK.Solution.Utility
 
 @inject SignInManager<ApplicationUser> SignInManager
@@ -16,10 +18,10 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<ExternalLogin> Logger
-
+@inject IPublisher _publisher
 <PageTitle>Register</PageTitle>
 
-<StatusMessage Message="@message" />
+@* <StatusMessage Message="@message" />
 <h1>Register</h1>
 <h2>Associate your @ProviderDisplayName account.</h2>
 <hr />
@@ -43,7 +45,75 @@
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </EditForm>
     </div>
-</div>
+</div> *@
+
+<style>
+    .background-radial-gradient {
+        background-color: hsl(218, 41%, 15%);
+        background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+    }
+
+    .bg-glass {
+        background-color: hsla(0, 0%, 100%, 0.9) !important;
+        backdrop-filter: saturate(200%) blur(25px);
+    }
+
+    .full-height {
+        height: 100vh;
+    }
+</style>
+
+<section class="background-radial-gradient overflow-hidden">
+    <div class="container d-flex justify-content-center align-items-center full-height px-4 py-5 px-md-5 text-center text-lg-start">
+        <div class="row gx-lg-5 align-items-center mb-5 w-100">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="my-5 display-5 fw-bold" style="color: hsl(218, 81%, 95%)">
+                    Create Your Account <br />
+                    <span style="color: hsl(218, 81%, 75%)">Join us today!</span>
+                </h1>
+                <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+                    Sign up to access all our features. It only takes a few seconds!
+                </p>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body px-4 py-5 px-md-5">
+                        <div class="alert alert-info">
+                            You've successfully authenticated with <strong>@ProviderDisplayName</strong>.
+                            You're almost done! Please provide the missing information and click the Register button.
+                        </div>
+                        <StatusMessage Message="@message" />
+                        <EditForm Model="Input" OnValidSubmit="OnValidSubmitAsync" FormName="confirmation" method="post">
+                            <DataAnnotationsValidator />
+
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.FirstName" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="Kalil" />
+                                <label for="FirstName"> First Name</label>
+                                <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                            </div>
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.LastName" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="Safraoui" />
+                                <label for="LastName"> Last Name</label>
+                                <ValidationMessage For="() => Input.LastName" class="text-danger" />
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                <label for="email" class="form-label">Email</label>
+                                <ValidationMessage For="() => Input.Email" class="text-danger" />
+                            </div>
+
+                            <button type="submit" class="w-100 btn btn-lg btn-primary fw-bold rounded-3">Register</button>
+
+                        </EditForm>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 @code {
     public const string LoginCallbackAction = "LoginCallback";
@@ -133,7 +203,8 @@
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-
+        user.FirstName = Input.FirstName;
+        user.LastName = Input.LastName;
         var result = await UserManager.CreateAsync(user);
         if (result.Succeeded)
         {
@@ -144,6 +215,7 @@
                 Logger.LogInformation("User created an account using {Name} provider.", externalLoginInfo.LoginProvider);
 
                 var userId = await UserManager.GetUserIdAsync(user);
+                await _publisher.Publish(new UserRegisteredEvent(userId, user.Email, user.FirstName, user.LastName), CancellationToken.None);
                 var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
@@ -193,5 +265,10 @@
         [Required]
         [EmailAddress]
         public string Email { get; set; } = "";
+
+        [Required]
+        public string? FirstName { get; set; } = "";
+        [Required]
+        public string? LastName { get; set; } = "";
     }
 }

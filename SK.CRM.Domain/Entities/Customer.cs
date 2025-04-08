@@ -6,10 +6,12 @@
         {
         }
 
-        public Customer(string userId, string email)
+        public Customer(string userId, string email,string firstName,string lastName)
         {
             UserId = userId;
             Email = email;
+            FirstName = firstName;
+            LastName = lastName;
             IsProspect = true;
         }
         public string FirstName { get; set; } = string.Empty;

@@ -22,65 +22,89 @@
 
 <PageTitle>Register</PageTitle>
 
-<div class="mt-5" style="height:100%">
-    <div class="h-100 d-flex align-items-center justify-content-center ">
-        <div class="card shadow-lg border-0 rounded-4" style="width: 30rem;">
-            <div class="card-body p-5">
-                <h2 class="card-title text-center fw-bold mb-4">Create an Account</h2>
 
-                <StatusMessage Message="@Message" />
+<style>
+    .background-radial-gradient {
+        background-color: hsl(218, 41%, 15%);
+        background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+    }
 
-                <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary class="text-danger" role="alert" />
+    .bg-glass {
+        background-color: hsla(0, 0%, 100%, 0.9) !important;
+        backdrop-filter: saturate(200%) blur(25px);
+    }
 
-                    <div class="form-floating mb-3">
-                        <InputText @bind-Value="Input.Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                        <label for="email">Email</label>
-                        <ValidationMessage For="() => Input.Email" class="text-danger" />
-                    </div>
+    .full-height {
+        height: 100vh;
+    }
+</style>
 
-                    <div class="form-floating mb-3">
-                        <InputText type="password" @bind-Value="Input.Password" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" placeholder="password" />
-                        <label for="password">Password</label>
-                        <ValidationMessage For="() => Input.Password" class="text-danger" />
-                    </div>
-
-                    <div class="form-floating mb-3">
-                        <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control form-control-lg" autocomplete="new-password" aria-required="true" placeholder="password" />
-                        <label for="confirm-password">Confirm Password</label>
-                        <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
-                    </div>
-
-                    <div class="form-floating mb-4">
-                        <InputSelect @bind-Value="Input.Role" class="form-select form-select-lg" id="role">
-                            <option value="@RoleType.Customer" selected>@RoleType.Customer</option>
-                            <option value="@RoleType.Admin">@RoleType.Admin</option>
-                        </InputSelect>
-                        <label for="role">Select Role</label>
-                        <ValidationMessage For="() => Input.Role" class="text-danger" />
-                    </div>
-
-                    <button type="submit" class="w-100 btn btn-lg btn-primary fw-bold rounded-3">Register</button>
-                </EditForm>
-
-                <hr class="my-4">
-
-                <ExternalLoginPicker />
-
-                <p class="text-center mt-3">
-                    <small class="text-muted">
-                        Already have an account?
-                        <a href="/Account/Login" class="fw-bold text-decoration-none">Sign In</a>
-                    </small>
+<section class="background-radial-gradient overflow-hidden">
+    <div class="container d-flex justify-content-center align-items-center full-height px-4 py-5 px-md-5 text-center text-lg-start">
+        <div class="row gx-lg-5 align-items-center mb-5 w-100">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="my-5 display-5 fw-bold" style="color: hsl(218, 81%, 95%)">
+                    Create Your Account <br />
+                    <span style="color: hsl(218, 81%, 75%)">Join us today!</span>
+                </h1>
+                <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+                    Sign up to access all our features. It only takes a few seconds!
                 </p>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body px-4 py-5 px-md-5">
+                        <StatusMessage Message="@Message" />
+                        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
+                            <DataAnnotationsValidator />
+                            
+
+                           
+                                <div class="form-floating mb-3">
+                                    <InputText @bind-Value="Input.FirstName" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="Kalil" />
+                                    <label for="FirstName"> First Name</label>
+                                    <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <InputText @bind-Value="Input.LastName" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="Safraoui" />
+                                    <label for="LastName"> Last Name</label>
+                                    <ValidationMessage For="() => Input.LastName" class="text-danger" />
+                                </div>
+                               
+                            
+
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                <label for="email" class="form-label">Email</label>
+                                <ValidationMessage For="() => Input.Email" class="text-danger" />
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <InputText type="password" @bind-Value="Input.Password" class="form-control form-control-lg" autocomplete="current-password" aria-required="true" placeholder="password" />
+                                <label for="password" class="form-label">Password</label>
+                                <ValidationMessage For="() => Input.Password" class="text-danger" />
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control form-control-lg" autocomplete="current-password" aria-required="true" placeholder="Confirm Password" />
+                                <label for="ConfirmPassword" class="form-label">Confirm Password</label>
+                                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                            </div>
+
+                            <button type="submit" class="w-100 btn btn-lg btn-primary fw-bold rounded-3">Register</button>
+
+                        </EditForm>
+                        <ExternalLoginPicker />
+                        <div class="mt-3 text-center">
+                            <a href="/Account/Login" class="text-muted">Already have an account? Log in</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-</div>
-
-
+</section>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
@@ -100,6 +124,8 @@
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        user.FirstName = Input.FirstName;
+        user.LastName = Input.LastName;
         var result = await UserManager.CreateAsync(user, Input.Password);
 
         if (!result.Succeeded)
@@ -124,9 +150,9 @@
         }
 
         var userId = await UserManager.GetUserIdAsync(user);
-        if (Input.Role == RoleType.Customer)
+        if (Input.Role == RoleType.Customer || string.IsNullOrEmpty(Input.Role))
         {
-            await _publisher.Publish(new UserRegisteredEvent(userId, user.Email), CancellationToken.None);
+            await _publisher.Publish(new UserRegisteredEvent(userId, user.Email, user.FirstName, user.LastName), CancellationToken.None);
         }
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -184,10 +210,14 @@
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [ComparePasswords(nameof(Password))]
         public string ConfirmPassword { get; set; } = "";
 
-
+       
         public string? Role { get; set; }
+        [Required]
+        public string? FirstName { get; set; } = "";
+        [Required]
+        public string? LastName { get; set; } = ""; 
     }
 }

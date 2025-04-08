@@ -16,20 +16,28 @@
 }
 else
 {
-    <div class="d-grid gap-2">
+    <div class="text-center">
+        <p>or log in with:</p>
         <form class="form-horizontal" action="Account/PerformExternalLogin" method="post">
-            
-                <AntiforgeryToken />
-                <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
-                <div class="d-grid gap-2">
-                    @foreach (var provider in externalLogins)
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
+            <div>
+                @foreach (var provider in externalLogins)
+                {
+                    var iconClass = provider.Name switch
                     {
-                        <button type="submit" class="btn btn-outline-dark" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
-                        Connect<span class="d-none d-sm-inline"> with a @provider.DisplayName</span>
+                        "Google" => "fab fa-google",
+                        "Microsoft" => "fab fa-microsoft",
+                        _ => "fas fa-user" // fallback
+                    };
+
+                    <button type="submit" class="btn btn-link btn-floating mx-1"
+                            name="provider" value="@provider.Name"
+                            title="Log in using your @provider.DisplayName account">
+                        <i class="@iconClass fa-2x"></i>
                     </button>
-                    }
-                </div>
-            
+                }
+            </div>
         </form>
     </div>
    

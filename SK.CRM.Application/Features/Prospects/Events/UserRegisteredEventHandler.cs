@@ -16,7 +16,7 @@ namespace SK.CRM.Application.Features.Prospects.Events
 
         public async Task Handle(UserRegisteredEvent notification, CancellationToken cancellationToken)
         {
-            var customer = new Customer(notification.UserId, notification.Email);
+            var customer = new Customer(notification.UserId, notification.Email, notification.firstName, notification.lastName);
             
             customer = await _customerRepository.CreateAsync(customer);
         }

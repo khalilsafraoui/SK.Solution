@@ -1,0 +1,89 @@
+﻿@page "/logintest"
+@inject NavigationManager Navigation
+
+<style>
+    .background-radial-gradient {
+        background-color: hsl(218, 41%, 15%);
+        background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+    }
+
+    .bg-glass {
+        background-color: hsla(0, 0%, 100%, 0.9) !important;
+        backdrop-filter: saturate(200%) blur(25px);
+    }
+
+    .full-height {
+        height: 100vh;
+    }
+</style>
+
+<section class="background-radial-gradient overflow-hidden">
+    <div class="container d-flex justify-content-center align-items-center full-height px-4 py-5 px-md-5 text-center text-lg-start">
+        <div class="row gx-lg-5 align-items-center mb-5 w-100">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="my-5 display-5 fw-bold" style="color: hsl(218, 81%, 95%)">
+                    Welcome back! <br />
+                    <span style="color: hsl(218, 81%, 75%)">Log in to your account</span>
+                </h1>
+                <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+                    Please enter your email and password to access your account. If you don't have an account, you can sign up.
+                </p>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body px-4 py-5 px-md-5">
+                        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                            <DataAnnotationsValidator />
+
+                            <div class="mb-4">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Email</RadzenText>
+                                <RadzenTextBox @bind-Value="loginModel.Email" Placeholder="Email" class="form-control" />
+                                <RadzenRequiredValidator Component="Email" Text="Email is required" />
+                            </div>
+                            
+                            <div class="mb-4">
+                                <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Password</RadzenText>
+                                <RadzenTextBox @bind-Value="loginModel.Password" Placeholder="Password" Type="password" class="form-control" />
+                                <RadzenRequiredValidator Component="Password" Text="Password is required" />
+                            </div>
+
+                            <div class="form-check d-flex justify-content-center mb-4">
+                                <input class="form-check-input me-2" type="checkbox" @bind="loginModel.RememberMe" />
+                                <label class="form-check-label"> Remember me </label>
+                            </div>
+
+                            <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="Log in" Click="HandleLogin" class="btn btn-primary w-100 mb-3" />
+
+                            <SK.Solution.Components.Account.Shared.ExternalLoginPicker />
+
+                            <div class="mt-3 text-center">
+                                <a href="/signuptest" class="text-muted">Don't have an account? Register</a>
+                            </div>
+
+                            <div class="mt-3 text-center">
+                                <a href="/forgot-password" class="text-muted">Forgot your password?</a>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+
+    private void HandleLogin()
+    {
+        Console.WriteLine($"Logging in with {loginModel.Email}, RememberMe: {loginModel.RememberMe}");
+    }
+
+    class LoginModel
+    {
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+        public bool RememberMe { get; set; } = false;
+    }
+}

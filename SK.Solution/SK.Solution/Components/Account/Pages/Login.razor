@@ -11,7 +11,7 @@
 @inject IdentityRedirectManager RedirectManager
 
 <PageTitle>Log in</PageTitle>
-<div class="mt-5" style="height:100%">
+@* <div class="mt-5" style="height:100%">
     <div class="h-100 d-flex align-items-center justify-content-center">
         <div class="card shadow-lg border-0 rounded-4" style="width: 28rem;">
             <div class="card-body p-5">
@@ -63,16 +63,89 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@
+
+<style>
+    .background-radial-gradient {
+        background-color: hsl(218, 41%, 15%);
+        background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+    }
+
+    .bg-glass {
+        background-color: hsla(0, 0%, 100%, 0.9) !important;
+        backdrop-filter: saturate(200%) blur(25px);
+    }
+
+    .full-height {
+        height: 100vh;
+    }
+</style>
+
+<section class="background-radial-gradient overflow-hidden">
+    <div class="container d-flex justify-content-center align-items-center full-height px-4 py-5 px-md-5 text-center text-lg-start">
+        <div class="row gx-lg-5 align-items-center mb-5 w-100">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <h1 class="my-5 display-5 fw-bold" style="color: hsl(218, 81%, 95%)">
+                    Welcome back! <br />
+                    <span style="color: hsl(218, 81%, 75%)">Log in to your account</span>
+                </h1>
+                <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+                    Please enter your email and password to access your account. If you don't have an account, you can sign up.
+                </p>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card bg-white shadow-lg">
+                    <div class="card-body px-4 py-5 px-md-5">
+                        <StatusMessage Message="@errorMessage" />
+                        <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger" role="alert" />
+
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                <label for="email" class="form-label">Email</label>
+                                <ValidationMessage For="() => Input.Email" class="text-danger" />
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <InputText type="password" @bind-Value="Input.Password" class="form-control form-control-lg" autocomplete="current-password" aria-required="true" placeholder="password" />
+                                <label for="password" class="form-label">Password</label>
+                                <ValidationMessage For="() => Input.Password" class="text-danger" />
+                            </div>
+
+                            <div class="form-check d-flex justify-content-center mb-4">
+                                <input class="form-check-input me-2" type="checkbox" @bind="Input.RememberMe" />
+                                <label class="form-check-label"> Remember me </label>
+                            </div>
+
+                            <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="Log in" ButtonType="ButtonType.Submit" class="btn btn-primary w-100 mb-3" />
+
+                        </EditForm>
 
 
+                        <ExternalLoginPicker />
+
+                        <div class="mt-3 text-center">
+                            <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))" class="text-muted">Don't have an account? Register</a>
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <a href="Account/ForgotPassword" class="text-muted">Forgot your password?</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 @code {
     private string? errorMessage;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    [SupplyParameterFromForm]
+    [SupplyParameterFromForm(FormName = "login")]
     private InputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
