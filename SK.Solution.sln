@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RabbitMqDocker", "RabbitMqD
 		readme.txt = readme.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.CRM.Infrastructure.PostgreSql", "SK.CRM.Infrastructure.PostgreSql\SK.CRM.Infrastructure.PostgreSql.csproj", "{DADA58DF-0BA6-4BF0-8102-69C1A8D02768}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{C66D7F0C-5545-40EC-9BBC-B2B0EA07CA7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C66D7F0C-5545-40EC-9BBC-B2B0EA07CA7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C66D7F0C-5545-40EC-9BBC-B2B0EA07CA7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DADA58DF-0BA6-4BF0-8102-69C1A8D02768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DADA58DF-0BA6-4BF0-8102-69C1A8D02768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DADA58DF-0BA6-4BF0-8102-69C1A8D02768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DADA58DF-0BA6-4BF0-8102-69C1A8D02768}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -101,6 +107,7 @@ Global
 		{B23F69CA-1FEA-4233-A738-1B4A54AF9AF9} = {FED6CD3D-B076-4EB2-9EEA-90FA493200A3}
 		{DDF634AE-DFE8-4217-A8D3-796496B216C5} = {FED6CD3D-B076-4EB2-9EEA-90FA493200A3}
 		{C66D7F0C-5545-40EC-9BBC-B2B0EA07CA7E} = {FED6CD3D-B076-4EB2-9EEA-90FA493200A3}
+		{DADA58DF-0BA6-4BF0-8102-69C1A8D02768} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {119719A0-EFBE-4F53-8963-C9D7F03E1007}

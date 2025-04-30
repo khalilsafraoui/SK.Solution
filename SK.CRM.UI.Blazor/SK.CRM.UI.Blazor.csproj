@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SK.CRM.Application\SK.CRM.Application.csproj" />
+    <ProjectReference Include="..\SK.CRM.Infrastructure.PostgreSql\SK.CRM.Infrastructure.PostgreSql.csproj" />
     <ProjectReference Include="..\SK.CRM.Infrastructure\SK.CRM.Infrastructure.csproj" />
     <ProjectReference Include="..\SK.Inventory.Application\SK.Inventory.Application.csproj" />
     <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
