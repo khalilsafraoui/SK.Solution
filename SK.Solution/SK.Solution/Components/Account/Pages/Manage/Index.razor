@@ -27,12 +27,24 @@
                 </div>
 
                 <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.FirstName" class="form-control" placeholder="First name." />
+                    <label for="FirstName" class="form-label">First Name</label>
+                    <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.LastName" class="form-control" placeholder="Last name" />
+                    <label for="LastName" class="form-label">Last Name</label>
+                    <ValidationMessage For="() => Input.LastName" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
                     <InputText @bind-Value="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number." />
                     <label for="phone-number" class="form-label">Phone number</label>
                     <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
                 </div>
 
-                <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="save" class="w-100">Save</RadzenButton>
+                <RadzenButton ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Primary" Icon="save" class="w-100">Save</RadzenButton>
             </EditForm>
         </RadzenCard>
     </div>
@@ -57,16 +69,43 @@
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
         Input.PhoneNumber ??= phoneNumber;
+        Input.FirstName = string.IsNullOrWhiteSpace(Input.FirstName) ? user.FirstName : Input.FirstName;
+        Input.LastName = string.IsNullOrWhiteSpace(Input.LastName) ? user.LastName : Input.LastName;
     }
 
     private async Task OnValidSubmitAsync()
     {
+        bool hasChanges = false;
         if (Input.PhoneNumber != phoneNumber)
         {
             var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
             if (!setPhoneResult.Succeeded)
             {
                 RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set phone number.", HttpContext);
+            }
+        }
+        
+        // Update first name if changed
+        if (user.FirstName != Input.FirstName)
+        {
+            user.FirstName = Input.FirstName;
+            hasChanges = true;
+        }
+
+        // Update last name if changed
+        if (user.LastName != Input.LastName)
+        {
+            user.LastName = Input.LastName;
+            hasChanges = true;
+        }
+
+        if (hasChanges)
+        {
+            var updateResult = await UserManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to update profile.", HttpContext);
+                return;
             }
         }
 
@@ -79,5 +118,12 @@
         [Phone]
         [Display(Name = "Phone number")]
         public string? PhoneNumber { get; set; }
+
+        [Required]
+        [Display(Name = "First Name")]
+        public string? FirstName { get; set; } = "";
+        [Required]
+        [Display(Name = "Last Name")]
+        public string? LastName { get; set; } = "";
     }
 }
