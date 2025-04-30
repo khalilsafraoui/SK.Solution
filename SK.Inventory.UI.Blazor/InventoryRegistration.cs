@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SK.Inventory.Application.Interfaces;
-using SK.Inventory.Infrastructure.SqlServer.Persistence;
-using SK.Inventory.Infrastructure.SqlServer.Repositories;
+using SK.Inventory.Infrastructure.PostgreSql;
+using SK.Inventory.Infrastructure.SqlServer;
 
 
 namespace SK.Inventory.UI.Blazor
@@ -12,16 +10,13 @@ namespace SK.Inventory.UI.Blazor
     {
         public static void AddInventoryModuleServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Register Generic Repository
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            var provider = configuration["DatabaseProvider"];
 
-            // Register Specific Repository
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
-            // Database Configuration
-            var inventoryConnectionString = configuration.GetConnectionString("InventoryConnection") ?? throw new InvalidOperationException("Connection string 'InventoryConnection' not found.");
-            services.AddDbContext<InventoryDbContext>(options =>
-                options.UseSqlServer(inventoryConnectionString));
+            if (provider == "PostgreSql")
+                services.AddPostgreSqlInfrastructure(configuration);
+            else
+                services.AddSqlInfrastructure(configuration);
+
         }
     }
 }
