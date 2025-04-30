@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SK.Inventory.Infrastructure.Persistence;
+using SK.Inventory.Infrastructure.SqlServer.Persistence;
 
 #nullable disable
 
-namespace SK.Inventory.Infrastructure.Migrations
+namespace SK.Inventory.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
     [Migration("20250322215827_CreateProductAndCategory")]

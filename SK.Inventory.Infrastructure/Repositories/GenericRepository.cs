@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using SK.Inventory.Application.Exceptions;
 using SK.Inventory.Application.Interfaces;
 using SK.Inventory.Domain.Entities;
-using SK.Inventory.Infrastructure.Persistence;
+using SK.Inventory.Infrastructure.SqlServer.Persistence;
 using System.Linq.Expressions;
 
 
-namespace SK.Inventory.Infrastructure.Repositories
+namespace SK.Inventory.Infrastructure.SqlServer.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {

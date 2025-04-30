@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SK.Inventory.Domain.Entities.Product;
 
-namespace SK.Inventory.Infrastructure.Persistence
+namespace SK.Inventory.Infrastructure.SqlServer.Persistence
 {
     public class InventoryDbContext : DbContext
     {

@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SK.Inventory.Application\SK.Inventory.Application.csproj" />
-    <ProjectReference Include="..\SK.Inventory.Infrastructure\SK.Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\SK.Inventory.Infrastructure\SK.Inventory.Infrastructure.SqlServer.csproj" />
     <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
   </ItemGroup>
 

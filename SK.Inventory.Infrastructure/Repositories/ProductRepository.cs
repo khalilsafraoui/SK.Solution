@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using SK.Inventory.Application.Interfaces;
 using SK.Inventory.Domain.Entities.Product;
-using SK.Inventory.Infrastructure.Persistence;
+using SK.Inventory.Infrastructure.SqlServer.Persistence;
 
-namespace SK.Inventory.Infrastructure.Repositories
+namespace SK.Inventory.Infrastructure.SqlServer.Repositories
 {
     public class ProductRepository : GenericRepository<Product>, IProductRepository
     {

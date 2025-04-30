@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SK.Inventory.Application.Interfaces;
-using SK.Inventory.Infrastructure.Persistence;
-using SK.Inventory.Infrastructure.Repositories;
+using SK.Inventory.Infrastructure.SqlServer.Persistence;
+using SK.Inventory.Infrastructure.SqlServer.Repositories;
 
 
 namespace SK.Inventory.UI.Blazor

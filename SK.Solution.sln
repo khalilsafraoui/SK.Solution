@@ -27,7 +27,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.Inventory.Application", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.Inventory.Domain", "SK.Inventory.Domain\SK.Inventory.Domain.csproj", "{B23F69CA-1FEA-4233-A738-1B4A54AF9AF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.Inventory.Infrastructure", "SK.Inventory.Infrastructure\SK.Inventory.Infrastructure.csproj", "{DDF634AE-DFE8-4217-A8D3-796496B216C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.Inventory.Infrastructure.SqlServer", "SK.Inventory.Infrastructure\SK.Inventory.Infrastructure.SqlServer.csproj", "{DDF634AE-DFE8-4217-A8D3-796496B216C5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SK.Inventory.UI.Blazor", "SK.Inventory.UI.Blazor\SK.Inventory.UI.Blazor.csproj", "{C66D7F0C-5545-40EC-9BBC-B2B0EA07CA7E}"
 EndProject

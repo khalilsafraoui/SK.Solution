@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace SK.Inventory.Infrastructure.Migrations
+namespace SK.Inventory.Infrastructure.SqlServer.Migrations
 {
     /// <inheritdoc />
     public partial class CreateProductAndCategory : Migration
