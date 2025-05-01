@@ -12,12 +12,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.8" />
+    <PackageReference Include="Radzen.Blazor" Version="6.2.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SK.Note.Infrastructure.PostgreSql\SK.Note.Infrastructure.PostgreSql.csproj" />
     <ProjectReference Include="..\SK.Note.Infrastructure.SqlServer\SK.Note.Infrastructure.SqlServer.csproj" />
+    <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
   </ItemGroup>
 
 </Project>
