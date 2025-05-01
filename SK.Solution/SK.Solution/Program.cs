@@ -23,9 +23,6 @@ builder.Services.AddRadzenComponents();
 builder.Services.AddCascadingAuthenticationState();
 
 
-//builder.Services.AddScoped<INoteRepository, NoteRepository>();
-//builder.Services.AddScoped<INoteCategoryRepository, NoteCategoryRepository>();
-
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()
     , typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly
