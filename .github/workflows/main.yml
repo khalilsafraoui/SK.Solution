@@ -25,6 +25,16 @@ jobs:
         run: dotnet build ./SK.Solution.sln --configuration Release --no-restore
         
       - name: Publish
-        run: dotnet publish ./SK.Solution.sln --configuration Release --no-build
+        run: dotnet publish ./SK.Solution.sln --configuration Release --no-build ./publish
+
+      - name: Copy files to Azure VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USERNAME }}
+          key: ${{ secrets.AZURE_VM_PASSWORD }} # use 'password' instead if needed
+          port: 22
+          source: "./publish/*"
+          target: "C:/inetpub/wwwroot/myapp" # adjust to your destination folder
         
       
