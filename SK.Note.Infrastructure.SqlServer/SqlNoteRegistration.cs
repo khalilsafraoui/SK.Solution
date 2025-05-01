@@ -11,7 +11,7 @@ namespace SK.Note.Infrastructure.SqlServer
     {
         public static IServiceCollection AddSqlInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var inventoryConnectionString = configuration.GetConnectionString("InventoryConnection") ?? throw new InvalidOperationException("Connection string 'InventoryConnection' not found.");
+            var inventoryConnectionString = configuration.GetConnectionString("NoteConnection") ?? throw new InvalidOperationException("Connection string 'NoteConnection' not found.");
             services.AddDbContext<NoteDbContext>(options =>
                 options.UseSqlServer(inventoryConnectionString));
 

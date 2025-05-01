@@ -1,0 +1,2 @@
+﻿add-migration InitialPostgreMigration -context SK.Note.Infrastructure.SqlServer.Persistence.NoteDbContext -project SK.Note.Infrastructure.SqlServer
+update-database -context SK.Note.Infrastructure.SqlServer.Persistence.NoteDbContext -project SK.Note.Infrastructure.SqlServer
