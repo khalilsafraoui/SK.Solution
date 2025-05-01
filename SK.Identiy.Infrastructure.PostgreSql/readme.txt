@@ -1,0 +1,2 @@
+﻿add-migration InitialPostgreMigration -context SK.Identity.Infrastructure.PostgreSql.Persistence.AppDbContext -project SK.Identity.Infrastructure.PostgreSql
+update-database -context SK.Identity.Infrastructure.PostgreSql.Persistence.AppDbContext -project SK.Identity.Infrastructure.PostgreSql

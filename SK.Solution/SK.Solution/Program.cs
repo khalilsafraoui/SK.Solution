@@ -1,30 +1,30 @@
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Radzen;
 using SK.CRM.UI.Blazor;
 using SK.Inventory.UI.Blazor;
+using SK.Identity.UI.Blazor;
 using SK.Solution.Components;
-using SK.Solution.Components.Account;
-using SK.Solution.Data;
-using SK.Solution.Repository;
-using SK.Solution.Repository.IRepository;
 using Stripe;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+#region Module
 
+builder.Services.AddCrmModuleServices(builder.Configuration);  // Register services from the Customers module
+builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register services from the Inventory module
+builder.Services.AddIdentityModuleServices(builder.Configuration);  // Register services from the Identity module
+builder.Services.AddNoteModuleServices(builder.Configuration);  // Register services from the Note module
+#endregion
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddRadzenComponents();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
-builder.Services.AddScoped<INoteRepository, NoteRepository>();
-builder.Services.AddScoped<INoteCategoryRepository, NoteCategoryRepository>();
+
+
+//builder.Services.AddScoped<INoteRepository, NoteRepository>();
+//builder.Services.AddScoped<INoteCategoryRepository, NoteCategoryRepository>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()
     , typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
@@ -32,12 +32,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.G
     , typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
     ));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-#region Module
 
-builder.Services.AddCrmModuleServices(builder.Configuration);  // Register services from the Customers module
-builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register services from the Inventory module
-
-#endregion
 
 builder.Services.AddAuthentication(options =>
     {
@@ -56,21 +51,11 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString), ServiceLifetime.Transient);
+
 
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("StripeApiKey").Value;
@@ -97,6 +82,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(SK.Solution.Client._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.CRM.UI.Blazor._Imports).Assembly)
+    .AddAdditionalAssemblies(typeof(SK.Note.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Inventory.UI.Blazor._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.

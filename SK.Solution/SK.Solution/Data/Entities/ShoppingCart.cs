@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using SK.Identity.Domain.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SK.Solution.Data.Entities
 {

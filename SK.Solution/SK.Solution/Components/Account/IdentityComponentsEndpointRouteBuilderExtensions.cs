@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SK.Solution.Components.Account.Pages;
 using SK.Solution.Components.Account.Pages.Manage;
-using SK.Solution.Data;
+using SK.Identity.Domain.Entities;
 using System.Security.Claims;
 using System.Text.Json;
 

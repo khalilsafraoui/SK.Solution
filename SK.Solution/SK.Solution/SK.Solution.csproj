@@ -10,7 +10,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SK.CRM.Application\SK.CRM.Application.csproj" />
     <ProjectReference Include="..\..\SK.CRM.UI.Blazor\SK.CRM.UI.Blazor.csproj" />
+    <ProjectReference Include="..\..\SK.Identity.UI.Blazor\SK.Identity.UI.Blazor.csproj" />
     <ProjectReference Include="..\..\SK.Inventory.UI.Blazor\SK.Inventory.UI.Blazor.csproj" />
+    <ProjectReference Include="..\..\SK.Note.UI.Blazor\SK.Note.UI.Blazor.csproj" />
     <ProjectReference Include="..\..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
     <ProjectReference Include="..\SK.Solution.Client\SK.Solution.Client.csproj" />
     <PackageReference Include="MediatR" Version="12.4.1" />
@@ -26,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Entities\NoteManagment\" />
     <Folder Include="ViewModels\" />
     <Folder Include="wwwroot\images\product\" />
   </ItemGroup>
