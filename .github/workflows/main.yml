@@ -26,6 +26,16 @@ jobs:
         
       - name: Publish
         run: dotnet publish ./SK.Solution.sln --configuration Release --no-build --output ./publish
+        
+      - name: Stop IIS App Pool
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.AZURE_VM_HOST }}
+          username: ${{ secrets.AZURE_VM_USERNAME }}
+          password: ${{ secrets.AZURE_VM_PASSWORD }}
+          port: 22
+          script: |
+            powershell -Command "Import-Module WebAdministration; Stop-WebAppPool 'DefaultAppPool'"
 
       - name: Copy files to Azure VM
         uses: appleboy/scp-action@v0.1.7
@@ -38,13 +48,13 @@ jobs:
           target: "C:/inetpub/wwwroot/sksolutiondeplyed" # adjust to your destination folder
 
       - name: Restart IIS App Pool
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.AZURE_VM_HOST }}
           username: ${{ secrets.AZURE_VM_USERNAME }}
           password: ${{ secrets.AZURE_VM_PASSWORD }}
           port: 22
           script: |
-            powershell -Command "Import-Module WebAdministration; Restart-WebAppPool 'DefaultAppPool'"
+            powershell -Command "Import-Module WebAdministration; Start-WebAppPool 'DefaultAppPool'"
         
       
