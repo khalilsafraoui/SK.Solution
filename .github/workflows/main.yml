@@ -32,9 +32,9 @@ jobs:
         with:
           host: ${{ secrets.AZURE_VM_HOST }}
           username: ${{ secrets.AZURE_VM_USERNAME }}
-          key: ${{ secrets.AZURE_VM_PASSWORD }} # use 'password' instead if needed
+          password: ${{ secrets.AZURE_VM_PASSWORD }}
           port: 22
-          source: "./publish/*"
-          target: "C:/inetpub/wwwroot/myapp" # adjust to your destination folder
+          source: "./publish/**"
+          target: "C:/inetpub/wwwroot/sksolutiondeplyed" # adjust to your destination folder
         
       
