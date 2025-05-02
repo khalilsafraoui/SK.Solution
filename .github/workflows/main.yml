@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.AZURE_VM_USERNAME }}
           password: ${{ secrets.AZURE_VM_PASSWORD }}
           port: 22
-          source: "./publish/*"
-          target: "C:/inetpub/wwwroot/myapp" # adjust to your destination folder
+          source: "./publish/**"
+          target: "C:/inetpub/wwwroot/sksolutiondeplyed" # adjust to your destination folder
         
       
