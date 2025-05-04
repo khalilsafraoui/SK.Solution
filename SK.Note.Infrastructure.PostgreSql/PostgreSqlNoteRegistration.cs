@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SK.Note.Application.Interfaces;
@@ -11,8 +13,28 @@ namespace SK.Note.Infrastructure.PostgreSql
     {
         public static IServiceCollection AddPostgreSqlInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("PostGreSQLNoteConnection")
-                ?? throw new InvalidOperationException("Connection string 'PostGreSQLNoteConnection' not found.");
+
+            var keyVaultUriString = configuration["KeyVault:Uri"];
+            var keyVaultConnectionString = configuration["KeyVault:NoteConnectionString"];
+            if (string.IsNullOrWhiteSpace(keyVaultUriString))
+                throw new InvalidOperationException("Key Vault URI not configured.");
+
+            var keyVaultUri = new Uri(keyVaultUriString);
+            var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
+
+            KeyVaultSecret dbSecret;
+            try
+            {
+                dbSecret = secretClient.GetSecret(keyVaultConnectionString);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Could not retrieve PostgreSQL connection string from Key Vault.", ex);
+            }
+
+            var connectionString = dbSecret?.Value;
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new InvalidOperationException("Connection string is null or empty.");
 
             services.AddDbContext<NoteDbContext>(options =>
                 options.UseNpgsql(connectionString));
