@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +16,27 @@ namespace SK.Identity.Infrastructure.PostgreSql
     {
         public static IServiceCollection AddPostgreSqlInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("PostGreSQLAppConnection")
-                ?? throw new InvalidOperationException("Connection string 'PostGreSQLAppConnection' not found.");
+            var keyVaultUriString = configuration["KeyVault:Uri"];
+            var keyVaultConnectionString = configuration["KeyVault:AppConnectionString"];
+            if (string.IsNullOrWhiteSpace(keyVaultUriString))
+                throw new InvalidOperationException("Key Vault URI not configured.");
+
+            var keyVaultUri = new Uri(keyVaultUriString);
+            var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
+
+            KeyVaultSecret dbSecret;
+            try
+            {
+                dbSecret = secretClient.GetSecret(keyVaultConnectionString);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Could not retrieve PostgreSQL connection string from Key Vault.", ex);
+            }
+
+            var connectionString = dbSecret?.Value;
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new InvalidOperationException("Connection string is null or empty.");
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(connectionString), ServiceLifetime.Transient);

@@ -6,6 +6,8 @@ using SK.Identity.UI.Blazor;
 using SK.Solution.Components;
 using Stripe;
 using System.Reflection;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Module
@@ -30,24 +32,30 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.G
     ));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+var keyVaultUriString = builder.Configuration["KeyVault:Uri"];
+var keyVaultUri = new Uri(keyVaultUriString);
+var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
 
+string microsoftSecret = secretClient.GetSecret("MicrosoftClientSecret").Value.Value;
+string googleSecret = secretClient.GetSecret("GoogleClientSecret").Value.Value;
+
+// --- Authentification externe ---
 builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddMicrosoftAccount(microsoftOptions =>
-    {
-        microsoftOptions.ClientId = "8c0470e8-9b70-4bfa-b777-8b5647734245";//uilder.Configuration["Authentication:Microsoft:ClientId"];
-        microsoftOptions.ClientSecret = "ajU8Q~z5m0fWTHklvWL6POKhImocWueNZbxC8cTQ"; // builder.Configuration["Authentication:Microsoft:ClientSecret"];
-    })
-    .AddGoogle(googleOptions =>
-    {
-        googleOptions.ClientId = "1072238982017-3ultbmigjh001uht8o19kla00ga0g7o4.apps.googleusercontent.com";// builder.Configuration["Authentication:Google:ClientId"];
-        googleOptions.ClientSecret = "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"; // builder.Configuration["Authentication:Google:ClientSecret"];
-    })
-    .AddIdentityCookies();
-
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+.AddMicrosoftAccount(microsoftOptions =>
+{
+    microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
+    microsoftOptions.ClientSecret = microsoftSecret;
+})
+.AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    googleOptions.ClientSecret = googleSecret;
+})
+.AddIdentityCookies();
 
 
 
