@@ -63,7 +63,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
-StripeConfiguration.ApiKey = builder.Configuration.GetSection("StripeApiKey").Value;
+StripeConfiguration.ApiKey = secretClient.GetSecret("StripeApiKey").Value.Value;
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
