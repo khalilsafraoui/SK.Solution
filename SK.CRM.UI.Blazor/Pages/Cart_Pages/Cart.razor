@@ -77,7 +77,7 @@ else
                                 <div class="card-body overflow-auto" style="max-height: 500px;">
                                 @foreach (var cartItem in shoppingCarts)
                                 {
-                                    <RadzenCard Class="d-flex flex-row align-items-center w-100 shadow-sm p-3 my-2   radzen-card-responsive">
+                                    <RadzenCard @key="cartItem.ProductId" Class="d-flex flex-row align-items-center w-100 shadow-sm p-3 my-2   radzen-card-responsive">
                                         <img class="rounded" style="width: 100px; height: 100px; object-fit: cover;"
                                              src="@(cartItem.Product?.ImageUrl ?? "/images/default.png")">
                                         <div class="card-body ms-3 w-100">
@@ -245,6 +245,7 @@ else
             TotalItems += cart.Count;
         }
         order.OrderTotal = Math.Round(order.OrderTotal, 2);
+        shoppingCarts = shoppingCarts.OrderBy(c => c.Product.Name).ToList();
     }
 
     private async Task UpdateOrderItem(int productId, int updateBy)
