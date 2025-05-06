@@ -26,25 +26,25 @@ else
 
     <style>
         .background-radial-gradient {
-            background-color: hsl(218, 41%, 15%);
-            background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+        background-color: hsl(218, 41%, 15%);
+        background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
         }
 
         .bg-glass {
-            background-color: hsla(0, 0%, 100%, 0.9) !important;
-            backdrop-filter: saturate(200%) blur(25px);
+        background-color: hsla(0, 0%, 100%, 0.9) !important;
+        backdrop-filter: saturate(200%) blur(25px);
         }
 
         .full-height {
-            height: 100vh;
+        height: 100vh;
         }
 
         .mb-5 {
-            margin-top: 5rem;
-            margin-bottom: 3rem !important;
+        margin-top: 5rem;
+        margin-bottom: 3rem !important;
         }
 
-        
+
     </style>
 
 
@@ -75,51 +75,51 @@ else
                             <RadzenCard Class="p-4 m-2 shadow radzen-card-responsive">
                                 <h4 class="text-center text-success display-6">Cart Summary</h4>
                                 <div class="card-body overflow-auto" style="max-height: 500px;">
-                                @foreach (var cartItem in shoppingCarts)
-                                {
-                                    <RadzenCard @key="cartItem.ProductId" Class="d-flex flex-row align-items-center w-100 shadow-sm p-3 my-2   radzen-card-responsive">
-                                        <img class="rounded" style="width: 100px; height: 100px; object-fit: cover;"
-                                             src="@(cartItem.Product?.ImageUrl ?? "/images/default.png")">
-                                        <div class="card-body ms-3 w-100">
-                                            <div class="d-flex justify-content-between">
-                                                <h5 class="fw-bold">@cartItem.Product?.Name</h5>
-                                               @*  <h5 class="text-primary">@cartItem.Product?.Price.ToString("C", CultureInfo.GetCultureInfo("en-us"))</h5> *@
-                                            </div>
-                                            <h4 class="text-danger fw-bold">
-                                                @((cartItem.Product?.Price * cartItem.Count)?.ToString("C", CultureInfo.GetCultureInfo("en-us")))
-                                            </h4>
-                                            <div >
+                                    @foreach (var cartItem in shoppingCarts)
+                                    {
+                                        <RadzenCard @key="cartItem.ProductId" Class="d-flex flex-row align-items-center w-100 shadow-sm p-3 my-2   radzen-card-responsive">
+                                            <img class="rounded" style="width: 100px; height: 100px; object-fit: cover;"
+                                            src="@(cartItem.Product?.ImageUrl ?? "/images/default.png")">
+                                            <div class="card-body ms-3 w-100">
+                                                <div class="d-flex justify-content-between">
+                                                    <h5 class="fw-bold">@cartItem.Product?.Name</h5>
+                                                    @*  <h5 class="text-primary">@cartItem.Product?.Price.ToString("C", CultureInfo.GetCultureInfo("en-us"))</h5> *@
+                                                </div>
+                                                <h4 class="text-danger fw-bold">
+                                                    @((cartItem.Product?.Price * cartItem.Count)?.ToString("C", CultureInfo.GetCultureInfo("en-us")))
+                                                </h4>
+                                                <div >
                                                     <div class="row">
                                                         <div class="col-6">
                                                             <!-- Sets width to 4/12 of the row -->
                                                             <RadzenNumeric Value="@cartItem.Count" Min="1" Max="100"
-                                                                           ValueChanged="@((int value) => UpdateOrderItem(cartItem.ProductId, value - cartItem.Count))" />
+                                                            ValueChanged="@((int value) => UpdateOrderItem(cartItem.ProductId, value - cartItem.Count))" />
                                                         </div>
                                                     </div>
 
                                                     <div class="row mt-3">
                                                         <div class="col-4">
                                                             <RadzenButton Text="Remove" Click="() => UpdateOrderItem(cartItem.ProductId, -cartItem.Count)"
-                                                                          ButtonStyle="ButtonStyle.Danger" />
+                                                            ButtonStyle="ButtonStyle.Danger" />
                                                         </div>
                                                     </div>
 
+                                                </div>
                                             </div>
-                                        </div>
-                                    </RadzenCard>
-                                }
+                                        </RadzenCard>
+                                    }
 
-                                <!-- Grand Total Section -->
-                                <div class="border-top pt-3 mt-3">
-                                    <h4 class="text-center fw-bold">
-                                        Total:
-                                        <span class="text-success">@order.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))</span>
-                                    </h4>
-                                </div>
+                                    <!-- Grand Total Section -->
+                                    <div class="border-top pt-3 mt-3">
+                                        <h4 class="text-center fw-bold">
+                                            Total:
+                                            <span class="text-success">@order.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))</span>
+                                        </h4>
+                                    </div>
 
-                                <div class="text-center">
-                                    <RadzenButton Text="Proceed to checkout ❯" Click="NextStep" ButtonStyle="ButtonStyle.Primary" Class="m-4 px-4 fw-bold" />
-                                </div>
+                                    <div class="text-center">
+                                        <RadzenButton Text="Proceed to checkout ❯" Click="NextStep" ButtonStyle="ButtonStyle.Primary" Class="m-4 px-4 fw-bold" />
+                                    </div>
                                 </div>
                             </RadzenCard>
                         }
@@ -151,7 +151,7 @@ else
                                             <ValidationMessage For="@(()=> order.PhoneNumber)" />
                                         </div>
 
-                                        <div class="mb-3">
+                                        @*  <div class="mb-3">
                                             <RadzenLabel Text="Delivery Method" />
                                             <RadzenRadioButtonList TValue="string" @bind-Value="order.PhoneNumber"
                                                                    Data="@DeliveryMethod"
@@ -161,7 +161,7 @@ else
                                         <div class="mb-3">
                                             <RadzenLabel Text="Payment Method" />
                                             <RadzenRadioButtonList @bind-Value="order.PhoneNumber" Data="@PaymentMethod" />
-                                        </div>
+                                        </div> *@
                                     </div>
 
                                     <div class="d-flex justify-content-between mt-3">
@@ -196,7 +196,7 @@ else
         </div>
     </section>
 
-    
+
 }
 
 @code {
@@ -261,19 +261,33 @@ else
 
     }
 
+    private bool OnlinePaymentEnabled = false;
     private async Task ProcessOrderCreation()
     {
         IsProcessing = true;
         await Task.Yield();
         order.OrderDetails = OrderServices.ConvertShoppingCartListToOrderDetails(shoppingCarts.ToList());
 
-        var session =  _PaymentService.CreateStripeCheckoutSession(order);
-        order.SessionId = session.Id;
+        if (OnlinePaymentEnabled)
+        {
+            var session = _PaymentService.CreateStripeCheckoutSession(order);
+            order.SessionId = session.Id;
+            var command = new CreateOrderCommand(order);
+            var result = await Mediator.Send(command);
 
-        var command = new CreateOrderCommand(order);
-        var result = await Mediator.Send(command);
+            _NavigationManager.NavigateTo(session.Url);
+        }
+        else
+        {
+            var command = new CreateOrderCommand(order);
+            var result = await Mediator.Send(command);
 
-        _NavigationManager.NavigateTo(session.Url);
+            _NavigationManager.NavigateTo($"/order/confirmed/{result.Id}/{result.UserId}");
+
+        }
+
+
+       
 
     }
     private int CurrentStep = 0;

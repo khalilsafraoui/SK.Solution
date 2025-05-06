@@ -1,40 +1,102 @@
 ﻿@page "/order/confirmation/{session_id}"
+@page "/order/confirmed/{orderId}/{userId}"
 
 @inject PaymentService _paymentService
 @inject IMediator Mediator
 <PageTitle>Order Confirmation</PageTitle>
 @if (IsProcessing)
 {
-	<div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
-		<img src="/images/loading.gif" alt="loading">
-	</div>
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
 }
 else
 {
- <div class="text-center">
-	 <h1 class="pt-4 text-center">You are one step  closer.</h1>
-	 <p>Your order is confirmed! Please note your order ID for any questions.</p>
-        <p>Order ID : <b>@order.Id</b></p>
-	 <hr />
-        <img src="/images/lawn_leaf.jpg" width="40%" alt="Order Confirmed" class="img-fluid" />
-		<hr />
- </div>	
+
+
+    <style>
+        .background-radial-gradient {
+        background-color: hsl(218, 41%, 15%);
+        background-image: radial-gradient(650px circle at 0% 0%, hsl(218, 41%, 35%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%), radial-gradient(1250px circle at 100% 100%, hsl(218, 41%, 45%) 15%, hsl(218, 41%, 30%) 35%, hsl(218, 41%, 20%) 75%, hsl(218, 41%, 19%) 80%, transparent 100%);
+        }
+
+        .bg-glass {
+        background-color: hsla(0, 0%, 100%, 0.9) !important;
+        backdrop-filter: saturate(200%) blur(25px);
+        }
+
+        .full-height {
+        height: 100vh;
+        }
+
+        .mb-5 {
+        margin-top: 5rem;
+        margin-bottom: 3rem !important;
+        }
+
+    </style>
+
+
+    <section class="background-radial-gradient overflow-auto">
+        <div class="container d-flex justify-content-center align-items-center full-height px-4 py-5 px-md-5 text-center text-lg-start">
+            <div class="row gx-lg-5 align-items-center mb-5 w-100 flex-column flex-lg-row">
+
+
+
+                <div class="text-center text-white">
+                    <RadzenIcon Icon="check_circle" Style="font-size: 100px; color: green;" />
+                    <h4 class="text-success mt-3">Order placed successfully!</h4>
+
+                    <h1 class="pt-4 text-center text-white">You are one step  closer.</h1>
+                    <p>Your order is confirmed! Please note your order ID for any questions.</p>
+                    <p>Order ID : <b>@orderId</b></p>
+
+
+                    <div class="text-center mt-4">
+                        <NavLink class="btn btn-primary me-2" href="/">Go to Home</NavLink>
+                        <NavLink class="btn btn-secondary" href="/orderV2/list">View My Orders</NavLink>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
 }
 
 @code {
     [Parameter]
-	public string session_id { get; set; }
-	private bool IsProcessing { get; set; } = true;
+    public string session_id { get; set; }
+    [Parameter]
+    public string orderId { get; set; }
+    [Parameter]
+    public string userId { get; set; }
+    private bool IsProcessing { get; set; } = true;
     private OrderDto order { get; set; } = new OrderDto();
 
     protected override async Task OnInitializedAsync()
     {
-		order = await _paymentService.CheckPaymentStatusAndUpdateOrderAsync(session_id);
-        if (order.Status == OrderStatus.StatusApproved)
+        if (orderId != null)
         {
-            var command = new ClearCartCommand(order.UserId);
+            await Task.Delay(2000);
+            var command = new ClearCartCommand(userId);
             await Mediator.Send(command);
         }
+        else
+        {
+            order = await _paymentService.CheckPaymentStatusAndUpdateOrderAsync(session_id);
+            orderId = order.Id.ToString();
+            if (order.Status == OrderStatus.StatusApproved)
+            {
+                var command = new ClearCartCommand(order.UserId);
+                await Mediator.Send(command);
+            }
+
+        }
+
+        
         IsProcessing = false;
     }
 }
