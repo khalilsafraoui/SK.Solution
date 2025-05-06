@@ -88,7 +88,7 @@ else
                         <RadzenCard Class="shadow-lg p-4">
                             <h4 class="text-center text-success fw-bold display-6">Pickup Details</h4>
 
-                            <EditForm Model="order" FormName="CartForm" OnValidSubmit="NextStep">
+                            <EditForm  FormName="CartForm" OnValidSubmit="NextStep" EditContext="@editContext">
                                 <DataAnnotationsValidator />
 
                                 <div class="card-body">
@@ -114,7 +114,7 @@ else
                                     <div class="mb-3">
                                         <RadzenLabel Text="Delivery Method" />
                                         <RadzenRadioButtonList TValue="string" @bind-Value="order.PhoneNumber"
-                                                               Data="@DeliveryMethod"
+                                        Data="@DeliveryMethod"
                                         Class="w-100" />
                                     </div>
 
@@ -170,79 +170,85 @@ else
     private List<string> DeliveryMethod = new List<string> { " Pickup", "Delivery" };
     private List<string> PaymentMethod = new List<string> { " Online Payment", "Cash on Delivery" };
     [SupplyParameterFromForm]
-	public OrderDto order { get; set; } = new OrderDto();
+    public OrderDto order { get; set; } = new OrderDto();
 
-	private int TotalItems { get; set; } = 0;
-	private bool IsProcessing { get; set; } = true;
+    private int TotalItems { get; set; } = 0;
+    private bool IsProcessing { get; set; } = true;
+    private EditContext editContext;
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        order.Email = user.FindFirst(u => u.Type.Contains("email"))?.Value;
+        order.UserId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+        order.Status = OrderStatus.StatusPending;	
+        editContext = new EditContext(order);
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
-		var user = authState.User;
-		order.Email = user.FindFirst(u => u.Type.Contains("email"))?.Value;
-		order.UserId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-		order.Status = OrderStatus.StatusPending;	
-	}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadShoppingCart();
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			await LoadShoppingCart();
-			IsProcessing = false;
-			StateHasChanged();
-		}
-	}
+    private async Task LoadShoppingCart()
+    {
+        var query = new GetShoppingCartsQuery(order.UserId);
+        shoppingCarts = await Mediator.Send(query);
 
-	private async Task LoadShoppingCart()
-	{
-		var query = new GetShoppingCartsQuery(order.UserId);
-		shoppingCarts = await Mediator.Send(query);
-		
-		order.OrderTotal = 0;
-		TotalItems = 0;
-		foreach (var cart in shoppingCarts)
-		{
-			var queryProductById = new GetProductByIdQuery(cart.ProductId);
-			cart.Product = _mapper.Map<ProductDto>(await Mediator.Send(queryProductById));
+        order.OrderTotal = 0;
+        TotalItems = 0;
+        foreach (var cart in shoppingCarts)
+        {
+            var queryProductById = new GetProductByIdQuery(cart.ProductId);
+            cart.Product = _mapper.Map<ProductDto>(await Mediator.Send(queryProductById));
             order.OrderTotal += (Convert.ToDouble(cart.Product?.Price) * cart.Count);
             TotalItems += cart.Count;
-		}
+        }
         order.OrderTotal = Math.Round(order.OrderTotal, 2);
-	}
+    }
 
-	private async Task UpdateOrderItem(int productId, int updateBy)
-	{
-		//add product to cart
-		var command = new UpdateCartCommand(order.UserId, productId, updateBy);
-		var cart = await Mediator.Send(command);
-		
-		var query = new GetTotalCartCountQuery(order.UserId);
-		
-		_SharedStateService.TotalCartCount = await Mediator.Send(query);
-		await LoadShoppingCart();
+    private async Task UpdateOrderItem(int productId, int updateBy)
+    {
+        //add product to cart
+        var command = new UpdateCartCommand(order.UserId, productId, updateBy);
+        var cart = await Mediator.Send(command);
 
-	}
+        var query = new GetTotalCartCountQuery(order.UserId);
 
-	private async Task ProcessOrderCreation()
-	{
+        _SharedStateService.TotalCartCount = await Mediator.Send(query);
+        await LoadShoppingCart();
+
+    }
+
+    private async Task ProcessOrderCreation()
+    {
         IsProcessing = true;
         await Task.Yield();
         order.OrderDetails = OrderServices.ConvertShoppingCartListToOrderDetails(shoppingCarts.ToList());
-        
+
         var session =  _PaymentService.CreateStripeCheckoutSession(order);
         order.SessionId = session.Id;
-        
-		var command = new CreateOrderCommand(order);
-		var result = await Mediator.Send(command);
-		
+
+        var command = new CreateOrderCommand(order);
+        var result = await Mediator.Send(command);
+
         _NavigationManager.NavigateTo(session.Url);
-        
-	}
+
+    }
     private int CurrentStep = 0;
     private void NextStep()
     {
-        if (CurrentStep < 2) CurrentStep++;
+        var isValid = editContext.Validate();
+
+        if (isValid)
+        {
+            if (CurrentStep < 2) CurrentStep++;
+        }
     }
 
     private void PreviousStep()
