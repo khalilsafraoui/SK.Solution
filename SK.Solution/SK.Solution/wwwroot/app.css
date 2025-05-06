@@ -49,3 +49,18 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+/* Répondre à la taille de l'écran */
+@media (max-width: 768px) {
+    /* Applique une hauteur maximale aux cartes et active le scroll si nécessaire */
+    .radzen-card-responsive {
+        max-height: 70vh; /* Ajuste cette valeur pour un meilleur rendu */
+        overflow-y: auto; /* Active le scroll vertical si le contenu dépasse */
+    }
+
+    /* Assure que la hauteur du container est ajustée */
+    .full-height {
+        height: auto !important;
+    }
+}
+
