@@ -17,6 +17,7 @@ namespace SK.Inventory.Application.Dtos
 
         public string? SpecialTag { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid category.")]
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]

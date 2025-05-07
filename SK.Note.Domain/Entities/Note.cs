@@ -16,6 +16,7 @@ namespace SK.Note.Domain.Entities
         [Required(ErrorMessage = "Please entre ordre..")]
         public int DisplayOrdre { get; set; }
 
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid category.")]
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
