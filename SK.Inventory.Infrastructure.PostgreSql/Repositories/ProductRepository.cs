@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using SK.Inventory.Application.Exceptions;
 using SK.Inventory.Application.Interfaces;
 using SK.Inventory.Domain.Entities.Product;
 using SK.Inventory.Infrastructure.PostgreSql.Persistence;
@@ -20,13 +21,18 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Repositories
         public async Task<bool> DeleteAsync(int Id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(c => c.Id == Id);
-            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ImageUrl.TrimStart('/'));
-            if (File.Exists(imagePath))
-            {
-                File.Delete(imagePath);
-            }
+            
             if (product != null)
             {
+                if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ImageUrl.TrimStart('/'));
+                    if (File.Exists(imagePath))
+                    {
+                        File.Delete(imagePath);
+                    }
+                }
+
                 _context.Products.Remove(product);
                 return await _context.SaveChangesAsync() > 0;
             }
@@ -40,19 +46,17 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Repositories
 
         public async Task<Product?> GetByIdAsync(int Id)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(c => c.Id == Id);
-            if (product == null)
-            {
-                return new Product();
-            }
-            return product;
+            return await _context.Products.FirstOrDefaultAsync(c => c.Id == Id);
         }
 
         public async Task<Product> UpdateAsync(Product product)
         {
             var productResult = await _context.Products.FirstOrDefaultAsync(c => c.Id == product.Id);
-            if (productResult is not null)
+            if (productResult is null)
             {
+                throw new NotFoundException(nameof(Product), product.Id);
+            }
+            
                 productResult.Name = product.Name;
                 productResult.Price = product.Price;
                 productResult.Description = product.Description;
@@ -62,8 +66,7 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Repositories
                 _context.Products.Update(productResult);
                 await _context.SaveChangesAsync();
                 return productResult;
-            }
-            return product;
+           
         }
     }
 }
