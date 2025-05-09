@@ -23,6 +23,13 @@ jobs:
         
       - name: Build
         run: dotnet build ./SK.Solution.sln --configuration Release --no-restore
-        
+
+      - name: Test
+        run: |
+          for proj in $(find . -name '*.Tests.csproj'); do
+          echo "Running tests in $proj"
+          dotnet test "$proj" --configuration Release --no-build --logger trx
+          done
+
       - name: Publish
         run: dotnet publish ./SK.Solution.sln --configuration Release --no-build
