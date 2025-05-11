@@ -9,7 +9,9 @@ using System.Linq.Expressions;
 
 namespace SK.Inventory.Infrastructure.PostgreSql.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T>,
+    IGuidEntityRepository<T>,
+    IIntEntityRepository<T> where T : BaseEntity
     {
         private readonly InventoryDbContext _context;
         private readonly DbSet<T> _dbSet;

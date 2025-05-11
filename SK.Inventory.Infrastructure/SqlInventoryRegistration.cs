@@ -21,7 +21,8 @@ namespace SK.Inventory.Infrastructure.SqlServer
 
             // Générique
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
+            services.AddScoped(typeof(IGuidEntityRepository<>), typeof(GenericRepository<>));
+            services.AddScoped(typeof(IIntEntityRepository<>), typeof(GenericRepository<>));
             return services;
         }
     }

@@ -44,7 +44,8 @@ namespace SK.Inventory.Infrastructure.PostgreSql
 
             // Générique
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
+            services.AddScoped(typeof(IGuidEntityRepository<>), typeof(GenericRepository<>));
+            services.AddScoped(typeof(IIntEntityRepository<>), typeof(GenericRepository<>));
             return services;
         }
     }
