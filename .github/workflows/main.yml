@@ -20,10 +20,13 @@ jobs:
           
       - name: Restore
         run: dotnet restore ./SK.Solution.sln
+      
+      - name: Clean
+        run: dotnet clean ./SK.Solution.sln
         
       - name: Build
         run: dotnet build ./SK.Solution.sln --configuration Release --no-restore
-        
+      
       - name: Publish
         run: dotnet publish ./SK.Solution.sln --configuration Release --no-build --output ./publish
         
@@ -37,6 +40,16 @@ jobs:
           script: |
             powershell -Command "Import-Module WebAdministration; Stop-WebAppPool 'DefaultAppPool'"
 
+      - name: Clean target folder on VM
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+         host: ${{ secrets.AZURE_VM_HOST }}
+         username: ${{ secrets.AZURE_VM_USERNAME }}
+         password: ${{ secrets.AZURE_VM_PASSWORD }}
+         port: 22
+         script: |
+           powershell -Command "Remove-Item -Recurse -Force 'C:/inetpub/wwwroot/sksolutiondeplyed/*'"
+           
       - name: Copy files to Azure VM
         uses: appleboy/scp-action@v0.1.7
         with:
