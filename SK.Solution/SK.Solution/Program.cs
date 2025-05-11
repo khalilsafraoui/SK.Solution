@@ -8,6 +8,8 @@ using Stripe;
 using System.Reflection;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using SK.Inventory.Application.MappingProfiles;
+using SK.CRM.Application.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Module
@@ -32,9 +34,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.G
     ));
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAutoMapper(
-    typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly,
-    typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly,
-    typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
+    typeof(InventoryMappingProfile).Assembly,
+    typeof(CrmMappingProfile).Assembly
 );
 var keyVaultUriString = builder.Configuration["KeyVault:Uri"];
 var keyVaultUri = new Uri(keyVaultUriString);
