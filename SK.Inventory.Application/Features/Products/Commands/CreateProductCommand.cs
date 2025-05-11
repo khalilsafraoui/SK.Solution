@@ -11,13 +11,11 @@ namespace SK.Inventory.Application.Features.Products.Commands
     public sealed record CreateProductCommand(ProductDto Product) : IRequest<ProductDto>;
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
     {
-        private readonly IProductRepository _productRepository;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public CreateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper)
+        public CreateProductCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _productRepository = productRepository;
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -26,8 +24,8 @@ namespace SK.Inventory.Application.Features.Products.Commands
             var product = _mapper.Map<Product>(request.Product);
             // Validate the Product entity before proceeding
             await ValidateProduct(product);
-            product = await _productRepository.CreateAsync(product);
-
+            product = await _unitOfWork.Products.CreateAsync(product);
+            await _unitOfWork.SaveChangesAsync();
             // Map back to DTO after creation to include any updates (e.g., ID)
             return _mapper.Map<ProductDto>(product);
         }
@@ -53,7 +51,7 @@ namespace SK.Inventory.Application.Features.Products.Commands
             }
 
             // Check if the Category exists in the database
-            var category = await _categoryRepository.GetByIdAsync(product.CategoryId);
+            var category = await _unitOfWork.Categories.GetByIdAsync(product.CategoryId);
             if (category == null)
             {
                 throw new ValidationException($"Category with ID {product.CategoryId} does not exist.");

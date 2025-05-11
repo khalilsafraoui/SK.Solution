@@ -10,5 +10,7 @@ namespace SK.Inventory.Application.Interfaces
         Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate);
         Task<T> CreateAsync(T entity);
         Task<T> UpdateAsync(T entity);
+
+        Task<T> DeleteAsync(T entity);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SK.Inventory.Application.Interfaces;
-
+using Microsoft.AspNetCore.Hosting;
 
 namespace SK.Inventory.Application.Features.Products.Commands
 {
@@ -9,22 +9,35 @@ namespace SK.Inventory.Application.Features.Products.Commands
 
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, bool>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public DeleteProductCommandHandler(IProductRepository productRepository)
+        public DeleteProductCommandHandler(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetByIdAsync(request.ProductId);
+            var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
             if (product == null)
             {
                 return false; // Or throw an exception if preferred
             }
 
-            await _productRepository.DeleteAsync(request.ProductId);
+            await _unitOfWork.Products.DeleteAsync(product);
+
+            if (!string.IsNullOrEmpty(product.ImageUrl))
+            {
+                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, product.ImageUrl.TrimStart('/'));
+                if (File.Exists(imagePath))
+                {
+                    File.Delete(imagePath);
+                }
+            }
+            // Save changes to the database
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

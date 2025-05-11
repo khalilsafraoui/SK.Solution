@@ -11,24 +11,24 @@ namespace SK.Inventory.Application.Features.Categories.Commands
 
     public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, CategoryDto>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateCategoryCommandHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public UpdateCategoryCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<CategoryDto> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _categoryRepository.GetByIdAsync(request.Category.Id)
+            var category = await _unitOfWork.Categories.GetByIdAsync(request.Category.Id)
                             ?? throw new NotFoundException(nameof(Category), request.Category.Id);
 
             _mapper.Map(request.Category, category);
 
-            var updated = await _categoryRepository.UpdateAsync(category);
-
+            var updated = await _unitOfWork.Categories.UpdateAsync(category);
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<CategoryDto>(category);
         }
     }

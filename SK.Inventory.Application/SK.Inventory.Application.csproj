@@ -14,5 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SK.Inventory.Domain\SK.Inventory.Domain.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>

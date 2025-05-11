@@ -9,18 +9,18 @@ namespace SK.Inventory.Application.Features.Categories.Queries
 
     public sealed class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, CategoryDto?>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public GetCategoryByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<CategoryDto?> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
-            var category = await _categoryRepository.GetByIdAsync(request.Id);
+            var category = await _unitOfWork.Categories.GetByIdAsync(request.Id);
             return category is null ? null : _mapper.Map<CategoryDto>(category);
         }
     }

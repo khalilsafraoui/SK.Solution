@@ -45,7 +45,6 @@ namespace SK.Inventory.Infrastructure.SqlServer.Repositories
         public async Task<T> CreateAsync(T entity)
         {
             _dbSet.Add(entity);
-            await _context.SaveChangesAsync();
             return entity;
         }
 
@@ -55,29 +54,15 @@ namespace SK.Inventory.Infrastructure.SqlServer.Repositories
             if (existingEntity == null) throw new NotFoundException(nameof(T),entity.Id);
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return existingEntity;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<T> DeleteAsync(T entity)
         {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity == null) return false;
-
             _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
+            return entity;
         }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity == null) return false;
-
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+      
     }
 
 }

@@ -9,18 +9,18 @@ namespace SK.Inventory.Application.Features.Products.Queries
 
     public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, List<ProductDto>>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetAllProductsQueryHandler(IProductRepository productRepository, IMapper mapper)
+        public GetAllProductsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<List<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _unitOfWork.Products.GetAllAsync();
             if(!products.Any())
             {
                 return new List<ProductDto>();

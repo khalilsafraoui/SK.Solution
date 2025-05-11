@@ -20,7 +20,6 @@ namespace SK.Inventory.Infrastructure.SqlServer.Repositories
             {
                 categoryResult.Name = category.Name;
                 _context.Categories.Update(categoryResult);
-                await _context.SaveChangesAsync();
                 return categoryResult;
             }
             return category;

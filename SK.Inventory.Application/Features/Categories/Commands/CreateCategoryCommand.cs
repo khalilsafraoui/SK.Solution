@@ -11,19 +11,19 @@ namespace SK.Inventory.Application.Features.Categories.Commands
     public sealed record CreateCategoryCommand(CategoryDto Category) : IRequest<CategoryDto>;
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryDto>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public CreateCategoryCommandHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<CategoryDto> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var categoryEntity = _mapper.Map<Category>(request.Category);
-            categoryEntity = await _categoryRepository.CreateAsync(categoryEntity);
-
+            categoryEntity = await _unitOfWork.Categories.CreateAsync(categoryEntity);
+            await _unitOfWork.SaveChangesAsync();
             // Map back to DTO after creation to include any updates (e.g., ID)
             return _mapper.Map<CategoryDto>(categoryEntity);
         }

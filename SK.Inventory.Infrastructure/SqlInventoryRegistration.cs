@@ -23,6 +23,8 @@ namespace SK.Inventory.Infrastructure.SqlServer
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped(typeof(IGuidEntityRepository<>), typeof(GenericRepository<>));
             services.AddScoped(typeof(IIntEntityRepository<>), typeof(GenericRepository<>));
+            // Register UnitOfWork
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }

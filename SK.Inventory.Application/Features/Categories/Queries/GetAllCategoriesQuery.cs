@@ -9,18 +9,18 @@ namespace SK.Inventory.Application.Features.Categories.Queries
 
     public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, List<CategoryDto>>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetAllCategoriesQueryHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public GetAllCategoriesQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<List<CategoryDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            var categories = await _unitOfWork.Categories.GetAllAsync();
             if(!categories.Any())
             {
                 return new List<CategoryDto>();

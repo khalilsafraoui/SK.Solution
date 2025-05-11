@@ -9,22 +9,23 @@ namespace SK.Inventory.Application.Features.Categories.Commands
 
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteCategoryCommandHandler(ICategoryRepository categoryRepository)
+        public DeleteCategoryCommandHandler(IUnitOfWork unitOfWork)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
+            var category = await _unitOfWork.Categories.GetByIdAsync(request.CategoryId);
             if (category == null)
             {
                 return false; // Or throw an exception if preferred
             }
 
-            await _categoryRepository.DeleteAsync(request.CategoryId);
+            await _unitOfWork.Categories.DeleteAsync(category);
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

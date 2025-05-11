@@ -12,27 +12,25 @@ namespace SK.Inventory.Application.Features.Products.Commands
 
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, ProductDto>
     {
-        private readonly IProductRepository _productRepository;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateProductCommandHandler(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper)
+        public UpdateProductCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _productRepository = productRepository;
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<ProductDto> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetByIdAsync(request.Product.Id)
+            var product = await _unitOfWork.Products.GetByIdAsync(request.Product.Id)
                             ?? throw new NotFoundException(nameof(Product), request.Product.Id);
 
             _mapper.Map(request.Product, product);
             // Validate the Product entity before proceeding
             await ValidateProduct(product);
-            var updated = await _productRepository.UpdateAsync(product);
-
+            var updated = await _unitOfWork.Products.UpdateAsync(product);
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<ProductDto>(product);
         }
 
@@ -57,7 +55,7 @@ namespace SK.Inventory.Application.Features.Products.Commands
             }
 
             // Check if the Category exists in the database
-            var category = await _categoryRepository.GetByIdAsync(product.CategoryId);
+            var category = await _unitOfWork.Categories.GetByIdAsync(product.CategoryId);
             if (category == null)
             {
                 throw new ValidationException($"Category with ID {product.CategoryId} does not exist.");
