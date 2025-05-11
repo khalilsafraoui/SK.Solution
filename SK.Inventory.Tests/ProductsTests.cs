@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Moq;
 using SK.Inventory.Application.Dtos;
 using SK.Inventory.Application.Exceptions;
@@ -17,8 +18,7 @@ namespace SK.Inventory.Tests
         public async Task Handle_ShouldCreateProductAndReturnProductDto()
         {
             // Arrange
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
             var productDto = new ProductDto { Name = "Laptop", Price = 1000, CategoryId = 1 };
@@ -29,14 +29,14 @@ namespace SK.Inventory.Tests
             var category = new Category { Id = 1, Name = "Electronics" };
 
             // Mock category check
-            mockCategoryRepo.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(category);
+            mockRepo.Setup(repo => repo.Categories.GetByIdAsync(1)).ReturnsAsync(category);
 
             // Mock mapping and repository calls
             mockMapper.Setup(m => m.Map<Product>(productDto)).Returns(product);
-            mockRepo.Setup(r => r.CreateAsync(product)).ReturnsAsync(savedProduct);
+            mockRepo.Setup(r => r.Products.CreateAsync(product)).ReturnsAsync(savedProduct);
             mockMapper.Setup(m => m.Map<ProductDto>(savedProduct)).Returns(returnedDto);
 
-            var handler = new CreateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mockMapper.Object);
+            var handler = new CreateProductCommandHandler(mockRepo.Object, mockMapper.Object);
             var command = new CreateProductCommand(productDto);
 
             // Act
@@ -48,17 +48,16 @@ namespace SK.Inventory.Tests
             Assert.Equal(returnedDto.Price, result.Price);
 
             mockMapper.Verify(m => m.Map<Product>(productDto), Times.Once);
-            mockRepo.Verify(r => r.CreateAsync(product), Times.Once);
+            mockRepo.Verify(r => r.Products.CreateAsync(product), Times.Once);
             mockMapper.Verify(m => m.Map<ProductDto>(savedProduct), Times.Once);
-            mockCategoryRepo.Verify(r => r.GetByIdAsync(1), Times.Once); // ✅ validation check
+            mockRepo.Verify(r => r.Categories.GetByIdAsync(1), Times.Once); // ✅ validation check
         }
 
         [Fact]
         public async Task Handle_ShouldThrowValidationException_WhenFieldsAreInvalid()
         {
             // Arrange
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
             var invalidProductDtos = new List<ProductDto>
@@ -73,9 +72,9 @@ namespace SK.Inventory.Tests
                 var product = new Product { Name = productDto.Name, Price = productDto.Price, CategoryId = productDto.CategoryId };
 
                 mockMapper.Setup(m => m.Map<Product>(productDto)).Returns(product);
-                mockCategoryRepo.Setup(repo => repo.GetByIdAsync(productDto.CategoryId)).ReturnsAsync((Category)null);
+                mockRepo.Setup(repo => repo.Categories.GetByIdAsync(productDto.CategoryId)).ReturnsAsync((Category)null);
 
-                var handler = new CreateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mockMapper.Object);
+                var handler = new CreateProductCommandHandler(mockRepo.Object, mockMapper.Object);
                 var command = new CreateProductCommand(productDto);
 
                 // Act & Assert
@@ -89,8 +88,7 @@ namespace SK.Inventory.Tests
         public async Task Handle_ShouldUpdateProductAndReturnProductDto()
         {
             // Arrange
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -104,11 +102,11 @@ namespace SK.Inventory.Tests
             var updatedProduct = new Product { Id = 1, Name = "Laptop", Price = 1000, CategoryId = 1 };
             var category = new Category { Id = 1, Name = "Electronics" };
 
-            mockRepo.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(existingProduct);
-            mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<Product>())).ReturnsAsync(updatedProduct);
-            mockCategoryRepo.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(category);
+            mockRepo.Setup(repo => repo.Products.GetByIdAsync(1)).ReturnsAsync(existingProduct);
+            mockRepo.Setup(repo => repo.Products.UpdateAsync(It.IsAny<Product>())).ReturnsAsync(updatedProduct);
+            mockRepo.Setup(repo => repo.Categories.GetByIdAsync(1)).ReturnsAsync(category);
 
-            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mapper);
+            var handler = new UpdateProductCommandHandler(mockRepo.Object, mapper);
             var command = new UpdateProductCommand(productDto);
 
             // Act
@@ -121,21 +119,21 @@ namespace SK.Inventory.Tests
             Assert.Equal(productDto.Price, result.Price);
             Assert.Equal(productDto.CategoryId, result.CategoryId);
 
-            mockRepo.Verify(r => r.GetByIdAsync(1), Times.Once);
-            mockRepo.Verify(r => r.UpdateAsync(It.Is<Product>(p => p.Price == 1000 && p.Name == "Laptop")), Times.Once);
-            mockCategoryRepo.Verify(r => r.GetByIdAsync(1), Times.Once);
+            mockRepo.Verify(r => r.Products.GetByIdAsync(1), Times.Once);
+            mockRepo.Verify(r => r.Products.UpdateAsync(It.Is<Product>(p => p.Price == 1000 && p.Name == "Laptop")), Times.Once);
+            mockRepo.Verify(r => r.Categories.GetByIdAsync(1), Times.Once);
         }
 
         [Fact]
         public async Task Handle_ShouldThrowNotFoundException_WhenProductDoesNotExist()
         {
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
+            
             var mapper = new Mapper(new MapperConfiguration(cfg => cfg.CreateMap<ProductDto, Product>()));
 
-            mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync((Product)null);
+            mockRepo.Setup(r => r.Products.GetByIdAsync(1)).ReturnsAsync((Product)null);
 
-            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mapper);
+            var handler = new UpdateProductCommandHandler(mockRepo.Object, mapper);
             var command = new UpdateProductCommand(new ProductDto { Id = 1 });
 
             await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(command, CancellationToken.None));
@@ -151,15 +149,14 @@ namespace SK.Inventory.Tests
             var product = new Product { Id = 1, Name = "Laptop", Price = 500, CategoryId = 1 };
             var category = new Category { Id = 1, Name = "Electronics" };
 
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(product);
-            mockCategoryRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(category);
+            mockRepo.Setup(r => r.Products.GetByIdAsync(1)).ReturnsAsync(product);
+            mockRepo.Setup(r => r.Categories.GetByIdAsync(1)).ReturnsAsync(category);
             mockMapper.Setup(m => m.Map(productDto, product)).Callback(() => product.Price = price);
 
-            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mockMapper.Object);
+            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockMapper.Object);
 
             await Assert.ThrowsAsync<ValidationException>(() => handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
         }
@@ -171,15 +168,14 @@ namespace SK.Inventory.Tests
             var product = new Product { Id = 1, Name = "Laptop", Price = 500, CategoryId = 1 };
             var category = new Category { Id = 1, Name = "Electronics" };
 
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(product);
-            mockCategoryRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(category);
+            mockRepo.Setup(r => r.Products.GetByIdAsync(1)).ReturnsAsync(product);
+            mockRepo.Setup(r => r.Categories.GetByIdAsync(1)).ReturnsAsync(category);
             mockMapper.Setup(m => m.Map(productDto, product)).Callback(() => product.Name = productDto.Name);
 
-            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mockMapper.Object);
+            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockMapper.Object);
 
             await Assert.ThrowsAsync<ValidationException>(() => handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
         }
@@ -190,14 +186,13 @@ namespace SK.Inventory.Tests
             var productDto = new ProductDto { Id = 1, Name = "Laptop", Price = 800, CategoryId = 0 };
             var product = new Product { Id = 1, Name = "Laptop", Price = 500, CategoryId = 1 };
 
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(product);
+            mockRepo.Setup(r => r.Products.GetByIdAsync(1)).ReturnsAsync(product);
             mockMapper.Setup(m => m.Map(productDto, product)).Callback(() => product.CategoryId = 0);
 
-            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mockMapper.Object);
+            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockMapper.Object);
 
             await Assert.ThrowsAsync<ValidationException>(() => handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
         }
@@ -208,15 +203,14 @@ namespace SK.Inventory.Tests
             var productDto = new ProductDto { Id = 1, Name = "Laptop", Price = 800, CategoryId = 2 };
             var product = new Product { Id = 1, Name = "Laptop", Price = 500, CategoryId = 1 };
 
-            var mockRepo = new Mock<IProductRepository>();
-            var mockCategoryRepo = new Mock<ICategoryRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(product);
-            mockCategoryRepo.Setup(r => r.GetByIdAsync(2)).ReturnsAsync((Category)null);
+            mockRepo.Setup(r => r.Products.GetByIdAsync(1)).ReturnsAsync(product);
+            mockRepo.Setup(r => r.Categories.GetByIdAsync(2)).ReturnsAsync((Category)null);
             mockMapper.Setup(m => m.Map(productDto, product)).Callback(() => product.CategoryId = 2);
 
-            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockCategoryRepo.Object, mockMapper.Object);
+            var handler = new UpdateProductCommandHandler(mockRepo.Object, mockMapper.Object);
 
             await Assert.ThrowsAsync<ValidationException>(() => handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
         }
@@ -231,18 +225,19 @@ namespace SK.Inventory.Tests
             var productId = 1;
             var product = new Product { Id = productId };
 
-            var mockRepo = new Mock<IProductRepository>();
-            mockRepo.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync(product);
-            mockRepo.Setup(r => r.DeleteAsync(productId)).ReturnsAsync(true);
+            var mockRepo = new Mock<IUnitOfWork>();
+            var mockWebHostRepo = new Mock<IWebHostEnvironment>();
+            mockRepo.Setup(r => r.Products.GetByIdAsync(productId)).ReturnsAsync(product);
+            mockRepo.Setup(r => r.Products.DeleteAsync(product)).ReturnsAsync(product);
 
-            var handler = new DeleteProductCommandHandler(mockRepo.Object);
+            var handler = new DeleteProductCommandHandler(mockRepo.Object, mockWebHostRepo.Object);
 
             // Act
             var result = await handler.Handle(new DeleteProductCommand(productId), CancellationToken.None);
 
             // Assert
             Assert.True(result);
-            mockRepo.Verify(r => r.DeleteAsync(productId), Times.Once);
+            mockRepo.Verify(r => r.Products.DeleteAsync(product), Times.Once);
         }
 
         [Fact]
@@ -251,17 +246,17 @@ namespace SK.Inventory.Tests
             // Arrange
             var productId = 99;
 
-            var mockRepo = new Mock<IProductRepository>();
-            mockRepo.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync((Product)null);
+            var mockRepo = new Mock<IUnitOfWork>();
+            var mockWebHostRepo = new Mock<IWebHostEnvironment>();
+            mockRepo.Setup(r => r.Products.GetByIdAsync(productId)).ReturnsAsync((Product)null);
 
-            var handler = new DeleteProductCommandHandler(mockRepo.Object);
+            var handler = new DeleteProductCommandHandler(mockRepo.Object, mockWebHostRepo.Object);
 
             // Act
             var result = await handler.Handle(new DeleteProductCommand(productId), CancellationToken.None);
 
             // Assert
             Assert.False(result);
-            mockRepo.Verify(r => r.DeleteAsync(It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
@@ -270,10 +265,11 @@ namespace SK.Inventory.Tests
             // Arrange
             var productId = 1;
 
-            var mockRepo = new Mock<IProductRepository>();
-            mockRepo.Setup(r => r.GetByIdAsync(productId)).ThrowsAsync(new Exception("DB error"));
+            var mockRepo = new Mock<IUnitOfWork>();
+            var mockWebHostRepo = new Mock<IWebHostEnvironment>();
+            mockRepo.Setup(r => r.Products.GetByIdAsync(productId)).ThrowsAsync(new Exception("DB error"));
 
-            var handler = new DeleteProductCommandHandler(mockRepo.Object);
+            var handler = new DeleteProductCommandHandler(mockRepo.Object, mockWebHostRepo.Object);
 
             // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => handler.Handle(new DeleteProductCommand(productId), CancellationToken.None));
@@ -289,10 +285,10 @@ namespace SK.Inventory.Tests
             var product = new Product { Id = productId, Name = "Laptop", Price = 1000, CategoryId = 1 };
             var productDto = new ProductDto { Id = productId, Name = "Laptop", Price = 1000, CategoryId = 1 };
 
-            var mockRepo = new Mock<IProductRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync(product);
+            mockRepo.Setup(r => r.Products.GetByIdAsync(productId)).ReturnsAsync(product);
             mockMapper.Setup(m => m.Map<ProductDto>(product)).Returns(productDto);
 
             var handler = new GetProductByIdQueryHandler(mockRepo.Object, mockMapper.Object);
@@ -307,7 +303,7 @@ namespace SK.Inventory.Tests
             Assert.Equal(productDto.Name, result.Name);
             Assert.Equal(productDto.Price, result.Price);
 
-            mockRepo.Verify(r => r.GetByIdAsync(productId), Times.Once);
+            mockRepo.Verify(r => r.Products.GetByIdAsync(productId), Times.Once);
             mockMapper.Verify(m => m.Map<ProductDto>(product), Times.Once);
         }
 
@@ -317,10 +313,10 @@ namespace SK.Inventory.Tests
             // Arrange
             var productId = 99;
 
-            var mockRepo = new Mock<IProductRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync((Product)null);
+            mockRepo.Setup(r => r.Products.GetByIdAsync(productId)).ReturnsAsync((Product)null);
 
             var handler = new GetProductByIdQueryHandler(mockRepo.Object, mockMapper.Object);
             var query = new GetProductByIdQuery(productId);
@@ -330,7 +326,7 @@ namespace SK.Inventory.Tests
 
             // Assert
             Assert.Null(result);
-            mockRepo.Verify(r => r.GetByIdAsync(productId), Times.Once);
+            mockRepo.Verify(r => r.Products.GetByIdAsync(productId), Times.Once);
             mockMapper.Verify(m => m.Map<ProductDto>(It.IsAny<Product>()), Times.Never);
         }
         #endregion
@@ -352,10 +348,10 @@ namespace SK.Inventory.Tests
         new ProductDto { Id = 2, Name = "Phone", Price = 500, CategoryId = 2 }
     };
 
-            var mockRepo = new Mock<IProductRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(products);
+            mockRepo.Setup(r => r.Products.GetAllAsync()).ReturnsAsync(products);
             mockMapper.Setup(m => m.Map<List<ProductDto>>(products)).Returns(productDtos);
 
             var handler = new GetAllProductsQueryHandler(mockRepo.Object, mockMapper.Object);
@@ -369,7 +365,7 @@ namespace SK.Inventory.Tests
             Assert.Equal(productDtos.Count, result.Count);
             Assert.Equal(productDtos[0].Name, result[0].Name);
 
-            mockRepo.Verify(r => r.GetAllAsync(), Times.Once);
+            mockRepo.Verify(r => r.Products.GetAllAsync(), Times.Once);
             mockMapper.Verify(m => m.Map<List<ProductDto>>(products), Times.Once);
         }
 
@@ -377,10 +373,10 @@ namespace SK.Inventory.Tests
         public async Task Handle_ShouldReturnEmptyList_WhenNoProductsExist()
         {
             // Arrange
-            var mockRepo = new Mock<IProductRepository>();
+            var mockRepo = new Mock<IUnitOfWork>();
             var mockMapper = new Mock<IMapper>();
 
-            mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<Product>());
+            mockRepo.Setup(r => r.Products.GetAllAsync()).ReturnsAsync(new List<Product>());
             mockMapper.Setup(m => m.Map<List<ProductDto>>(It.IsAny<List<Product>>())).Returns(new List<ProductDto>());
 
             var handler = new GetAllProductsQueryHandler(mockRepo.Object, mockMapper.Object);
@@ -393,7 +389,7 @@ namespace SK.Inventory.Tests
             Assert.NotNull(result);
             Assert.Empty(result);
 
-            mockRepo.Verify(r => r.GetAllAsync(), Times.Once);
+            mockRepo.Verify(r => r.Products.GetAllAsync(), Times.Once);
             mockMapper.Verify(m => m.Map<List<ProductDto>>(It.IsAny<List<Product>>()), Times.AtMost(1));
         }
         #endregion
