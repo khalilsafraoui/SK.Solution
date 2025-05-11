@@ -30,8 +30,12 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.G
     , typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
     ));
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
+//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(
+    typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly,
+    typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly,
+    typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
+);
 var keyVaultUriString = builder.Configuration["KeyVault:Uri"];
 var keyVaultUri = new Uri(keyVaultUriString);
 var secretClient = new SecretClient(keyVaultUri, new DefaultAzureCredential());
