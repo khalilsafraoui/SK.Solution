@@ -1,0 +1,82 @@
+﻿@page "/googlemap"
+@rendermode InteractiveServer
+@using SK.Solution.Shared.Extensions
+@using SK.Visit.UI.Blazor.Model
+@inject IJSRuntime JS
+
+<h3>Display Google Map</h3>
+<GoogleMap></GoogleMap>
+<button @onclick="()=>SetMarks()">Load Marks</button>
+<button @onclick="()=>SetMarks2()">Load Marks 2</button>
+<button @onclick="()=>DrawSampleRoute()">Draw Polylines</button>
+<button @onclick="()=>ClearPolylines()">Clear Polylines</button>
+<button @onclick="()=>ClearMarks()">Clear Marks</button>
+@code {
+    private List<Mark> Marks = new List<Mark>
+    {
+       // new LatLng(50.464095373854,4.8647300719352256), // Customer 1
+        new Mark(34.7406, 10.7603,"sfax","1"), // Customer 2
+        new Mark(35.8256, 10.6084,"Sousse","3"), // Customer 3
+        new Mark(37.2744,9.8739,"Bizerte","2"), // Customer 3
+        new Mark(33.8818,10.0982,"Gabès","4"), // Customer 3
+        new Mark(35.6781,10.0963,"Kairouan","5"), // Customer 3
+    };
+
+    private List<Mark> Marks2 = new List<Mark>
+    {
+       // new LatLng(50.464095373854,4.8647300719352256), // Customer 1
+        new Mark(34.7406, 10.7603,"sfax","1"), // Customer 2
+        new Mark(35.8256, 10.6084,"Sousse","3"), // Customer 3
+         new Mark(37.2744,9.9739,"Bizerte","2"), // Customer 3
+
+    };
+
+    // Method to set customer locations on the map
+    public async Task SetMarks()
+    {
+        await JS.GoogleMap_AddMarkers(Marks);
+    }
+    public async Task SetMarks2()
+    {
+        await JS.GoogleMap_AddMarkers(Marks2);
+    }
+
+    public async Task ClearMarks()
+    {
+        
+        await JS.GoogleMap_ClearMarkers();
+    }
+
+    public async Task ClearPolylines()
+    {
+        
+        await JS.GoogleMap_ClearPolylines();
+        
+    }
+
+    private async Task DrawSampleRoute()
+    {
+        var referenceLat = 36.8065;
+        var referenceLng = 10.1815;
+
+        var sortedByDistance = Marks.OrderBy(a =>
+            GetDistanceInKm(referenceLat, referenceLng, a.Lat, a.Lng)).ToList();
+       
+        await JS.GoogleMap_DrawPolylines(sortedByDistance);
+    }
+
+    public static double GetDistanceInKm(double lat1, double lon1, double lat2, double lon2)
+    {
+        const double R = 6371; // Radius of the Earth in km
+        double dLat = (lat2 - lat1) * Math.PI / 180;
+        double dLon = (lon2 - lon1) * Math.PI / 180;
+
+        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                   Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+        return R * c; // Distance in km
+    }
+
+}

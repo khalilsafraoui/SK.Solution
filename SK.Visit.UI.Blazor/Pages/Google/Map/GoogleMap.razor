@@ -1,0 +1,18 @@
+﻿@using SK.Solution.Shared.Extensions
+@using SK.Visit.UI.Blazor.Model
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+
+<div id="map" style="height: 500px; width: 100%; border: 1px solid gray;"></div>
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.GoogleMap_InitMap();
+        }
+    }
+} 

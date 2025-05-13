@@ -3,6 +3,7 @@ using Radzen;
 using SK.CRM.UI.Blazor;
 using SK.Inventory.UI.Blazor;
 using SK.Identity.UI.Blazor;
+using SK.Visit.UI.Blazor;
 using SK.Solution.Components;
 using Stripe;
 using System.Reflection;
@@ -18,6 +19,7 @@ builder.Services.AddCrmModuleServices(builder.Configuration);  // Register servi
 builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register services from the Inventory module
 builder.Services.AddIdentityModuleServices(builder.Configuration);  // Register services from the Identity module
 builder.Services.AddNoteModuleServices(builder.Configuration);  // Register services from the Note module
+builder.Services.AddVisitModuleServices(builder.Configuration);  // Register services from the Visit module
 #endregion
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -93,6 +95,7 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(SK.Solution.Client._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.CRM.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Note.UI.Blazor._Imports).Assembly)
+    .AddAdditionalAssemblies(typeof(SK.Visit.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Inventory.UI.Blazor._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.
