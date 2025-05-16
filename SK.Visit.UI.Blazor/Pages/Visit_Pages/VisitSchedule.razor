@@ -1,0 +1,161 @@
+﻿@page "/visit-schedule"
+@rendermode InteractiveServer
+@using System.Globalization
+@using SK.Visit.UI.Blazor.Model
+@using SK.Visit.UI.Blazor.Services
+@inject IVisitPlanningServices visitPlanningServices
+@inject DestinationNotifier DestinationNotifier
+<div class="p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Weekly Visit Schedule</h5>
+        <div class="d-flex align-items-center gap-2">
+            <RadzenButton Icon="chevron_left" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@PreviousWeek" />
+            <span class="px-3 py-2 bg-primary text-white rounded-3 shadow-sm">
+                @WeekRange
+            </span>
+            <RadzenButton Icon="chevron_right" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@NextWeek" />
+        </div>
+    </div>
+
+    <ul class="d-flex gap-2 list-unstyled mt-3">
+        @foreach (var day in DaysOfWeek)
+        {
+            <li>
+                <button class="btn px-3 py-2 rounded-pill fw-semibold
+                          @(SelectedDay == day
+                              ? "btn-primary text-white shadow-sm"
+                              : "btn-light border text-dark")"
+                @onclick="() => SelectDay(day)">
+                    @day
+                </button>
+            </li>
+        }
+    </ul>
+
+
+    <div class="mt-4" style="min-height: 300px; max-height: 500px; overflow-y: auto;">
+        @foreach (var visitPlanning in visitPlannings)
+        {
+            <div class="rounded-3 p-3 mb-4 shadow-sm border" style="background-color: white;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="rounded-circle d-inline-block" style="width: 12px; height: 12px; background-color: @visitPlanning._Agent.Color;">
+                        </span>
+                        <strong>@visitPlanning._Agent.Name</strong>
+                    </div>
+                    <span class="text-muted small">@visitPlanningServices.DestinationCountBySelectedDate(visitPlanning, SelectedDate) visits</span>
+                </div>
+                <div class="border border-2 border-dashed rounded-3 text-center text-muted p-4" style="min-height: 100px;">
+
+                    <Dropzone TItem="Destination" Items="@visitPlanningServices.GetDestinationsBySelectedDate(visitPlanning,SelectedDate)" OnItemDrop="@(item => OnItemDrop(item,visitPlanning))" Accepts='(d, t)=>SelectedDate >= DateTime.Today' CopyItem="(item)=> { return CopyDestination(item); }">
+                        @if(context.IsFake)
+                        {
+                            <div class="card mb-3 shadow-sm border-0">
+                                @if (SelectedDate >= DateTime.Today)
+                                {
+                                    <p> Drag Items here to schedule visits</p>
+                                }
+                                else
+                                {
+                                    <p>You cannot schedule visits in the past.</p>
+                                }
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card mb-3 shadow-sm border-0">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong>@context.Name</strong>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="@GetBadgeClass(context.Priority)">@context.Priority</span>
+                                            <i class="bi bi-trash text-danger cursor-pointer"
+                                            role="button"
+                                            title="Delete"
+                                            @onclick="() => OnDelete(context,visitPlanning)">
+                                            </i>
+                                        </div>
+                                    </div>
+                                    <div class="text-muted small">@context.Address</div>
+                                    <div class="text-muted small">@context.Phone</div>
+                                </div>
+                            </div>
+                        }
+                    </Dropzone>
+
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+    private List<string> DaysOfWeek = new() { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+    private string SelectedDay = DateTime.Now.DayOfWeek.ToString();
+
+
+    private List<VisitPlanning> visitPlannings = new() {};
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadVisitPlanning();
+            //IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadVisitPlanning()
+    {
+        visitPlannings = await visitPlanningServices.GetVisitPlanningsAsync();
+    }
+
+    private DateTime StartOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+
+    private string WeekRange => $"{StartOfWeek:MMM dd} - {StartOfWeek.AddDays(6):MMM dd}";
+    private DateTime SelectedDate => StartOfWeek.AddDays(DaysOfWeek.IndexOf(SelectedDay));
+
+    void SelectDay(string day) => SelectedDay = day;
+
+    void PreviousWeek() => StartOfWeek = StartOfWeek.AddDays(-7);
+    void NextWeek() => StartOfWeek = StartOfWeek.AddDays(7);
+
+    private string GetBadgeClass(string priority) => priority switch
+    {
+        "High" => "badge bg-danger-subtle text-danger-emphasis",
+        "Medium" => "badge bg-warning-subtle text-warning-emphasis",
+        "Low" => "badge bg-success-subtle text-success-emphasis",
+        _ => "badge bg-secondary"
+    };
+
+    private void OnItemDrop(Destination item, VisitPlanning visitPlanning)
+    {
+        visitPlanningServices.AddDestination(visitPlanning, item, SelectedDate);
+    }
+
+    private Destination CopyDestination(Destination item)
+    {
+        return new Destination
+            {
+                CustomerId = item.CustomerId,
+                OrderId = item.OrderId,
+                IsDelevery = item.IsDelevery,
+                Name = item.Name,
+                Address = item.Address,
+                Phone = item.Phone,
+                Priority = item.Priority,
+                IsFake = false,
+                IsSelected = true
+            };
+    }
+
+    private void OnDelete(Destination item, VisitPlanning visitPlanning)
+    {
+        visitPlanningServices.DeleteVisitPlanned(visitPlanning, item, SelectedDate);
+        DestinationNotifier.NotifyDestinationsChanged(); // 🔥 Triggers reload in Page 1
+    }
+}
