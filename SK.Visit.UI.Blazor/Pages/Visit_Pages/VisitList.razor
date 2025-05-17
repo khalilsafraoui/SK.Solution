@@ -132,7 +132,7 @@
 
     private async Task LoadDestinations()
     {
-        Destinations = visitPlanningServices.GetDistinations();
+        Destinations = await visitPlanningServices.GetDistinations();
     }
 
     private string GetBadgeClass(string priority) => priority switch
@@ -153,7 +153,7 @@
     }
 
     public IEnumerable<Destination> FiltredDestinations =>
-     visitPlanningServices.GetDistinations()
+     Destinations
          .Where(d =>
              // Filter type
              (selectedFilter == FilterType.All ||

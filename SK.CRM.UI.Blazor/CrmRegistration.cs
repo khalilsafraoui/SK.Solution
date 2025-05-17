@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SK.CRM.Application.Features.Customers.Services;
 using SK.CRM.Infrastructure;
 using SK.CRM.Infrastructure.PostgreSql;
 using SK.CRM.UI.Blazor.Services;
+using SK.Solution.Shared.Interfaces.Crm;
 
 namespace SK.CRM.UI.Blazor
 {
@@ -19,6 +21,7 @@ namespace SK.CRM.UI.Blazor
 
             services.AddSingleton<SharedStateService>();
             services.AddScoped<PaymentService>();
+            services.AddScoped<ISharedCustomerServices, SharedCustomerServices>();
         }
     }
 }

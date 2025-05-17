@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SK.Identity.Domain\SK.Identity.Domain.csproj" />
+    <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
     <ProjectReference Include="..\SK.Solution\SK.Solution.Client\SK.Solution.Client.csproj" />
   </ItemGroup>
 

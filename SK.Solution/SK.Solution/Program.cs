@@ -63,7 +63,7 @@ builder.Services.AddAuthentication(options =>
     googleOptions.ClientSecret = googleSecret;
 })
 .AddIdentityCookies();
-
+builder.Services.AddAuthorization();
 
 
 

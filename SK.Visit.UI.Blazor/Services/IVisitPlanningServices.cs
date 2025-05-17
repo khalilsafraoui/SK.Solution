@@ -15,7 +15,7 @@ namespace SK.Visit.UI.Blazor.Services
 
         Task<List<VisitPlanning>> GetVisitPlanningsAsync();
 
-        List<Destination> GetDistinations();
+        Task<List<Destination>> GetDistinations();
 
         List<KeyValueAddress> GetCities();
 

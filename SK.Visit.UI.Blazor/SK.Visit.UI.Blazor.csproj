@@ -23,4 +23,8 @@
     <PackageReference Include="Radzen.Blazor" Version="6.2.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,6 +2,7 @@
 using SK.CRM.Application.Dtos;
 using SK.CRM.Application.DTOs;
 using SK.CRM.Domain.Entities;
+using SK.Solution.Shared.Model.Crm;
 
 namespace SK.CRM.Application.MappingProfiles
 {
@@ -18,7 +19,8 @@ namespace SK.CRM.Application.MappingProfiles
             CreateMap<Address, AddressDto>().ReverseMap(); // Map between Address and AddressDto
             CreateMap<Inventory.Application.Dtos.CategoryDto, CategoryDto>().ReverseMap();
             CreateMap<Inventory.Application.Dtos.ProductDto, ProductDto>().ReverseMap();
-
+            CreateMap<SharedCustomerDto, Customer>().ReverseMap(); // Map between SharedCustomerDto and CustomerDTO
+            CreateMap<SharedAddressDto, Address>().ReverseMap(); // Map between SharedAddressDto and AddressDto
         }
     }
 }
