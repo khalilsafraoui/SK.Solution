@@ -1,0 +1,2 @@
+﻿add-migration CreateVisitDBAndDestinationTable -context SK.Visit.Infrastructure.SqlServer.Persistence.VisitDbContext -project SK.Visit.Infrastructure.SqlServer
+update-database -context SK.Visit.Infrastructure.SqlServer.Persistence.VisitDbContext -project SK.Visit.Infrastructure.SqlServer
