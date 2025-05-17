@@ -16,6 +16,10 @@ namespace SK.Solution.Shared.Model.Crm
 
         public string CountryId { get; set; }
 
+        public string Name { get; set; }
+
+        public string FullAddress { get; set; }
+
         // Foreign key to Customer
         public Guid CustomerId { get; set; }
         public SharedCustomerDto Customer { get; set; }

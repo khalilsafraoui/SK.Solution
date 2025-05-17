@@ -13,6 +13,10 @@
 
         public string CountryId { get; set; }
 
+        public string Name { get; set; }
+
+        public string FullAddress { get; set; }
+
         // Foreign key to Customer
         public Guid CustomerId { get; set; }
         public Customer Customer { get; set; }

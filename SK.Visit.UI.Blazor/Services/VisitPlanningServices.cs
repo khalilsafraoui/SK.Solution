@@ -170,7 +170,7 @@ namespace SK.Visit.UI.Blazor.Services
                     Destinations.Add(new Destination { 
                         CustomerId = customer.Id.ToString(),
                         Name = customer.FirstName + " " + customer.LastName,
-                        Address = customer.Address,
+                        Address = address.FullAddress,
                         Phone = customer.PhoneNumber, 
                         Priority = "Low", 
                         CityId =address.CityId,

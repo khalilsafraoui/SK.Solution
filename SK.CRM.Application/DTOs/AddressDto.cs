@@ -16,6 +16,10 @@ namespace SK.CRM.Application.DTOs
 
         public string ZipCode { get; set; }
 
+        public string Name { get; set; }
+
+        public string FullAddress { get; set; }
+
         public string CountryId { get; set; }
 
         // Foreign key to Customer
