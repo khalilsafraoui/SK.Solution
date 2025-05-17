@@ -6,5 +6,6 @@ namespace SK.Solution.Shared.Interfaces.Crm
     public interface ISharedCustomerServices
     {
         Task<List<SharedCustomerDto>> GetCusomersAsync();
+        Task<List<SharedCustomerDestinationDto>> GetCusomersDestinationsAsync();
     }
 }

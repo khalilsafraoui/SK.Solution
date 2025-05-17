@@ -6,6 +6,8 @@
 
         public string CustomerId { get; set; }
 
+        public string AddressId { get; set; }
+
         public bool IsDelevery { get; set; } = false;
         public string Name { get; set; }
         public string Address { get; set; }
@@ -48,7 +50,8 @@
                     Mark = this.Mark != null ? new Mark(this.Mark.Lat, this.Mark.Lng, this.Mark.Title, this.Mark.Label) : null,
                     CityId = this.CityId,
                     StateId = this.StateId,
-                    CountryId = this.CountryId
+                    CountryId = this.CountryId,
+                    AddressId = this.AddressId
 
                 };
             }

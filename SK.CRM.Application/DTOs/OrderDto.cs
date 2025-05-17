@@ -5,7 +5,14 @@ namespace SK.CRM.Application.DTOs
     public class OrderDto
     {
         public Guid Id { get; set; }
-        [Required]
+       
+        public Guid CustomerId { get; set; }
+
+        public CustomerDto Customer { get; set; }
+
+        public Guid AddressId { get; set; }
+
+        public AddressDto Address { get; set; }
         public string UserId { get; set; }
         [Required]
         [Display(Name = "Order Total")]

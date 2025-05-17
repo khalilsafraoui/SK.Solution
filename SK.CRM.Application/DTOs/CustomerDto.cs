@@ -1,6 +1,4 @@
-﻿using SK.CRM.Domain.Entities;
-
-namespace SK.CRM.Application.DTOs
+﻿namespace SK.CRM.Application.DTOs
 {
     public class CustomerDto
     {

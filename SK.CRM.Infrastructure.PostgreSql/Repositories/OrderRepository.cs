@@ -55,5 +55,14 @@ namespace SK.CRM.Infrastructure.PostgreSql.Repositories
             }
             return order;
         }
+
+        public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status)
+        {
+            if (!string.IsNullOrEmpty(status))
+            {
+                return await _context.Orders.Where(o => o.Status == status).ToListAsync();
+            }
+            return await _context.Orders.ToListAsync();
+        }
     }
 }

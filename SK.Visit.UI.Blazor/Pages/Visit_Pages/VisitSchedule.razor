@@ -9,11 +9,19 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0">Weekly Visit Schedule</h5>
         <div class="d-flex align-items-center gap-2">
-            <RadzenButton Icon="chevron_left" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@PreviousWeek" />
+            @if (CanClickPrevious)
+            {
+                <RadzenButton Icon="chevron_left" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@PreviousWeek" />
+            }
+            
             <span class="px-3 py-2 bg-primary text-white rounded-3 shadow-sm">
                 @WeekRange
             </span>
-            <RadzenButton Icon="chevron_right" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@NextWeek" />
+            @if (CanClickNext)
+            {
+                <RadzenButton Icon="chevron_right" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@NextWeek" />
+            }
+           
         </div>
     </div>
 
@@ -118,11 +126,15 @@
 
     private string WeekRange => $"{StartOfWeek:MMM dd} - {StartOfWeek.AddDays(6):MMM dd}";
     private DateTime SelectedDate => StartOfWeek.AddDays(DaysOfWeek.IndexOf(SelectedDay));
-
+    private DateTime FirstDayOfCurrentWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+    
     void SelectDay(string day) => SelectedDay = day;
 
     void PreviousWeek() => StartOfWeek = StartOfWeek.AddDays(-7);
     void NextWeek() => StartOfWeek = StartOfWeek.AddDays(7);
+
+    private bool CanClickPrevious => StartOfWeek > FirstDayOfCurrentWeek.AddDays(0);
+    private bool CanClickNext => StartOfWeek < FirstDayOfCurrentWeek.AddDays(28);
 
     private string GetBadgeClass(string priority) => priority switch
     {

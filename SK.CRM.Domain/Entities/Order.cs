@@ -5,8 +5,16 @@ namespace SK.CRM.Domain.Entities
     public class Order : BaseEntity
     {
        
-        [Required]
         public string UserId { get; set; }
+
+        public Guid? CustomerId { get; set; }
+
+        public Customer Customer { get; set; }
+
+        public Guid? AddressId { get; set; }
+
+        public Address Address { get; set; }
+
         [Required]
         [Display(Name = "Order Total")]
         public double OrderTotal { get; set; }

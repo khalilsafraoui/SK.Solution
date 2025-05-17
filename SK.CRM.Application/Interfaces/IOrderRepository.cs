@@ -10,5 +10,7 @@ namespace SK.CRM.Application.Interfaces
         public Task<IEnumerable<Order>> GetAllAsync(string? userId = null);
         public Task<Order> CreateAsync(Order order);
         public Task<Order> UpdateStatusAsync(Guid orderId, string status, string paymentIntentId);
+
+        public Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status);
     }
 }

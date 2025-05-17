@@ -41,6 +41,15 @@ namespace SK.CRM.Infrastructure.Repositories
             return _context.Orders.FirstOrDefaultAsync(o => o.SessionId == sessionId);
         }
 
+        public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status)
+        {
+            if (!string.IsNullOrEmpty(status))
+            {
+                return await _context.Orders.Where(o => o.Status == status).ToListAsync();
+            }
+            return await _context.Orders.ToListAsync();
+        }
+
         public async Task<Order> UpdateStatusAsync(Guid orderId, string status, string paymentIntentId)
         {
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);

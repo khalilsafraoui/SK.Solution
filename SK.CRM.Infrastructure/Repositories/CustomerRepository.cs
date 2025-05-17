@@ -35,5 +35,10 @@ namespace SK.CRM.Infrastructure.Repositories
         {
             return await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
         }
+
+        public async Task<Customer> GetCustomerByUserIdAsync(string userId)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
+        }
     }
 }

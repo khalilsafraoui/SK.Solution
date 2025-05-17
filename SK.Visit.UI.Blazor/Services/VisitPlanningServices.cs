@@ -12,30 +12,21 @@ namespace SK.Visit.UI.Blazor.Services
 
         private readonly ISharedUserServices _sharedUserServices;
         private readonly ISharedCustomerServices _sharedCustomerServices;
+        private readonly ISharedOrderServices _sharedOrderServices;
 
 
-        public VisitPlanningServices(ISharedUserServices sharedUserServices, ISharedCustomerServices sharedCustomerServices)
+        public VisitPlanningServices(ISharedUserServices sharedUserServices, ISharedCustomerServices sharedCustomerServices, ISharedOrderServices sharedOrderServices)
         {
             _sharedUserServices = sharedUserServices;
             _sharedCustomerServices = sharedCustomerServices;
+            _sharedOrderServices = sharedOrderServices;
         }
         private List<VisitPlanning> visitPlannings = new()
         {
-            //new VisitPlanning { _Agent = new Agent { Id="1", Name = "John Doe", Color = "#5b43f2" }, Destinations = new List<Destination>() },
-            //new VisitPlanning { _Agent = new Agent { Id="2", Name = "Jane Smith", Color = "#00b981" }, Destinations = new List<Destination>() },
-            //new VisitPlanning { _Agent = new Agent { Id="3", Name = "khalil safraoui", Color = "#000000" }, Destinations = new List<Destination>() }
         };
 
         private List<Destination> Destinations = new()
         {
-            //new Destination { Name = "David Wilson", Address = "202 Elm St, Newton, MA", Phone = "617-555-5678", Priority = "High", CustomerId= "1", OrderId="", Mark = new Mark(34.7406, 10.7603,"David Wilson","1"), CountryId ="TN", StateId="BN", CityId="1"},
-            //new Destination { Name = "Emily Johnson", Address = "456 Park Ave, Cambridge, MA", Phone = "617-555-2345", Priority = "Medium", IsDelevery = true, CustomerId= "2", OrderId="1", Mark = new Mark(35.8256, 10.6084,"Emily Johnson","3"), CountryId ="TN", StateId="BN", CityId="1"},
-            //new Destination { Name = "Jennifer Taylor", Address = "303 Cedar Ln, Watertown, MA", Phone = "617-555-6789", Priority = "Low", CustomerId= "3", OrderId="", Mark = new Mark(37.2744,9.8739,"Jennifer Taylor","2"), CountryId ="TN", StateId="BA", CityId="2"},
-            //new Destination { Name = "John Smith", Address = "123 Main St, Boston, MA", Phone = "617-555-1234", Priority = "High", CustomerId= "4", OrderId="", Mark = new Mark(33.8818,10.0982,"John Smith","4") , CountryId ="TN", StateId="BA", CityId="3"},
-            //new Destination { Name = "Lisa Anderson", Address = "505 Maple Ave, Malden, MA", Phone = "617-555-8901", Priority = "High", CustomerId= "5", OrderId="", Mark = new Mark(35.6781,10.0963,"Lisa Anderson","5"), CountryId ="TN", StateId="BA", CityId="4" },
-            //new Destination { Name = "Michael Brown", Address = "789 Oak Rd, Somerville, MA", Phone = "617-555-3456", Priority = "Low", IsDelevery = true, CustomerId= "6", OrderId="2", CountryId ="TN", StateId="BZ", CityId="5" },
-            //new Destination { Name = "Robert Martinez", Address = "404 Birch Dr, Medford, MA", Phone = "617-555-7890", Priority = "Medium", CustomerId= "7", OrderId="", CountryId ="TN", StateId="BZ", CityId="6" },
-            //new Destination { Name = "Sarah Davis", Address = "101 Pine St, Brookline, MA", Phone = "617-555-4567", Priority = "Medium", IsDelevery = true, CustomerId= "8", OrderId="3" , CountryId ="TN", StateId="BB", CityId="7"},
         };
 
         private List<KeyValueAddress> Countries = new()
@@ -95,20 +86,20 @@ namespace SK.Visit.UI.Blazor.Services
 
 
 
-            if (!_visitPlanning.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.Date == selectedDate))
+            if (!_visitPlanning.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.Date == selectedDate))
             {
-                if(visitPlannings.Exists(i => i.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.IsDelevery)))
+                if(visitPlannings.Exists(i => i.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.IsDelevery)))
                 {
-                   foreach(VisitPlanning visitPlanningToPerformeRemoe in visitPlannings.Where(i => i.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.IsDelevery)))
+                   foreach(VisitPlanning visitPlanningToPerformeRemoe in visitPlannings.Where(i => i.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.IsDelevery)))
                     {
-                        visitPlanningToPerformeRemoe.Destinations.RemoveAll(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.IsDelevery);
+                        visitPlanningToPerformeRemoe.Destinations.RemoveAll(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.IsDelevery);
                     }
                 }
                 Destination newDestination  = destination.Clone;
                 newDestination.Date = selectedDate;
                 _visitPlanning.Destinations.Add(newDestination);
 
-                Destinations.Where(i => i.CustomerId == destination.CustomerId && i.OrderId == destination.OrderId).ToList().ForEach(i => {
+                Destinations.Where(i => i.CustomerId == destination.CustomerId && i.OrderId == destination.OrderId && i.AddressId == destination.AddressId).ToList().ForEach(i => {
                     i.IsSelected = true;
                     i.TotalVisitPlanned = IncrementVisitPlannedCount(i);
                 });
@@ -161,28 +152,43 @@ namespace SK.Visit.UI.Blazor.Services
 
         public async Task<List<Destination>> GetDistinations()
         {
-            List<SharedCustomerDto> customers = await _sharedCustomerServices.GetCusomersAsync();
-            customers.ForEach(customer =>
+            List<SharedCustomerDestinationDto> customers = await _sharedCustomerServices.GetCusomersDestinationsAsync();
+            List<SharedOrderDestinationDto> orders = await _sharedOrderServices.GetOrdersDestinaionsAsync();
+
+            Destinations = new();
+            foreach (var customer in customers)
             {
-                customer.Addresses.ToList().ForEach(address =>
+                Destinations.Add(new Destination
                 {
-                   
-                    Destinations.Add(new Destination { 
-                        CustomerId = customer.Id.ToString(),
-                        Name = customer.FirstName + " " + customer.LastName,
-                        Address = address.FullAddress,
-                        Phone = customer.PhoneNumber, 
-                        Priority = "Low", 
-                        CityId =address.CityId,
-                        CountryId = address.CountryId,
-                        StateId = address.StateId,
-                        Mark = address.Latitude != decimal.Parse("0,000000") ? new Mark(double.Parse(address.Latitude.ToString()), double.Parse(address.Longitude.ToString()), customer.FirstName + " " + customer.LastName, customer.Id.ToString()) : null,
-                        
-                    });
-                    
+                    CustomerId = customer.CustomerId?.ToString(),
+                    AddressId = customer.AddressId?.ToString(),
+                    Name = customer.Name,
+                    Address = customer.Address,
+                    Phone = customer.Phone,
+                    Mark =  customer.Mark != null ? new Mark(customer.Mark.Lat, customer.Mark.Lng, customer.Mark.Title, customer.Mark.Label) :null,
+                    CountryId = customer.CountryId,
+                    StateId = customer.StateId,
+                    CityId = customer.CityId
                 });
-               
-            });
+            }
+            foreach (var order in orders)
+            {
+                Destinations.Add(new Destination
+                {
+                    OrderId = order.OrderId?.ToString(),
+                    CustomerId = order.CustomerId?.ToString(),
+                    AddressId = order.AddressId?.ToString(),
+                    IsDelevery = order.IsDelevery,
+                    Name = order.Name,
+                    Address = order.Address,
+                    Phone = order.Phone,
+                    Mark = order.Mark != null ? new Mark(order.Mark.Lat, order.Mark.Lng, order.Mark.Title, order.Mark.Label) : null,
+                    CountryId = order.CountryId,
+                    StateId = order.StateId,
+                    CityId = order.CityId
+                });
+            }
+
             return Destinations;
         }
 
@@ -204,10 +210,10 @@ namespace SK.Visit.UI.Blazor.Services
         public bool DeleteVisitPlanned(VisitPlanning visitPlanning, Destination destination, DateTime selectedDate)
         {
             VisitPlanning _visitPlanning = visitPlannings.First(i => i._Agent.Id == visitPlanning._Agent.Id);
-            if (_visitPlanning.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.Date == selectedDate))
+            if (_visitPlanning.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.Date == selectedDate))
             {
-                _visitPlanning.Destinations.RemoveAll(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.Date == selectedDate);
-                Destinations.Where(i => i.CustomerId == destination.CustomerId && i.OrderId == destination.OrderId).ToList().ForEach(i => {
+                _visitPlanning.Destinations.RemoveAll(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.Date == selectedDate);
+                Destinations.Where(i => i.CustomerId == destination.CustomerId && i.OrderId == destination.OrderId && i.AddressId == destination.AddressId).ToList().ForEach(i => {
                     i.IsSelected = IsSelecedCheckBeforeDelete(i);
                     i.TotalVisitPlanned = DecrementVisitPlannedCount(i);
                 });
