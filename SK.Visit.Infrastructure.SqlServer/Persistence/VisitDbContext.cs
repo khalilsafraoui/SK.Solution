@@ -29,7 +29,7 @@ namespace SK.Visit.Infrastructure.SqlServer.Persistence
             
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries<BaseEntity>())
             {
@@ -37,15 +37,15 @@ namespace SK.Visit.Infrastructure.SqlServer.Persistence
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedDate = DateTime.Now;
-                        entry.Entity.CreatedBy = _currentUserService?.UserId;
+                        entry.Entity.CreatedBy = await _currentUserService.GetUserIdAsync();
                         break;
                     case EntityState.Modified:
                         entry.Entity.LastModifiedDate = DateTime.Now;
-                        entry.Entity.LastModifiedBy = _currentUserService?.UserId;
+                        entry.Entity.LastModifiedBy = await _currentUserService.GetUserIdAsync();
                         break;
                 }
             }
-            return base.SaveChangesAsync(cancellationToken);
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }
