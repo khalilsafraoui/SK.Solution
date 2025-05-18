@@ -1,8 +1,4 @@
-﻿using SK.Solution.Shared.Interfaces.Crm;
-using SK.Solution.Shared.Interfaces.Identity;
-using SK.Solution.Shared.Model.Crm;
-using SK.Solution.Shared.Model.Identity;
-using SK.Visit.Application.Dtos;
+﻿using SK.Visit.Application.Dtos;
 using SK.Visit.UI.Blazor.Model;
 
 
@@ -10,26 +6,6 @@ namespace SK.Visit.UI.Blazor.Services
 {
     public class VisitPlanningServices : IVisitPlanningServices
     {
-
-        private readonly ISharedUserServices _sharedUserServices;
-        private readonly ISharedCustomerServices _sharedCustomerServices;
-        private readonly ISharedOrderServices _sharedOrderServices;
-
-
-        public VisitPlanningServices(ISharedUserServices sharedUserServices, ISharedCustomerServices sharedCustomerServices, ISharedOrderServices sharedOrderServices)
-        {
-            _sharedUserServices = sharedUserServices;
-            _sharedCustomerServices = sharedCustomerServices;
-            _sharedOrderServices = sharedOrderServices;
-        }
-        //private List<VisitPlanningDto> visitPlannings = new()
-        //{
-        //};
-
-        private List<DestinationDto> Destinations = new()
-        {
-        };
-
         private List<KeyValueAddress> Countries = new()
         {
              new KeyValueAddress { _key = "TN", _value = "Tunisia" },
@@ -80,12 +56,9 @@ namespace SK.Visit.UI.Blazor.Services
             return visitPlanning.Destinations.Count(v => v.Date == selectedDate && v.IsFake == false);
         }
 
-        public List<DestinationDto> AddDestination(List<VisitPlanningDto> visitPlannings, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate)
+        public List<DestinationDto> AddDestination(List<VisitPlanningDto> visitPlannings, List<DestinationDto> Destinations, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate)
         {
             VisitPlanningDto _visitPlanning = visitPlannings.First(i => i._Agent.Id == visitPlanning._Agent.Id);
-
-
-
 
             if (!_visitPlanning.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.Date == selectedDate))
             {
@@ -134,55 +107,6 @@ namespace SK.Visit.UI.Blazor.Services
             return true;
         }
 
-        public static string GetRandomHexColor()
-        {
-            var random = new Random();
-            return $"#{random.Next(0x1000000):X6}"; // Generates something like "#A1B2C3"
-        }
-
-
-        public async Task<List<DestinationDto>> GetDistinations()
-        {
-            List<SharedCustomerDestinationDto> customers = await _sharedCustomerServices.GetCusomersDestinationsAsync();
-            List<SharedOrderDestinationDto> orders = await _sharedOrderServices.GetOrdersDestinaionsAsync();
-
-            Destinations = new();
-            foreach (var customer in customers)
-            {
-                Destinations.Add(new DestinationDto
-                {
-                    CustomerId = customer.CustomerId?.ToString(),
-                    AddressId = customer.AddressId?.ToString(),
-                    Name = customer.Name,
-                    Address = customer.Address,
-                    Phone = customer.Phone,
-                    Mark =  customer.Mark != null ? new MarkDto(customer.Mark.Lat, customer.Mark.Lng, customer.Mark.Title, customer.Mark.Label) :null,
-                    CountryId = customer.CountryId,
-                    StateId = customer.StateId,
-                    CityId = customer.CityId
-                });
-            }
-            foreach (var order in orders)
-            {
-                Destinations.Add(new DestinationDto
-                {
-                    OrderId = order.OrderId?.ToString(),
-                    CustomerId = order.CustomerId?.ToString(),
-                    AddressId = order.AddressId?.ToString(),
-                    IsDelevery = order.IsDelevery,
-                    Name = order.Name,
-                    Address = order.Address,
-                    Phone = order.Phone,
-                    Mark = order.Mark != null ? new MarkDto(order.Mark.Lat, order.Mark.Lng, order.Mark.Title, order.Mark.Label) : null,
-                    CountryId = order.CountryId,
-                    StateId = order.StateId,
-                    CityId = order.CityId
-                });
-            }
-
-            return Destinations;
-        }
-
         public List<KeyValueAddress> GetCountries()
         {
             return Countries;
@@ -198,7 +122,7 @@ namespace SK.Visit.UI.Blazor.Services
             return Cities;
         }
 
-        public bool DeleteVisitPlanned(List<VisitPlanningDto> visitPlannings, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate)
+        public bool DeleteVisitPlanned(List<VisitPlanningDto> visitPlannings, List<DestinationDto> Destinations, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate)
         {
             VisitPlanningDto _visitPlanning = visitPlannings.First(i => i._Agent.Id == visitPlanning._Agent.Id);
             if (_visitPlanning.Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.AddressId == destination.AddressId && i.Date == selectedDate))

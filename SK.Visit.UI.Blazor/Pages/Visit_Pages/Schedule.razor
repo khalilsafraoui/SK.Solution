@@ -1,9 +1,9 @@
 ﻿@page "/schedule"
 @rendermode InteractiveServer
-@using SK.Solution.Shared.Extensions
-@using SK.Visit.Application.Dtos
-@using SK.Visit.UI.Blazor.Model
+
 @inject IJSRuntime JS
+@inject IMediator Mediator
+@inject DestinationNotifier DestinationNotifier
 @attribute [Authorize(Roles = "Admin,Manager")]
 
 
@@ -11,6 +11,7 @@
 
 <div class="container-fluid full-height">
     <div class="row h-100">
+        <CascadingValue Value="Destinations">
         <!-- Left (20%) -->
         <div class="col-2 d-flex align-items-center justify-content-center p-2" >
                 <VisitList></VisitList>
@@ -31,10 +32,46 @@
                 </div>
             </div>
         </div>
+        </CascadingValue>
     </div>
 </div>
 
 @code {
+
+    private List<DestinationDto> Destinations = new() { };
+    protected override async Task OnInitializedAsync()
+    {
+        DestinationNotifier.OnDestinationsChanged += OnDestinationsChanged;
+
+        await LoadDestinations();
+    }
+
+    private async void OnDestinationsChanged()
+    {
+        await InvokeAsync(async () =>
+    {
+        StateHasChanged();
+    });
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadDestinations()
+    {
+        var query = new GetAllDestinationsQuery();
+        Destinations = await Mediator.Send(query);
+    }
+
+    public void Dispose()
+    {
+        DestinationNotifier.OnDestinationsChanged -= OnDestinationsChanged;
+    }
+
     private List<MarkDto> Marks = new List<MarkDto>
     {
        // new LatLng(50.464095373854,4.8647300719352256), // Customer 1

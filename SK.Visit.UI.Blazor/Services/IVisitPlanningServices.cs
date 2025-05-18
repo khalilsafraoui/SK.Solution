@@ -9,11 +9,9 @@ namespace SK.Visit.UI.Blazor.Services
 
         int DestinationCountBySelectedDate(VisitPlanningDto visitPlanning, DateTime selectedDate);
 
-        List<DestinationDto> AddDestination(List<VisitPlanningDto> visitPlannings, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate);
+        List<DestinationDto> AddDestination(List<VisitPlanningDto> visitPlannings, List<DestinationDto> Destinations, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate);
 
-        bool DeleteVisitPlanned(List<VisitPlanningDto> visitPlannings, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate);
-
-        Task<List<DestinationDto>> GetDistinations();
+        bool DeleteVisitPlanned(List<VisitPlanningDto> visitPlannings, List<DestinationDto> Destinations, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate);
 
         List<KeyValueAddress> GetCities();
 

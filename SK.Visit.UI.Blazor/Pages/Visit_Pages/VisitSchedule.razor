@@ -13,7 +13,7 @@
             {
                 <RadzenButton Icon="chevron_left" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@PreviousWeek" />
             }
-            
+
             <span class="px-3 py-2 bg-primary text-white rounded-3 shadow-sm">
                 @WeekRange
             </span>
@@ -21,7 +21,7 @@
             {
                 <RadzenButton Icon="chevron_right" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Light" Click="@NextWeek" />
             }
-           
+
         </div>
     </div>
 
@@ -109,13 +109,13 @@
 
 
     private List<VisitPlanningDto> visitPlannings = new() { };
-
+    [CascadingParameter]
+    public List<DestinationDto> Destinations { get; set; } = new();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await LoadVisitPlanning();
-            //IsProcessing = false;
             StateHasChanged();
         }
     }
@@ -124,7 +124,6 @@
     {
         var query = new GetAllVisitPlanningStartingFromTomorrowQuery();
         visitPlannings = await Mediator.Send(query);
-        //visitPlannings = await visitPlanningServices.GetVisitPlanningsAsync();
     }
 
     private DateTime StartOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
@@ -132,7 +131,7 @@
     private string WeekRange => $"{StartOfWeek:MMM dd} - {StartOfWeek.AddDays(6):MMM dd}";
     private DateTime SelectedDate => StartOfWeek.AddDays(DaysOfWeek.IndexOf(SelectedDay));
     private DateTime FirstDayOfCurrentWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
-    
+
     void SelectDay(string day) => SelectedDay = day;
 
     void PreviousWeek() => StartOfWeek = StartOfWeek.AddDays(-7);
@@ -151,16 +150,21 @@
 
     private void OnItemDrop(DestinationDto item, VisitPlanningDto visitPlanning)
     {
-        visitPlanningServices.AddDestination(visitPlannings, visitPlanning, item, SelectedDate);
+        visitPlanningServices.AddDestination(visitPlannings, Destinations, visitPlanning, item, SelectedDate);
     }
 
     private async void OnSave()
     {
-       // visitPlanningServices.SaveVisitPlanned(visitPlannings, SelectedDate);
-      //  DestinationNotifier.NotifyDestinationsChanged(); // 🔥 Triggers reload in Page 1
-        var query = new SaveDestinationsCommand(visitPlannings);
-        await Mediator.Send(query);
-        await _IJSRuntime.ToastrSuccessWithDelay("Product Updated Successfully");
+        try
+        {
+            var query = new SaveDestinationsCommand(visitPlannings);
+            await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("All Plannings are Saved Successfully");
+        }
+        catch (Exception ex)
+        {
+            await _IJSRuntime.ToastrError("An unexpected error occurred while saving the plannings. Please try again.");
+        }
     }
 
     private DestinationDto CopyDestination(DestinationDto item)
@@ -181,7 +185,7 @@
 
     private void OnDelete(DestinationDto item, VisitPlanningDto visitPlanning)
     {
-        visitPlanningServices.DeleteVisitPlanned(visitPlannings, visitPlanning, item, SelectedDate);
+        visitPlanningServices.DeleteVisitPlanned(visitPlannings, Destinations, visitPlanning, item, SelectedDate);
         DestinationNotifier.NotifyDestinationsChanged(); // 🔥 Triggers reload in Page 1
     }
 }

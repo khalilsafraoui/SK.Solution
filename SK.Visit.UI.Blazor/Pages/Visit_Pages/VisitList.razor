@@ -1,12 +1,5 @@
-﻿
-@using System.Collections.Generic
-@using SK.Visit.Application.Dtos
-@using SK.Visit.UI.Blazor.Model
-@using SK.Visit.UI.Blazor.Services
-@using SK.Solution.Shared.Extensions
-@inject IVisitPlanningServices visitPlanningServices
+﻿@inject IVisitPlanningServices visitPlanningServices
 @inject IJSRuntime JS
-@inject DestinationNotifier DestinationNotifier
 <div class="card shadow rounded p-3  w-100 h-100" style="max-width: 400px; height: 90vh; overflow-y: auto;background: #f5f7ff;" >
     <h5 class="card-title">Items</h5>
 
@@ -113,28 +106,9 @@
         Orders
     }
     private string searchText = "";
-    private List<DestinationDto> Destinations = new() { };
 
-    protected override async Task OnInitializedAsync()
-    {
-        DestinationNotifier.OnDestinationsChanged += OnDestinationsChanged;
-
-        await LoadDestinations();
-    }
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-           // await LoadDestinations();
-            //IsProcessing = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadDestinations()
-    {
-        Destinations = await visitPlanningServices.GetDistinations();
-    }
+    [CascadingParameter]
+    public List<DestinationDto> Destinations { get; set; } = new();
 
     private string GetBadgeClass(string priority) => priority switch
     {
@@ -143,15 +117,6 @@
         "Low" => "badge bg-success-subtle text-success-emphasis",
         _ => "badge bg-secondary"
     };
-
-    private async void OnDestinationsChanged()
-    {
-        await InvokeAsync(async () =>
-    {
-        //await LoadDestinations();
-        StateHasChanged();
-    });
-    }
 
     public IEnumerable<DestinationDto> FiltredDestinations =>
      Destinations
@@ -217,13 +182,5 @@
             await JS.GoogleMap_ClearMarkers();
             await JS.GoogleMap_AddMarkers(marks);
         }
-       
-       
     }
-
-    public void Dispose()
-    {
-        DestinationNotifier.OnDestinationsChanged -= OnDestinationsChanged;
-    }
-
 }
