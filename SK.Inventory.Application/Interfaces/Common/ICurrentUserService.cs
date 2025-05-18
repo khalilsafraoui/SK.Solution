@@ -2,6 +2,6 @@
 {
     public interface ICurrentUserService
     {
-        public Guid UserId { get; }
+        Task<Guid> GetUserIdAsync();
     }
 }

@@ -1,26 +1,33 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using SK.Inventory.Application.Interfaces.Common;
 using System.Security.Claims;
 
 
 namespace SK.Inventory.UI.Blazor.Common
 {
-    class CurrentUserService : ICurrentUserService
+    public class CurrentUserService : ICurrentUserService
     {
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly AuthenticationStateProvider _authStateProvider;
 
-        public CurrentUserService(IHttpContextAccessor contextAccessor)
+        public CurrentUserService(AuthenticationStateProvider authStateProvider)
         {
-            _contextAccessor = contextAccessor;
+            _authStateProvider = authStateProvider;
         }
 
-        public Guid UserId
+        public async Task<Guid> GetUserIdAsync()
         {
-            get
-            {
-                var id = _contextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-                return Guid.Parse(id);
-            }
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user?.Identity?.IsAuthenticated != true)
+                throw new Exception("User is not authenticated");
+
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("ClaimTypes.NameIdentifier is missing");
+
+            return Guid.Parse(userId);
         }
     }
 }
