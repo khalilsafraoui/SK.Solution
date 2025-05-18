@@ -158,7 +158,8 @@
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex.Message);
+            Logger.LogError(ex, "Error while saving visit plannings.");
+
             await _IJSRuntime.ToastrError("An unexpected error occurred while saving the plannings. Please try again.");
         }
     }
