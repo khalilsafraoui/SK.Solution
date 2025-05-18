@@ -1,7 +1,8 @@
-﻿namespace SK.Visit.UI.Blazor.Model
+﻿namespace SK.Visit.Application.Dtos
 {
-    public class Destination
+    public class DestinationDto
     {
+        public Guid Id { get; set; } = Guid.Empty;
         public string OrderId { get; set; }
 
         public string CustomerId { get; set; }
@@ -21,7 +22,7 @@
 
         public int TotalVisitPlanned { get; set; } = 0;
 
-        public Mark? Mark { get; set; }
+        public MarkDto? Mark { get; set; }
 
         public string CityId { get; set; }
 
@@ -30,11 +31,11 @@
         public string CountryId { get; set; }
 
 
-        public Destination Clone
+        public DestinationDto Clone
         {
             get
             {
-                return new Destination
+                return new DestinationDto
                 {
                     OrderId = this.OrderId,
                     CustomerId = this.CustomerId,
@@ -47,7 +48,7 @@
                     IsFake = this.IsFake,
                     IsSelected = this.IsSelected,
                     TotalVisitPlanned = this.TotalVisitPlanned,
-                    Mark = this.Mark != null ? new Mark(this.Mark.Lat, this.Mark.Lng, this.Mark.Title, this.Mark.Label) : null,
+                    Mark = this.Mark != null ? new MarkDto(this.Mark.Lat, this.Mark.Lng, this.Mark.Title, this.Mark.Label) : null,
                     CityId = this.CityId,
                     StateId = this.StateId,
                     CountryId = this.CountryId,

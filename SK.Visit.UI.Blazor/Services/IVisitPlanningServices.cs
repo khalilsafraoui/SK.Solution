@@ -1,21 +1,19 @@
-﻿using SK.Visit.UI.Blazor.Model;
+﻿using SK.Visit.Application.Dtos;
+using SK.Visit.UI.Blazor.Model;
 
 namespace SK.Visit.UI.Blazor.Services
 {
     public interface IVisitPlanningServices
     {
-        List<Destination> GetDestinationsBySelectedDate(VisitPlanning visitPlanning, DateTime selectedDate);
+        List<DestinationDto> GetDestinationsBySelectedDate(VisitPlanningDto visitPlanning, DateTime selectedDate);
 
-        int DestinationCountBySelectedDate(VisitPlanning visitPlanning, DateTime selectedDate);
+        int DestinationCountBySelectedDate(VisitPlanningDto visitPlanning, DateTime selectedDate);
 
-        List<Destination> AddDestination(VisitPlanning visitPlanning, Destination destination, DateTime selectedDate);
+        List<DestinationDto> AddDestination(List<VisitPlanningDto> visitPlannings, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate);
 
-        bool DeleteVisitPlanned(VisitPlanning visitPlanning, Destination destination, DateTime selectedDate);
+        bool DeleteVisitPlanned(List<VisitPlanningDto> visitPlannings, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate);
 
-
-        Task<List<VisitPlanning>> GetVisitPlanningsAsync();
-
-        Task<List<Destination>> GetDistinations();
+        Task<List<DestinationDto>> GetDistinations();
 
         List<KeyValueAddress> GetCities();
 

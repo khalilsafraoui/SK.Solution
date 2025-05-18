@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace SK.Solution.Shared.Extensions
+namespace SK.Visit.UI.Blazor.Extensions
 {
     public static class IJSRuntimeExtensions
     {

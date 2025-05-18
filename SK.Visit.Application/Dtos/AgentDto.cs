@@ -1,6 +1,6 @@
-﻿namespace SK.Visit.UI.Blazor.Model
+﻿namespace SK.Visit.Application.Dtos
 {
-    public class Agent
+    public class AgentDto
     {
         public string Id { get; set; }
         public string Name { get; set; }

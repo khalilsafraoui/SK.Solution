@@ -1,21 +1,21 @@
-﻿namespace SK.Visit.UI.Blazor.Model
+﻿namespace SK.Visit.Application.Dtos
 {
-    public class VisitPlanning
+    public class VisitPlanningDto
     {
-        public Agent _Agent { get; set; }
-        public List<Destination> Destinations { get; set; }
+        public AgentDto _Agent { get; set; }
+        public List<DestinationDto> Destinations { get; set; }
 
-        public List<Destination> GetDestinationsBySelectedDate(DateTime selectedDate)
+        public List<DestinationDto> GetDestinationsBySelectedDate(DateTime selectedDate)
         {
             if (Destinations.Count == 0)
             {
-                return new List<Destination>() { new Destination { IsFake = true, Date = selectedDate } };
+                return new List<DestinationDto>() { new DestinationDto { IsFake = true, Date = selectedDate } };
             }
 
             if (Destinations.Where(v => v.Date == selectedDate).Count() == 0)
             {
                 Destinations.RemoveAll(i => i.IsFake == true && i.Date != selectedDate);
-                Destinations.Add(new Destination { IsFake = true, Date = selectedDate });
+                Destinations.Add(new DestinationDto { IsFake = true, Date = selectedDate });
                 return Destinations.Where(v => v.Date == selectedDate).ToList();
 
             }
@@ -27,7 +27,7 @@
             return Destinations.Count(v => v.Date == selectedDate && v.IsFake == false);
         }
 
-        public List<Destination> AddDestination(Destination destination,DateTime selectedDate)
+        public List<DestinationDto> AddDestination(DestinationDto destination,DateTime selectedDate)
         {
             if (!Destinations.Exists(i => i.OrderId == destination.OrderId && i.CustomerId == destination.CustomerId && i.Date == selectedDate))
             {

@@ -88,7 +88,6 @@ namespace SK.Visit.Infrastructure.SqlServer.Migrations
                         .HasAnnotation("ErrorMessage", "Name is missing..");
 
                     b.Property<string>("OrderId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")

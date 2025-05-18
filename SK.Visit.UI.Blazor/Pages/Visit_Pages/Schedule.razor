@@ -1,6 +1,7 @@
 ﻿@page "/schedule"
 @rendermode InteractiveServer
 @using SK.Solution.Shared.Extensions
+@using SK.Visit.Application.Dtos
 @using SK.Visit.UI.Blazor.Model
 @inject IJSRuntime JS
 @attribute [Authorize(Roles = "Admin,Manager")]
@@ -34,22 +35,22 @@
 </div>
 
 @code {
-    private List<Mark> Marks = new List<Mark>
+    private List<MarkDto> Marks = new List<MarkDto>
     {
        // new LatLng(50.464095373854,4.8647300719352256), // Customer 1
-        new Mark(34.7406, 10.7603,"sfax","1"), // Customer 2
-        new Mark(35.8256, 10.6084,"Sousse","3"), // Customer 3
-        new Mark(37.2744,9.8739,"Bizerte","2"), // Customer 3
-        new Mark(33.8818,10.0982,"Gabès","4"), // Customer 3
-        new Mark(35.6781,10.0963,"Kairouan","5"), // Customer 3
+        new MarkDto(34.7406, 10.7603,"sfax","1"), // Customer 2
+        new MarkDto(35.8256, 10.6084,"Sousse","3"), // Customer 3
+        new MarkDto(37.2744,9.8739,"Bizerte","2"), // Customer 3
+        new MarkDto(33.8818,10.0982,"Gabès","4"), // Customer 3
+        new MarkDto(35.6781,10.0963,"Kairouan","5"), // Customer 3
     };
 
-    private List<Mark> Marks2 = new List<Mark>
+    private List<MarkDto> Marks2 = new List<MarkDto>
     {
        // new LatLng(50.464095373854,4.8647300719352256), // Customer 1
-        new Mark(34.7406, 10.7603,"sfax","1"), // Customer 2
-        new Mark(35.8256, 10.6084,"Sousse","3"), // Customer 3
-         new Mark(37.2744,9.9739,"Bizerte","2"), // Customer 3
+        new MarkDto(34.7406, 10.7603,"sfax","1"), // Customer 2
+        new MarkDto(35.8256, 10.6084,"Sousse","3"), // Customer 3
+         new MarkDto(37.2744,9.9739,"Bizerte","2"), // Customer 3
 
     };
 

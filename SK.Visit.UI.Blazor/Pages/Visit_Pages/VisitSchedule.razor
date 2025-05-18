@@ -1,10 +1,10 @@
 ﻿@page "/visit-schedule"
 @rendermode InteractiveServer
-@using System.Globalization
-@using SK.Visit.UI.Blazor.Model
-@using SK.Visit.UI.Blazor.Services
+
 @inject IVisitPlanningServices visitPlanningServices
 @inject DestinationNotifier DestinationNotifier
+@inject IJSRuntime _IJSRuntime
+@inject IMediator Mediator
 <div class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0">Weekly Visit Schedule</h5>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="border border-2 border-dashed rounded-3 text-center text-muted p-4" style="min-height: 100px;">
 
-                    <Dropzone TItem="Destination" Items="@visitPlanningServices.GetDestinationsBySelectedDate(visitPlanning,SelectedDate)" OnItemDrop="@(item => OnItemDrop(item,visitPlanning))" Accepts='(d, t)=>SelectedDate >= DateTime.Today' CopyItem="(item)=> { return CopyDestination(item); }">
+                    <Dropzone TItem="DestinationDto" Items="@visitPlanningServices.GetDestinationsBySelectedDate(visitPlanning,SelectedDate)" OnItemDrop="@(item => OnItemDrop(item,visitPlanning))" Accepts='(d, t)=>SelectedDate >= DateTime.Today' CopyItem="(item)=> { return CopyDestination(item); }">
                         @if(context.IsFake)
                         {
                             <div class="card mb-3 shadow-sm border-0">
@@ -97,6 +97,9 @@
             </div>
         }
     </div>
+    <div class="d-flex justify-content-end mt-4">
+        <RadzenButton Text="Save" Icon="save" ButtonStyle="ButtonStyle.Primary" Click="@OnSave" />
+    </div>
 </div>
 
 
@@ -105,7 +108,7 @@
     private string SelectedDay = DateTime.Now.DayOfWeek.ToString();
 
 
-    private List<VisitPlanning> visitPlannings = new() {};
+    private List<VisitPlanningDto> visitPlannings = new() { };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -119,7 +122,9 @@
 
     private async Task LoadVisitPlanning()
     {
-        visitPlannings = await visitPlanningServices.GetVisitPlanningsAsync();
+        var query = new GetAllVisitPlanningStartingFromTomorrowQuery();
+        visitPlannings = await Mediator.Send(query);
+        //visitPlannings = await visitPlanningServices.GetVisitPlanningsAsync();
     }
 
     private DateTime StartOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
@@ -144,14 +149,23 @@
         _ => "badge bg-secondary"
     };
 
-    private void OnItemDrop(Destination item, VisitPlanning visitPlanning)
+    private void OnItemDrop(DestinationDto item, VisitPlanningDto visitPlanning)
     {
-        visitPlanningServices.AddDestination(visitPlanning, item, SelectedDate);
+        visitPlanningServices.AddDestination(visitPlannings, visitPlanning, item, SelectedDate);
     }
 
-    private Destination CopyDestination(Destination item)
+    private async void OnSave()
     {
-        return new Destination
+       // visitPlanningServices.SaveVisitPlanned(visitPlannings, SelectedDate);
+      //  DestinationNotifier.NotifyDestinationsChanged(); // 🔥 Triggers reload in Page 1
+        var query = new SaveDestinationsCommand(visitPlannings);
+        await Mediator.Send(query);
+        await _IJSRuntime.ToastrSuccessWithDelay("Product Updated Successfully");
+    }
+
+    private DestinationDto CopyDestination(DestinationDto item)
+    {
+        return new DestinationDto
             {
                 CustomerId = item.CustomerId,
                 OrderId = item.OrderId,
@@ -165,9 +179,9 @@
             };
     }
 
-    private void OnDelete(Destination item, VisitPlanning visitPlanning)
+    private void OnDelete(DestinationDto item, VisitPlanningDto visitPlanning)
     {
-        visitPlanningServices.DeleteVisitPlanned(visitPlanning, item, SelectedDate);
+        visitPlanningServices.DeleteVisitPlanned(visitPlannings, visitPlanning, item, SelectedDate);
         DestinationNotifier.NotifyDestinationsChanged(); // 🔥 Triggers reload in Page 1
     }
 }

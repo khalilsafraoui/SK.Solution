@@ -3,7 +3,7 @@
     public class Destination : BaseEntity
     {
         public string AgentId { get; set; }
-        public string OrderId { get; set; }
+        public string? OrderId { get; set; }
 
         public string CustomerId { get; set; }
 

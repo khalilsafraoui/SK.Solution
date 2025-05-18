@@ -11,6 +11,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using SK.Inventory.Application.MappingProfiles;
 using SK.CRM.Application.MappingProfiles;
+using SK.Visit.Application.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Module
@@ -33,11 +34,13 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.G
     , typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
+     , typeof(SK.Visit.Application.Features.Visit.Schedule.Queries.GetAllVisitPlanningStartingFromTomorrowQuery).Assembly
     ));
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAutoMapper(
     typeof(InventoryMappingProfile).Assembly,
-    typeof(CrmMappingProfile).Assembly
+    typeof(CrmMappingProfile).Assembly,
+    typeof(VisitMappingProfile).Assembly
 );
 var keyVaultUriString = builder.Configuration["KeyVault:Uri"];
 var keyVaultUri = new Uri(keyVaultUriString);

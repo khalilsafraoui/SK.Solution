@@ -1,6 +1,6 @@
-﻿namespace SK.Visit.UI.Blazor.Model
+﻿namespace SK.Visit.Application.Dtos
 {
-    public class Mark
+    public class MarkDto
     {
         public double Lat { get; set; }
         public double Lng { get; set; }
@@ -9,13 +9,13 @@
 
         public string Title { get; set; }
 
-        public Mark(double lat, double lng)
+        public MarkDto(double lat, double lng)
         {
             Lat = lat;
             Lng = lng;
         }
 
-        public Mark(double lat, double lng, string title, string label)
+        public MarkDto(double lat, double lng, string title, string label)
         {
             Lat = lat;
             Lng = lng;
