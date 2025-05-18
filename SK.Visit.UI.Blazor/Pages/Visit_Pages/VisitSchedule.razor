@@ -1,10 +1,12 @@
 ﻿@page "/visit-schedule"
+
 @rendermode InteractiveServer
 
 @inject IVisitPlanningServices visitPlanningServices
 @inject DestinationNotifier DestinationNotifier
 @inject IJSRuntime _IJSRuntime
 @inject IMediator Mediator
+@inject ILogger<VisitSchedule> Logger
 <div class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0">Weekly Visit Schedule</h5>
@@ -156,6 +158,7 @@
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex.Message);
             await _IJSRuntime.ToastrError("An unexpected error occurred while saving the plannings. Please try again.");
         }
     }

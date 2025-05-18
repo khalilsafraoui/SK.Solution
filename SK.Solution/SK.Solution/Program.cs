@@ -12,6 +12,7 @@ using Azure.Security.KeyVault.Secrets;
 using SK.Inventory.Application.MappingProfiles;
 using SK.CRM.Application.MappingProfiles;
 using SK.Visit.Application.MappingProfiles;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Module
@@ -28,7 +29,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddRadzenComponents();
 builder.Services.AddCascadingAuthenticationState();
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 
+builder.Host.UseSerilog();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()
     , typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
