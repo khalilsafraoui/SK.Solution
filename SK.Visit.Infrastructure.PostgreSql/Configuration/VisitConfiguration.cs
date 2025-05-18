@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using SK.Visit.Domain.Entities;
+using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace SK.Visit.Infrastructure.PostgreSql.Configuration
 {
@@ -8,6 +10,10 @@ namespace SK.Visit.Infrastructure.PostgreSql.Configuration
     {
         public void Configure(EntityTypeBuilder<Destination> builder)
         {
+            var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
+                v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
             builder.HasKey(entity => entity.Id);
             builder.Property(p => p.Name)
                .IsRequired()
@@ -16,6 +22,11 @@ namespace SK.Visit.Infrastructure.PostgreSql.Configuration
 
             builder.Property(p => p.Date)
               .IsRequired()
+              .HasConversion(
+                        v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified),
+                        v => DateTime.SpecifyKind(v, DateTimeKind.Unspecified)
+                    )
+                   .HasColumnType("timestamp")
               .HasAnnotation("ErrorMessage", "Date is missing..");
 
             builder.Property(p => p.IsDelevery)
@@ -40,6 +51,13 @@ namespace SK.Visit.Infrastructure.PostgreSql.Configuration
                  .IsRequired()
                  .HasMaxLength(500) // Optional
                  .HasAnnotation("ErrorMessage", "AddressId is missing..");
+
+            builder.Property(p => p.CreatedDate)
+                .HasConversion(dateTimeConverter);
+
+            builder.Property(p => p.LastModifiedDate)
+               .HasConversion(dateTimeConverter);
+
 
         }
     }

@@ -107,23 +107,16 @@
     private List<string> DaysOfWeek = new() { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
     private string SelectedDay = DateTime.Now.DayOfWeek.ToString();
 
-
-    private List<VisitPlanningDto> visitPlannings = new() { };
+    [CascadingParameter]
+    private List<VisitPlanningDto> visitPlannings { get; set; } = new();
     [CascadingParameter]
     public List<DestinationDto> Destinations { get; set; } = new();
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await LoadVisitPlanning();
             StateHasChanged();
         }
-    }
-
-    private async Task LoadVisitPlanning()
-    {
-        var query = new GetAllVisitPlanningStartingFromTomorrowQuery();
-        visitPlannings = await Mediator.Send(query);
     }
 
     private DateTime StartOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
