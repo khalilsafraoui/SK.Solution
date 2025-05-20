@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Options;
 using SK.Visit.Application.Dtos;
 using SK.Visit.Application.Interfaces;
+using SK.Visit.Application.Settings;
 using SK.Visit.Domain.Entities;
 
 namespace SK.Visit.Application.Features.Visit.Schedule.Commands
@@ -11,10 +13,12 @@ namespace SK.Visit.Application.Features.Visit.Schedule.Commands
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public SaveDestinationsCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly VisitSettings _settings;
+        public SaveDestinationsCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<VisitSettings> options)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _settings = options.Value;
         }
 
         public async Task<List<VisitPlanningDto>> Handle(SaveDestinationsCommand request, CancellationToken cancellationToken)
@@ -35,7 +39,8 @@ namespace SK.Visit.Application.Features.Visit.Schedule.Commands
 
 
             }
-            destinations = await _unitOfWork.DestinationsRepository.SaveDestinationsAsync(destinations);
+            var cutoffDate = DateTime.Today.AddDays(_settings.NumberOfDaysToAddInScheduleGetAndSave).Date;
+            destinations = await _unitOfWork.DestinationsRepository.SaveDestinationsAsync(destinations, cutoffDate);
 
             await _unitOfWork.SaveChangesAsync();
             // Map back to DTO after creation to include any updates (e.g., ID)

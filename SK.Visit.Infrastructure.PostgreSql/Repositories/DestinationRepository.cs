@@ -15,10 +15,8 @@ namespace SK.Visit.Infrastructure.PostgreSql.Repositories
             _context = context;
         }
 
-        public async Task<List<Destination>> SaveDestinationsAsync(List<Destination> newDestinations)
+        public async Task<List<Destination>> SaveDestinationsAsync(List<Destination> newDestinations, DateTime cutoffDate)
         {
-            var cutoffDate = DateTime.Today.AddDays(1);
-
             // Step 1: Find existing future destinations
             var destinationsToDelete = await _context.Destinations
                 .Where(d => d.Date >= cutoffDate)

@@ -27,7 +27,7 @@ namespace SK.Visit.Application.Features.Visit.Schedule.Queries
 
         public async Task<List<DestinationDto>> Handle(GetAllDestinationsQuery request, CancellationToken cancellationToken)
         {
-            var tomorrow = DateTime.Now.AddDays(_settings.NumberOfDaysToAddInScheduleGetAndSave);
+            var tomorrow = DateTime.Now.AddDays(_settings.NumberOfDaysToAddInScheduleGetAndSave).Date;
             var savedDestinations = await _unitOfWork.DestinationsRepository.GetDestinationsStartingFromSpecificDateAsync(tomorrow);
             if (!savedDestinations.Any())
             {

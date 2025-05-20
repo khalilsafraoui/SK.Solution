@@ -5,7 +5,7 @@ namespace SK.Visit.Application.Interfaces
     public interface IDestinationRepository : IGenericRepository<Destination>,
         IGuidEntityRepository<Destination>
     {
-        Task<List<Destination>> SaveDestinationsAsync(List<Destination> newDestinations);
+        Task<List<Destination>> SaveDestinationsAsync(List<Destination> newDestinations, DateTime cutoffDate);
 
         Task<List<Destination>> GetDestinationsStartingFromSpecificDateAsync(DateTime date);
 
