@@ -1,0 +1,145 @@
+[
+  {
+    "code": "BE-BRU-IXL",
+    "name": "Ixelles",
+    "stateCode": "BE-BRU"
+  },
+  {
+    "code": "BE-BRU-ETT",
+    "name": "Etterbeek",
+    "stateCode": "BE-BRU"
+  },
+  {
+    "code": "BE-BRU-UCC",
+    "name": "Uccle",
+    "stateCode": "BE-BRU"
+  },
+
+  {
+    "code": "BE-FLA-GHT",
+    "name": "Ghent",
+    "stateCode": "BE-FLA"
+  },
+  {
+    "code": "BE-FLA-ANT",
+    "name": "Antwerp",
+    "stateCode": "BE-FLA"
+  },
+  {
+    "code": "BE-FLA-BRU",
+    "name": "Bruges",
+    "stateCode": "BE-FLA"
+  },
+
+  {
+    "code": "CA-ON-TOR",
+    "name": "Toronto",
+    "stateCode": "CA-ON"
+  },
+  {
+    "code": "CA-ON-OTT",
+    "name": "Ottawa",
+    "stateCode": "CA-ON"
+  },
+  {
+    "code": "CA-ON-MIS",
+    "name": "Mississauga",
+    "stateCode": "CA-ON"
+  },
+
+  {
+    "code": "JP-KAN-TYO",
+    "name": "Tokyo",
+    "stateCode": "JP-KAN"
+  },
+  {
+    "code": "JP-KAN-YOK",
+    "name": "Yokohama",
+    "stateCode": "JP-KAN"
+  },
+  {
+    "code": "JP-KAN-SAI",
+    "name": "Saitama",
+    "stateCode": "JP-KAN"
+  },
+
+  {
+    "code": "TN-TUN-MRS",
+    "name": "La Marsa",
+    "stateCode": "TN-TUN"
+  },
+  {
+    "code": "TN-TUN-BAR",
+    "name": "Le Bardo",
+    "stateCode": "TN-TUN"
+  },
+  {
+    "code": "TN-TUN-CAR",
+    "name": "Carthage",
+    "stateCode": "TN-TUN"
+  },
+
+  {
+    "code": "TN-SFX-SKE",
+    "name": "Sakiet Ezzit",
+    "stateCode": "TN-SFX"
+  },
+  {
+    "code": "TN-SFX-AIN",
+    "name": "El Ain",
+    "stateCode": "TN-SFX"
+  },
+  {
+    "code": "TN-SFX-THY",
+    "name": "Thyna",
+    "stateCode": "TN-SFX"
+  },
+
+  {
+    "code": "TN-SSS-AKD",
+    "name": "Akouda",
+    "stateCode": "TN-SSS"
+  },
+  {
+    "code": "TN-SSS-HMS",
+    "name": "Hammam Sousse",
+    "stateCode": "TN-SSS"
+  },
+  {
+    "code": "TN-SSS-KKB",
+    "name": "Kalaa Kebira",
+    "stateCode": "TN-SSS"
+  },
+
+  {
+    "code": "TN-GBS-HAM",
+    "name": "El Hamma",
+    "stateCode": "TN-GBS"
+  },
+  {
+    "code": "TN-GBS-MAR",
+    "name": "Mareth",
+    "stateCode": "TN-GBS"
+  },
+  {
+    "code": "TN-GBS-GHN",
+    "name": "Ghannouch",
+    "stateCode": "TN-GBS"
+  },
+
+  {
+    "code": "TN-KAI-CHB",
+    "name": "Chebika",
+    "stateCode": "TN-KAI"
+  },
+  {
+    "code": "TN-KAI-HAF",
+    "name": "Haffouz",
+    "stateCode": "TN-KAI"
+  },
+  {
+    "code": "TN-KAI-BHJ",
+    "name": "Bouhajla",
+    "stateCode": "TN-KAI"
+  }
+]

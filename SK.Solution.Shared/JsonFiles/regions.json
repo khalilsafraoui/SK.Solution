@@ -1,0 +1,105 @@
+[
+  {
+    "code": "BE-BRU",
+    "name": "Brussels",
+    "countryCode": "BE"
+  },
+  {
+    "code": "BE-FLA",
+    "name": "Flanders",
+    "countryCode": "BE"
+  },
+  {
+    "code": "BE-WAL",
+    "name": "Wallonia",
+    "countryCode": "BE"
+  },
+  {
+    "code": "BE-EFL",
+    "name": "East Flanders",
+    "countryCode": "BE"
+  },
+  {
+    "code": "BE-LIM",
+    "name": "Limburg",
+    "countryCode": "BE"
+  },
+
+  {
+    "code": "CA-ON",
+    "name": "Ontario",
+    "countryCode": "CA"
+  },
+  {
+    "code": "CA-QC",
+    "name": "Quebec",
+    "countryCode": "CA"
+  },
+  {
+    "code": "CA-BC",
+    "name": "British Columbia",
+    "countryCode": "CA"
+  },
+  {
+    "code": "CA-AB",
+    "name": "Alberta",
+    "countryCode": "CA"
+  },
+  {
+    "code": "CA-NS",
+    "name": "Nova Scotia",
+    "countryCode": "CA"
+  },
+
+  {
+    "code": "JP-KAN",
+    "name": "Kanto",
+    "countryCode": "JP"
+  },
+  {
+    "code": "JP-KANSAI",
+    "name": "Kansai",
+    "countryCode": "JP"
+  },
+  {
+    "code": "JP-CHU",
+    "name": "Chubu",
+    "countryCode": "JP"
+  },
+  {
+    "code": "JP-TOH",
+    "name": "Tohoku",
+    "countryCode": "JP"
+  },
+  {
+    "code": "JP-HOK",
+    "name": "Hokkaido",
+    "countryCode": "JP"
+  },
+
+  {
+    "code": "TN-TUN",
+    "name": "Tunis",
+    "countryCode": "TN"
+  },
+  {
+    "code": "TN-SFX",
+    "name": "Sfax",
+    "countryCode": "TN"
+  },
+  {
+    "code": "TN-SSS",
+    "name": "Sousse",
+    "countryCode": "TN"
+  },
+  {
+    "code": "TN-GBS",
+    "name": "Gabès",
+    "countryCode": "TN"
+  },
+  {
+    "code": "TN-KAI",
+    "name": "Kairouan",
+    "countryCode": "TN"
+  }
+]

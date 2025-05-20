@@ -1,39 +1,9 @@
 ﻿using SK.Visit.Application.Dtos;
-using SK.Visit.UI.Blazor.Model;
-
 
 namespace SK.Visit.UI.Blazor.Services
 {
     public class VisitPlanningServices : IVisitPlanningServices
     {
-        private List<KeyValueAddress> Countries = new()
-        {
-             new KeyValueAddress { _key = "TN", _value = "Tunisia" },
-             new KeyValueAddress { _key = "FR", _value = "France" },
-             new KeyValueAddress { _key = "BL", _value = "Belgium" },
-        };
-        private List<KeyValueAddress> States = new()
-        {
-            new KeyValueAddress { _key = "BA", _value = "Bizerte" },
-            new KeyValueAddress { _key = "BB", _value = "Bordj Bou Arreridj" },
-            new KeyValueAddress { _key = "BZ", _value = "Beja" },
-            new KeyValueAddress { _key = "BN", _value = "Ben Arous" },
-            new KeyValueAddress { _key = "BS", _value = "Béjaïa" },
-            new KeyValueAddress { _key = "NA", _value = "Namur" },
-
-        };
-        private List<KeyValueAddress> Cities = new()
-        { 
-            new KeyValueAddress { _key = "1", _value = "Tunis" },
-            new KeyValueAddress { _key = "2", _value = "Sousse" },
-            new KeyValueAddress { _key = "3", _value = "Sfax" },
-            new KeyValueAddress { _key = "4", _value = "Kairouan" },
-            new KeyValueAddress { _key = "5", _value = "Nabeul" },
-            new KeyValueAddress { _key = "6", _value = "Gabès" },
-            new KeyValueAddress { _key = "7", _value = "Monastir" },
-            new KeyValueAddress { _key = "NA", _value = "Namur" },
-        };
-
         public List<DestinationDto> GetDestinationsBySelectedDate(VisitPlanningDto visitPlanning, DateTime selectedDate)
         {
             if (visitPlanning.Destinations.Count == 0)
@@ -105,21 +75,6 @@ namespace SK.Visit.UI.Blazor.Services
             if (dist.TotalVisitPlanned == 1)
                 return false;
             return true;
-        }
-
-        public List<KeyValueAddress> GetCountries()
-        {
-            return Countries;
-        }
-
-        public List<KeyValueAddress> GetStates()
-        {
-            return States;
-        }
-
-        public List<KeyValueAddress> GetCities()
-        {
-            return Cities;
         }
 
         public bool DeleteVisitPlanned(List<VisitPlanningDto> visitPlannings, List<DestinationDto> Destinations, VisitPlanningDto visitPlanning, DestinationDto destination, DateTime selectedDate)

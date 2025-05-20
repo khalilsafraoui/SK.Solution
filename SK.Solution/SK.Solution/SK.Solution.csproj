@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\geo\cities.json" />
+    <Content Remove="wwwroot\geo\countries.json" />
+    <Content Remove="wwwroot\geo\states.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\SK.CRM.Application\SK.CRM.Application.csproj" />
     <ProjectReference Include="..\..\SK.CRM.UI.Blazor\SK.CRM.UI.Blazor.csproj" />
     <ProjectReference Include="..\..\SK.Identity.UI.Blazor\SK.Identity.UI.Blazor.csproj" />
@@ -38,6 +44,12 @@
   <ItemGroup>
     <Folder Include="ViewModels\" />
     <Folder Include="wwwroot\images\product\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\geo\countries.json" />
+    <None Include="wwwroot\geo\states.json" />
+    <None Include="wwwroot\geo\cities.json" />
   </ItemGroup>
 
 </Project>

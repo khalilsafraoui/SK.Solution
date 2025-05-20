@@ -1,0 +1,145 @@
+[
+  {
+    "code": "BE-BRU-IXL",
+    "name": "Ixelles",
+    "regionCode": "BE-BRU"
+  },
+  {
+    "code": "BE-BRU-ETT",
+    "name": "Etterbeek",
+    "regionCode": "BE-BRU"
+  },
+  {
+    "code": "BE-BRU-UCC",
+    "name": "Uccle",
+    "regionCode": "BE-BRU"
+  },
+
+  {
+    "code": "BE-FLA-GHT",
+    "name": "Ghent",
+    "regionCode": "BE-FLA"
+  },
+  {
+    "code": "BE-FLA-ANT",
+    "name": "Antwerp",
+    "regionCode": "BE-FLA"
+  },
+  {
+    "code": "BE-FLA-BRU",
+    "name": "Bruges",
+    "regionCode": "BE-FLA"
+  },
+
+  {
+    "code": "CA-ON-TOR",
+    "name": "Toronto",
+    "regionCode": "CA-ON"
+  },
+  {
+    "code": "CA-ON-OTT",
+    "name": "Ottawa",
+    "regionCode": "CA-ON"
+  },
+  {
+    "code": "CA-ON-MIS",
+    "name": "Mississauga",
+    "regionCode": "CA-ON"
+  },
+
+  {
+    "code": "JP-KAN-TYO",
+    "name": "Tokyo",
+    "regionCode": "JP-KAN"
+  },
+  {
+    "code": "JP-KAN-YOK",
+    "name": "Yokohama",
+    "regionCode": "JP-KAN"
+  },
+  {
+    "code": "JP-KAN-SAI",
+    "name": "Saitama",
+    "regionCode": "JP-KAN"
+  },
+
+  {
+    "code": "TN-TUN-MRS",
+    "name": "La Marsa",
+    "regionCode": "TN-TUN"
+  },
+  {
+    "code": "TN-TUN-BAR",
+    "name": "Le Bardo",
+    "regionCode": "TN-TUN"
+  },
+  {
+    "code": "TN-TUN-CAR",
+    "name": "Carthage",
+    "regionCode": "TN-TUN"
+  },
+
+  {
+    "code": "TN-SFX-SKE",
+    "name": "Sakiet Ezzit",
+    "regionCode": "TN-SFX"
+  },
+  {
+    "code": "TN-SFX-AIN",
+    "name": "El Ain",
+    "regionCode": "TN-SFX"
+  },
+  {
+    "code": "TN-SFX-THY",
+    "name": "Thyna",
+    "regionCode": "TN-SFX"
+  },
+
+  {
+    "code": "TN-SSS-AKD",
+    "name": "Akouda",
+    "regionCode": "TN-SSS"
+  },
+  {
+    "code": "TN-SSS-HMS",
+    "name": "Hammam Sousse",
+    "regionCode": "TN-SSS"
+  },
+  {
+    "code": "TN-SSS-KKB",
+    "name": "Kalaa Kebira",
+    "regionCode": "TN-SSS"
+  },
+
+  {
+    "code": "TN-GBS-HAM",
+    "name": "El Hamma",
+    "regionCode": "TN-GBS"
+  },
+  {
+    "code": "TN-GBS-MAR",
+    "name": "Mareth",
+    "regionCode": "TN-GBS"
+  },
+  {
+    "code": "TN-GBS-GHN",
+    "name": "Ghannouch",
+    "regionCode": "TN-GBS"
+  },
+
+  {
+    "code": "TN-KAI-CHB",
+    "name": "Chebika",
+    "regionCode": "TN-KAI"
+  },
+  {
+    "code": "TN-KAI-HAF",
+    "name": "Haffouz",
+    "regionCode": "TN-KAI"
+  },
+  {
+    "code": "TN-KAI-BHJ",
+    "name": "Bouhajla",
+    "regionCode": "TN-KAI"
+  }
+]

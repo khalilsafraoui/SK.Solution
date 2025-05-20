@@ -1,5 +1,10 @@
-﻿@inject IVisitPlanningServices visitPlanningServices
+﻿@using SK.Solution.Shared.Entities
+@using SK.Solution.Shared.Interfaces.GeoLocalisation
+@inject IVisitPlanningServices visitPlanningServices
 @inject IJSRuntime JS
+@inject ICountryService countryService
+@inject IStateService stateService
+@inject ICityService cityService
 <div class="card shadow rounded p-3  w-100 h-100" style="max-width: 400px; height: 90vh; overflow-y: auto;background: #f5f7ff;" >
     <h5 class="card-title">Items</h5>
 
@@ -23,81 +28,99 @@
     @if (showAdvancedFilter)
     {
         <div style="min-height: 300px; max-height: 1000px; overflow-y: auto;">
-        <div class="card card-body mb-3 border border-primary">
-            <div class="mb-2">
-                <label>Country:</label>
-                <select class="form-select" @bind="selectedCountry">
-                    <option value="">All</option>
-                        @foreach (var country in visitPlanningServices.GetCountries())
-                    {
-                        <option value="@country._key">@country._value</option>
-                    }
-                </select>
-            </div>
+            <div class="card card-body mb-3 border border-primary">
+                <div class="mb-2">
+                    <label>Country:</label>
+                    <select class="form-select" @bind="selectedCountry">
+                        <option value="">All</option>
+                        @foreach (var country in Countries)
+                        {
+                            <option value="@country.Code">@country.Name</option>
+                        }
+                    </select>
+                </div>
 
-            <div class="mb-2">
-                <label>State:</label>
-                <select class="form-select" @bind="selectedState">
-                    <option value="">All</option>
-                        @foreach (var state in visitPlanningServices.GetStates())
-                    {
-                            <option value="@state._key">@state._value</option>
-                    }
-                </select>
-            </div>
+                <div class="mb-2">
+                    <label>State:</label>
+                    <select class="form-select" @bind="selectedState">
+                        <option value="">All</option>
+                        @foreach (var state in FiltredStates)
+                        {
+                            <option value="@state.Code">@state.Name</option>
+                        }
+                    </select>
+                </div>
 
                 <div class="mb-2">
                     <label>City:</label>
                     <select class="form-select" @bind="selectedCity">
                         <option value="">All</option>
-                        @foreach (var city in visitPlanningServices.GetCities())
+                        @foreach (var city in FiltredCities)
                         {
-                            <option value="@city._key">@city._value</option>
+                            <option value="@city.Code">@city.Name</option>
                         }
                     </select>
                 </div>
 
-            <button class="btn btn-primary mt-2" @onclick="ApplyAdvancedFilter">Apply Filters</button>
-        </div>
+                <button class="btn btn-primary mt-2" @onclick="ApplyAdvancedFilter">Apply Filters</button>
+            </div>
         </div>
     }else{
-    <div style="min-height: 300px; max-height: 1000px; overflow-y: auto;">
+        <div style="min-height: 300px; max-height: 1000px; overflow-y: auto;">
             <Dropzone TItem="DestinationDto" Items="@FiltredDestinations.ToList()" AllowsDrag='(d)=>d.IsSelected == false || (d.IsSelected && !d.IsDelevery)' Accepts='(d, t)=>d.Name == "No Drop Accepted"'>
 
-        <div class="card mb-3 shadow-sm border-0">
-            <div class="card-body p-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <strong>@context.Name</strong>
+                <div class="card mb-3 shadow-sm border-0">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>@context.Name</strong>
 
-                    <div class="d-flex align-items-center gap-2">
-                        <!-- Icon Button to Add Mark in Google Maps -->
-                        @if (context.Mark is not null)
-                        {
-                            <button class="btn btn-sm btn-outline-secondary" title="Add mark on Google Maps" @onclick="() => AddMapMark(context)">
-                                <i class="bi bi-geo-alt-fill"></i>
-                            </button>
-                        }
-                        <span class="@GetBadgeClass(context.Priority)">@context.Priority</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Icon Button to Add Mark in Google Maps -->
+                                @if (context.Mark is not null)
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary" title="Add mark on Google Maps" @onclick="() => AddMapMark(context)">
+                                        <i class="bi bi-geo-alt-fill"></i>
+                                    </button>
+                                }
+                                <span class="@GetBadgeClass(context.Priority)">@context.Priority</span>
 
-                        
-                       
+
+
+                            </div>
+                        </div>
+
+                        <div class="text-muted small">@context.Address</div>
+                        <div class="text-muted small">@context.Phone</div>
+                        <div class="text-muted small">
+                            (@(context.IsDelevery ? context.TotalVisitPlanned + " / 1) Delivery" : context.TotalVisitPlanned + ") Visite(s)") Planned
+                        </div>
                     </div>
+
                 </div>
 
-                <div class="text-muted small">@context.Address</div>
-                <div class="text-muted small">@context.Phone</div>
-                <div class="text-muted small">
-                    (@(context.IsDelevery ? context.TotalVisitPlanned + " / 1) Delivery" : context.TotalVisitPlanned + ") Visite(s)") Planned
-                </div>
-            </div>
-
-        </div>
-
-    </Dropzone>
-    </div>}
+            </Dropzone>
+        </div>}
 </div>
 
 @code {
+    private List<CountryDto> Countries = new();
+    private List<StateDto> States = new();
+    private List<CityDto> Cities = new();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Countries = await countryService.GetAllCountriesAsync();
+            States = await stateService.GetAllStatesAsync();
+            Cities = await cityService.GetAllCitiesAsync();
+        }
+    }
+
+    public IEnumerable<StateDto> FiltredStates =>
+    States.Where(filter => filter.CountryCode == selectedCountry).ToList();
+
+    public IEnumerable<CityDto> FiltredCities =>
+    Cities.Where(filter => filter.StateCode == selectedState).ToList();
 
     public enum FilterType
     {

@@ -13,6 +13,8 @@ using SK.Inventory.Application.MappingProfiles;
 using SK.CRM.Application.MappingProfiles;
 using SK.Visit.Application.MappingProfiles;
 using Serilog;
+using SK.Solution.Shared.Interfaces.GeoLocalisation;
+using SK.Solution.Utility.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Module
@@ -22,6 +24,10 @@ builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register
 builder.Services.AddIdentityModuleServices(builder.Configuration);  // Register services from the Identity module
 builder.Services.AddNoteModuleServices(builder.Configuration);  // Register services from the Note module
 builder.Services.AddVisitModuleServices(builder.Configuration);  // Register services from the Visit module
+builder.Services.AddSingleton<JsonFileService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<IStateService, StateService>();
+builder.Services.AddScoped<ICityService, CityService>();
 #endregion
 // Add services to the container.
 builder.Services.AddRazorComponents()
