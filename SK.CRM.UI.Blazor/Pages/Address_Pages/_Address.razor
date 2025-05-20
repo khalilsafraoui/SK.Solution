@@ -1,4 +1,9 @@
-﻿@rendermode InteractiveServer
+﻿@using SK.Solution.Shared.Entities
+@using SK.Solution.Shared.Interfaces.GeoLocalisation
+@rendermode InteractiveServer
+@inject ICountryService countryService
+@inject IStateService stateService
+@inject ICityService cityService
 <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">Addresses</RadzenText>
 <div class="border p-3 mt-4">
     <!-- Button to Add Another Address -->
@@ -39,7 +44,7 @@
                                     <option value="">Select a country</option>
                                     @foreach (var country in Countries)
                                     {
-                                        <option value="@country.Key">@country.Value</option>
+                                        <option value="@country.Code">@country.Name</option>
                                     }
                                 </InputSelect>
                                 <label for="Country">Country</label>
@@ -49,9 +54,9 @@
                             <div class="form-floating py-3 col-md-4">
                                 <InputSelect @bind-Value="address.StateId" class="form-select" id="State">
                                     <option value="">Select a state</option>
-                                    @foreach (var state in States)
+                                    @foreach (var state in States.Where(filter => filter.CountryCode == address.CountryId).ToList())
                                     {
-                                        <option value="@state.Key">@state.Value</option>
+                                        <option value="@state.Code">@state.Name</option>
                                     }
                                 </InputSelect>
                                 <label for="State">State</label>
@@ -61,9 +66,9 @@
                             <div class="form-floating py-3 col-md-4">
                                 <InputSelect @bind-Value="address.CityId" class="form-select" id="City">
                                     <option value="">Select a city</option>
-                                    @foreach (var city in Cities)
+                                    @foreach (var city in Cities.Where(filter => filter.StateCode == address.StateId).ToList())
                                     {
-                                        <option value="@city.Key">@city.Value</option>
+                                        <option value="@city.Code">@city.Name</option>
                                     }
                                 </InputSelect>
                                 <label for="City">City</label>
@@ -135,9 +140,9 @@
             {
                 <div>
                     <strong>@address.Street</strong><br />
-                    @(address.CityId is not null ? Cities.GetValueOrDefault(address.CityId): "" ),
-                    @(address.StateId is not null ? States.GetValueOrDefault(address.StateId) : ""),
-                    @(address.CountryId is not null ? Countries.GetValueOrDefault(address.CountryId) : ""),
+                    @(address.CityId is not null ? Cities?.Where(x => x.Code == address.CityId).Select(y => y.Name)?.FirstOrDefault() : ""),
+                    @(address.StateId is not null ? States?.Where(x => x.Code == address.StateId).Select(y => y.Name)?.FirstOrDefault() : ""),
+                    @(address.CountryId is not null ? Countries?.Where(x => x.Code == address.CountryId).Select(y => y.Name)?.FirstOrDefault() : ""),
                     @address.ZipCode
                 </div>
             }
@@ -158,20 +163,21 @@
         [Parameter]
         public EventCallback<Guid> OnAddressDeleted { get; set; }
 
-        Dictionary<string, string> Countries = new Dictionary<string, string>
+    private List<CountryDto> Countries = new();
+    private List<StateDto> States = new();
+    private List<CityDto> Cities = new();
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-            { "BL", "Belgium" },
-    };
+        if (firstRender)
+        {
+            Countries = await countryService.GetAllCountriesAsync();
+            States = await stateService.GetAllStatesAsync();
+            Cities = await cityService.GetAllCitiesAsync();
+        }
+    }
 
-        Dictionary<string, string> States = new Dictionary<string, string>
-    {
-            { "NA", "Namur" },
-    };
-
-        Dictionary<string, string> Cities = new Dictionary<string, string>
-    {
-            { "NA", "Namur" },
-    };
+    
     private void AddNewAddress()
     {
         var address = new AddressDto();
@@ -259,13 +265,13 @@
             addressParts.Add(addressDto.Street);
 
         if (!string.IsNullOrEmpty(addressDto.CityId))
-            addressParts.Add(Cities.GetValueOrDefault(addressDto.CityId));
+            addressParts.Add(Cities.Where(x => x.Code == addressDto.CityId).Select(y => y.Name).First());
 
         if (!string.IsNullOrEmpty(addressDto.StateId))
-            addressParts.Add(States.GetValueOrDefault(addressDto.StateId));
+            addressParts.Add(States.Where(x => x.Code == addressDto.StateId).Select(y => y.Name).First());
 
         if (!string.IsNullOrEmpty(addressDto.CountryId))
-            addressParts.Add(Countries.GetValueOrDefault(addressDto.CountryId));
+            addressParts.Add(Countries.Where(x => x.Code == addressDto.CountryId).Select(y => y.Name).First());
 
 
         if (!string.IsNullOrWhiteSpace(addressDto.ZipCode))
