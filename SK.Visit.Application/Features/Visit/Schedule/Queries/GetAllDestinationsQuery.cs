@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Options;
 using SK.Solution.Shared.Model.Crm;
 using SK.Visit.Application.Dtos;
 using SK.Visit.Application.Interfaces;
+using SK.Visit.Application.Settings;
 using SK.Visit.Domain.Entities;
+using System.Runtime;
 
 namespace SK.Visit.Application.Features.Visit.Schedule.Queries
 {
@@ -13,17 +16,20 @@ namespace SK.Visit.Application.Features.Visit.Schedule.Queries
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly VisitSettings _settings;
 
-        public GetAllDestinationsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        public GetAllDestinationsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<VisitSettings> options)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _settings = options.Value;
         }
 
         public async Task<List<DestinationDto>> Handle(GetAllDestinationsQuery request, CancellationToken cancellationToken)
         {
-            var savedDestinations = await _unitOfWork.DestinationsRepository.GetDestinationsStartingFromTomorrowAsync();
-            if(!savedDestinations.Any())
+            var tomorrow = DateTime.Now.AddDays(_settings.NumberOfDaysToAddInScheduleGetAndSave);
+            var savedDestinations = await _unitOfWork.DestinationsRepository.GetDestinationsStartingFromSpecificDateAsync(tomorrow);
+            if (!savedDestinations.Any())
             {
                 savedDestinations = new List<Destination>();
             }

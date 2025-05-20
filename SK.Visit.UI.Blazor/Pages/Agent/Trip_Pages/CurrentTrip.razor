@@ -1,0 +1,127 @@
+﻿@page "/currenttrip"
+@using System.Globalization
+@using Microsoft.AspNetCore.Components.Web
+@using SK.Visit.Application.Enum
+@using SK.Visit.Application.Features.Visit.AgentTrip.Queries
+@using SK.Visit.Application.Interfaces.Common
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject ICurrentUserService CurrentUserService
+@attribute [Authorize(Roles = "Admin,Manager")]
+<PageTitle>Today's Trip</PageTitle>
+
+<div class="container my-5">
+    @if(Trips.Any())
+    {
+        <div class="shadow-lg rounded-4 p-4 mb-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="mb-0">Today's Trip</h2>
+                    <small class="text-muted">@DateTime.Today.ToString("D", CultureInfo.InvariantCulture)</small>
+                </div>
+                @if (Trips.Count(x => x.Status == TripStatusDto.Completed || x.Status == TripStatusDto.SkippedPermanently) != Trips.Count)
+                {
+                    <button class="btn @(isTripStarted ? "btn-warning" : "btn-success") px-4 py-2 rounded-pill"
+                    @onclick="() => OnStart()">
+                        @(isTripStarted ? "Pause Trip" : !InProgress ? "Start Trip" : "Resume Trip")
+                    </button>
+                }
+
+
+            </div>
+            <div class="text-center">
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar"
+                    role="progressbar"
+                    style="width: @($"{Progress}%");"
+                    aria-valuenow="@Progress"
+                    aria-valuemin="0"
+                    aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="mt-1 fw-semibold">
+                    @CompletedTrips / @TotalTrips Completed
+                </div>
+            </div>
+
+        </div>
+
+        <div class="shadow-lg rounded-4 p-4 mb-4 bg-light border">
+            @if (Trips.Count(x => x.Status == TripStatusDto.Completed || x.Status == TripStatusDto.SkippedPermanently) != Trips.Count)
+            {
+                <p class="text-primary fw-semibold mb-0">🔵 @(isTripStarted ? "Click (Pause Trip) above to Pause your trip for today." : !InProgress ? "Click (Start Trip) above to begin your trip for today." : "Click (Resume Trip) above to resume your trip for today.")</p>
+            }
+            else
+            {
+                <p class="text-primary fw-semibold mb-0">🔵 All of today's trips have been completed. Great job!</p>
+            }
+        </div>
+        <CascadingValue Value="Trips">
+            @if (isTripStarted)
+            {
+                <TripStep OnTripChanged="HandleTripChanged" OnTripsCompleted="HandleTripsCompleted"></TripStep>
+            }
+            else
+            {
+                <DisplayDestinations></DisplayDestinations>
+            }
+
+        </CascadingValue>
+    }
+    else
+    {
+        <div class="shadow-lg rounded-4 p-4 mb-4 bg-light border">
+            <p class="text-primary fw-semibold mb-0">🔵 There are no trips scheduled for today. Please check back later or tomorrow.</p>
+        </div>
+    }
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadTrips();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadTrips()
+    {
+        var agentId = await CurrentUserService.GetUserIdAsync();
+        DateTime today = DateTime.Today;
+        var query = new GetAgentToDayTripQuery(agentId.ToString(), today);
+        Trips = await Mediator.Send(query);
+    }
+
+
+    public List<TripDto> Trips = new()
+    {
+        
+    };
+    private bool isTripStarted = false;
+    private void OnStart()
+    {
+        isTripStarted = !isTripStarted;
+    }
+
+    private int CompletedTrips => Trips.Count(x => x.Status == TripStatusDto.Completed || x.Status == TripStatusDto.SkippedPermanently);
+    private int TotalTrips => Trips.Count;
+    private int Progress => TotalTrips > 0 ? (CompletedTrips * 100 / TotalTrips) : 0;
+
+    private bool InProgress => Trips.Any(x => x.Status == TripStatusDto.Ongoing || x.Status == TripStatusDto.Completed || x.Status == TripStatusDto.SkippedPermanently || x.Status == TripStatusDto.SkippedTemporary) && Trips.Count(x => x.Status == TripStatusDto.Completed || x.Status == TripStatusDto.SkippedPermanently) != Trips.Count;
+
+    private void HandleTripChanged()
+    {
+        StateHasChanged();
+    }
+
+    private void HandleTripsCompleted()
+    {
+        isTripStarted = false;
+        StateHasChanged();
+    }
+
+    
+}
+

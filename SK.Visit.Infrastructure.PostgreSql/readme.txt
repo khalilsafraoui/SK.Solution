@@ -1,2 +1,2 @@
-﻿add-migration changeDateType -context SK.Visit.Infrastructure.PostgreSql.Persistence.VisitDbContext -project SK.Visit.Infrastructure.PostgreSql
+﻿add-migration AddFieldsRelatedToTripInDestinationEntity -context SK.Visit.Infrastructure.PostgreSql.Persistence.VisitDbContext -project SK.Visit.Infrastructure.PostgreSql
 update-database -context SK.Visit.Infrastructure.PostgreSql.Persistence.VisitDbContext -project SK.Visit.Infrastructure.PostgreSql

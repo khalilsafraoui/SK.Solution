@@ -1,0 +1,104 @@
+﻿@using SK.Visit.Application.Enum
+@using static SK.Visit.UI.Blazor.Pages.Agent.Trip_Pages.CurrentTrip
+<h5 class="fw-bold mb-3">Today's Destinations</h5>
+
+@for (int i = 0; i < Trips.Count; i++)
+{
+    var trip = Trips[i];
+    <div class="card shadow-lg rounded-4 mb-4 border-0">
+        <div class="card-body p-4 bg-white">
+            <h6 class="fw-bold mb-2">@($"{i + 1}. {trip.CompanyName}")</h6>
+
+
+
+            <div class="bg-light p-3 rounded">
+                <p class="mb-1"><i class="bi bi-geo-alt-fill me-2"></i>@trip.Address</p>
+
+                <p class="mb-1">
+                    <i class="bi bi-person-fill me-1"></i>@trip.Name<br />
+                    <i class="bi bi-telephone-fill me-1"></i>@trip.Phone
+                </p>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p class="mb-1"><strong>Status:</strong> <span class="fw-semibold">@DisplayStatus(trip.Status)</span></p>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-12">
+                    @if (!string.IsNullOrWhiteSpace(trip.SkipReason))
+                    {
+                        <p class="mb-2 text-muted">
+                            <strong>Skip Reason:</strong> @GetSelectedReasonLabel(trip.SkipReason)
+                        </p>
+                    }
+                </div>
+
+            </div>
+
+            @if (trip.Status == TripStatusDto.Ongoing || trip.Status == TripStatusDto.Completed)
+            {
+                <div class="row">
+                    <div class="col-3">
+                        <p class="mb-1"><strong>Arrival: </strong>@trip.ArrivalTime</p>
+                    </div>
+                    @if (trip.Status == TripStatusDto.Completed)
+                    {
+                        <div class="col-3">
+                            <p class="mb-1"><strong>Finish: </strong>@trip.FinishTime</p>
+                    </div>
+                    }
+                </div>
+                }
+                
+           
+            <div class="bg-light p-3 rounded">
+            @if (!string.IsNullOrWhiteSpace(trip.Note))
+            {
+                <p class="text-muted mt-3 mb-1"><strong>Note:</strong></p>
+                <p class="mb-2">@trip.Note</p>
+            }
+
+            @if (trip.PreviousNotes.Any())
+            {
+                <p class="text-muted mb-1"><strong>Previous Notes:</strong></p>
+                @foreach (string note in trip.PreviousNotes)
+                {
+                    <p class="mb-0">@note</p>
+                }
+            }
+            </div>
+        </div>
+    </div>
+
+}
+
+@code {
+
+    [CascadingParameter]
+    public List<TripDto> Trips { get; set; } = new();
+
+    private string DisplayStatus(TripStatusDto status) => status switch
+    {
+        TripStatusDto.Completed => "✅ Completed",
+        TripStatusDto.SkippedTemporary => "⏳ Skipped (for now)",
+        TripStatusDto.SkippedPermanently => "🚫 Skipped permanently",
+        TripStatusDto.Ongoing => "🚗 Ongoing",
+        _ => "🕓 Pending"
+    };
+
+    private List<SkipReasonDto> SkipReasons = new()
+    {
+        new SkipReasonDto { Label = "Customer not available", Value = "CustomerUnavailable" },
+        new SkipReasonDto { Label = "Traffic or delay", Value = "TrafficDelay" },
+        new SkipReasonDto { Label = "Rescheduled", Value = "Rescheduled" },
+        new SkipReasonDto { Label = "Other", Value = "Other" }
+    };
+
+    private string GetSelectedReasonLabel(string skipReason)
+    {
+        var selected = SkipReasons.FirstOrDefault(r => r.Value == skipReason);
+        return selected != null ? selected.Label : "None selected";
+    }
+}

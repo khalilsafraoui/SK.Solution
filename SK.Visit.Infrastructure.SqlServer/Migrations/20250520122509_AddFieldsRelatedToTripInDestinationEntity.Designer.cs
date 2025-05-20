@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SK.Visit.Infrastructure.SqlServer.Persistence;
 
@@ -11,9 +12,11 @@ using SK.Visit.Infrastructure.SqlServer.Persistence;
 namespace SK.Visit.Infrastructure.SqlServer.Migrations
 {
     [DbContext(typeof(VisitDbContext))]
-    partial class VisitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250520122509_AddFieldsRelatedToTripInDestinationEntity")]
+    partial class AddFieldsRelatedToTripInDestinationEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

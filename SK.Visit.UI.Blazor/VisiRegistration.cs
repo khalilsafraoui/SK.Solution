@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Plk.Blazor.DragDrop;
 using SK.Visit.Application.Interfaces.Common;
+using SK.Visit.Application.Settings;
 using SK.Visit.Infrastructure.PostgreSql;
 using SK.Visit.Infrastructure.SqlServer;
 using SK.Visit.UI.Blazor.Common;
@@ -25,6 +26,8 @@ namespace SK.Visit.UI.Blazor
             services.AddBlazorDragDrop();
             services.AddScoped<IVisitPlanningServices, VisitPlanningServices>();
             services.AddSingleton<DestinationNotifier>();
+            services.Configure<VisitSettings>(configuration.GetSection("VisitSettings"));
+
 
         }
     }

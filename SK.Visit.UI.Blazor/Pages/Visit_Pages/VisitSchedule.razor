@@ -1,4 +1,6 @@
 ﻿@page "/visit-schedule"
+@using Microsoft.Extensions.Options
+@using SK.Visit.Application.Settings
 
 @rendermode InteractiveServer
 
@@ -7,6 +9,7 @@
 @inject IJSRuntime _IJSRuntime
 @inject IMediator Mediator
 @inject ILogger<VisitSchedule> Logger
+@inject IOptions<VisitSettings> VisitOptions
 <div class="p-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold mb-0">Weekly Visit Schedule</h5>
@@ -57,13 +60,17 @@
                 </div>
                 <div class="border border-2 border-dashed rounded-3 text-center text-muted p-4" style="min-height: 100px;">
 
-                    <Dropzone TItem="DestinationDto" Items="@visitPlanningServices.GetDestinationsBySelectedDate(visitPlanning,SelectedDate)" OnItemDrop="@(item => OnItemDrop(item,visitPlanning))" Accepts='(d, t)=>SelectedDate >= DateTime.Today' CopyItem="(item)=> { return CopyDestination(item); }">
+                    <Dropzone TItem="DestinationDto" Items="@visitPlanningServices.GetDestinationsBySelectedDate(visitPlanning,SelectedDate)" OnItemDrop="@(item => OnItemDrop(item,visitPlanning))" Accepts='(d, t)=>SelectedDate >= StartDate' CopyItem="(item)=> { return CopyDestination(item); }">
                         @if(context.IsFake)
                         {
                             <div class="card mb-3 shadow-sm border-0">
-                                @if (SelectedDate >= DateTime.Today)
+                                @if (SelectedDate >= StartDate)
                                 {
                                     <p> Drag Items here to schedule visits</p>
+                                }
+                                else if (SelectedDate == StartDate.AddDays(-1))
+                                {
+                                    <p>You cannot schedule visits Today.</p>
                                 }
                                 else
                                 {
@@ -117,10 +124,13 @@
     {
         if (firstRender)
         {
+            var daysToAdd = VisitOptions.Value.NumberOfDaysToAddInScheduleGetAndSave;
+            StartDate = DateTime.Today.AddDays(daysToAdd).Date;
             StateHasChanged();
         }
     }
-
+    
+    private DateTime StartDate = DateTime.Today;
     private DateTime StartOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
 
     private string WeekRange => $"{StartOfWeek:MMM dd} - {StartOfWeek.AddDays(6):MMM dd}";

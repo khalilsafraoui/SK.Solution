@@ -1,0 +1,304 @@
+﻿@using SK.Visit.Application.Enum
+@using SK.Visit.Application.Features.Visit.AgentTrip.Commands
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<TripStep> Logger
+@if (SelectedTrip.Status == TripStatusDto.Pending || SelectedTrip.Status == TripStatusDto.Ongoing || SelectedTrip.Status == TripStatusDto.SkippedTemporary && !OpenNote)
+{
+    <div class="card shadow-sm mb-4 rounded-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title">
+                    <span class="badge bg-primary rounded-circle me-2">@currentTripIndex</span>
+                    Current Destination @DisplayStatus(SelectedTrip.Status)
+                </h5>
+                <small class="text-muted">@currentTripIndex of @Trips.Count</small>
+            </div>
+
+            <div class="mt-3">
+                <div class="bg-light p-3 rounded">
+                    <h6 class="fw-bold">@SelectedTrip.CompanyName</h6>
+                    <p class="mb-1">
+                        <i class="bi bi-geo-alt-fill me-2"></i>@SelectedTrip.Address
+                    </p>
+                    <p class="mb-1">
+                        <i class="bi bi-person-fill me-2"></i>@SelectedTrip.Name
+                    </p>
+                    <p class="mb-1">
+                        <i class="bi bi-telephone-fill me-2"></i>@SelectedTrip.Phone
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h6>
+                    <i class="bi bi-lock-fill me-2"></i>Previous Visit Notes
+                </h6>
+                <div class="bg-light p-3 rounded">
+                    @foreach (var note in SelectedTrip.PreviousNotes)
+                    {
+                        <div class="mb-2">
+                            <strong>2023-05-15:</strong>
+                            <p>@note</p>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                @if (SelectedTrip.Status != TripStatusDto.Ongoing)
+                {
+                    <button class="btn btn-primary" @onclick="MarkArrival">
+                        <i class="bi bi-check-circle me-2"></i>Mark Arrival
+                    </button>
+
+                    @if (SelectedTrip.Status != TripStatusDto.SkippedTemporary && currentTripIndex != Trips.Count)
+                    {
+                        <div class="row">
+                            <div class="col-6">
+                                <button class="btn btn-warning text-white w-100" @onclick="MarkSkipped">
+                                    <i class="bi bi-chevron-double-right me-2"></i>Skip Temporary
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-warning text-white w-100" @onclick="MarkSkippedCompletly">
+                                    <i class="bi bi-chevron-double-right me-2"></i>Skip Permanently
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <button class="btn btn-warning" @onclick="MarkSkippedCompletly">
+                            <i class="bi bi-chevron-double-right me-2"></i>Skip Permanently
+                        </button>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-success d-flex align-items-center justify-content-center" role="alert">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Arrived at @SelectedTrip.ArrivalTime)
+                    </div>
+                    <button class="btn btn-primary text-white" @onclick="MarkCompleted">
+                        <i class="bi bi-chevron-double-right me-2"></i>Complete visit & continue
+                    </button>
+                }
+
+            </div>
+        </div>
+    </div>
+}
+else if (SelectedTrip.Status == TripStatusDto.Completed)
+{
+    <div class="card shadow-sm mb-4 rounded-4">
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="note" class="form-label">
+                    Note <small class="text-muted">(optional)</small>
+                </label>
+                <RadzenTextArea @bind-Value="@Note"
+                Name="note"
+                Style="width: 100%; min-height: 100px;"
+                Placeholder="Write your note here..."
+                MaxLength="1000"
+                Class="form-control" />
+            </div>
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btn-primary text-white" @onclick="NextTrip">
+                    <i class="bi bi-chevron-double-right me-2"></i>Save & Next trip
+                </button>
+            </div>
+        </div>
+    </div>
+}
+else if (SelectedTrip.Status == TripStatusDto.SkippedPermanently | SelectedTrip.Status == TripStatusDto.SkippedTemporary)
+{
+    <div class="card shadow-sm mb-4 rounded-4">
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Reason for skipping the visit <span class="text-danger">*</span></label>
+                <RadzenDropDown @bind-Value="@SelectedReason"
+                Data="@SkipReasons"
+                TextProperty="Label"
+                ValueProperty="Value"
+                Style="width: 100%;"
+                Placeholder="Select a reason..."
+                Class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Additional note <small class="text-muted">(optional)</small>
+                </label>
+                <RadzenTextArea @bind-Value="@Note"
+                Style="width: 100%; min-height: 100px;"
+                Placeholder="You can provide more context here..."
+                MaxLength="1000"
+                Class="form-control" />
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btn-primary text-white" @onclick="NextTrip">
+                    <i class="bi bi-chevron-double-right me-2"></i>Save & Next trip
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [CascadingParameter]
+    public List<TripDto> Trips { get; set; } = new();
+    private int currentTripIndex = 0;
+    private TripDto SelectedTrip { get; set; } = new();
+    private string? Note;
+    private string? SelectedReason = string.Empty;
+    [Parameter] public EventCallback OnTripChanged { get; set; }
+    [Parameter] public EventCallback OnTripsCompleted { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Trips.Any(x => x.Status == TripStatusDto.Ongoing))
+            {
+                SelectedTrip = Trips.First(x => x.Status == TripStatusDto.Ongoing);
+                currentTripIndex = Trips.IndexOf(SelectedTrip) + 1;
+            }
+            else if (Trips.Any(x => x.Status == TripStatusDto.Pending))
+            {
+                SelectedTrip = Trips.First(x => x.Status == TripStatusDto.Pending);
+                currentTripIndex = Trips.IndexOf(SelectedTrip) + 1;
+            }
+            else if (Trips.Any(x => x.Status == TripStatusDto.SkippedTemporary))
+            {
+                SelectedTrip = Trips.First(x => x.Status == TripStatusDto.SkippedTemporary);
+                currentTripIndex = Trips.IndexOf(SelectedTrip) + 1;
+            }
+            Note = SelectedTrip.Note;
+            SelectedReason = SelectedTrip.SkipReason;
+            StateHasChanged();
+        }
+    }
+
+    private async void MarkArrival()
+    {
+        SelectedTrip.Status = TripStatusDto.Ongoing;
+        SelectedTrip.ArrivalTime = DateTime.Now.ToString("HH:mm");
+        if (!SelectedTrip.IsFake)
+        {
+            var command = new UpdateArrivalTimeCommand(SelectedTrip);
+            await Mediator.Send(command);
+        }
+
+    }
+
+
+
+    private void MarkCompleted()
+    {
+        SelectedTrip.Status = TripStatusDto.Completed;
+    }
+
+    private bool OpenNote { get; set; } = false;
+
+    private void MarkSkipped()
+    {
+        OpenNote = true;
+        SelectedTrip.Status = TripStatusDto.SkippedTemporary;
+    }
+    private void MarkSkippedCompletly()
+    {
+        SelectedTrip.Status = TripStatusDto.SkippedPermanently;
+    }
+
+    private async void NextTrip()
+    {
+        try
+        {
+            if (SelectedTrip.Status == TripStatusDto.Completed)
+            {
+                SelectedTrip.FinishTime = DateTime.Now.ToString("HH:mm");
+                SelectedTrip.Note = Note;
+                if (!SelectedTrip.IsFake)
+                {
+                    var command = new UpdateTripCompletedCommand(SelectedTrip);
+                    await Mediator.Send(command);
+                }
+                OnTripChanged.InvokeAsync();
+            }
+            else if (SelectedTrip.Status == TripStatusDto.SkippedTemporary)
+            {
+                SelectedTrip.Note = Note;
+                SelectedTrip.SkipReason = SelectedReason;
+                if (!SelectedTrip.IsFake)
+                {
+                    var command = new UpdateSkippedTemporaryCommand(SelectedTrip);
+                    await Mediator.Send(command);
+                }
+                OpenNote = false;
+            }
+            else if (SelectedTrip.Status == TripStatusDto.SkippedPermanently)
+            {
+                SelectedTrip.Note = Note;
+                SelectedTrip.SkipReason = SelectedReason;
+                if (!SelectedTrip.IsFake)
+                {
+                    var command = new UpdateSkippedPermanentlyCommand(SelectedTrip);
+                    await Mediator.Send(command);
+                }
+                OnTripChanged.InvokeAsync();
+            }
+
+            if (Trips.Any(x => x.Status == TripStatusDto.Pending))
+            {
+                SelectedTrip = Trips.FirstOrDefault(x => x.Status == TripStatusDto.Pending);
+                currentTripIndex = Trips.IndexOf(SelectedTrip) + 1;
+            }
+            else if (Trips.Any(x => x.Status == TripStatusDto.SkippedTemporary))
+            {
+                SelectedTrip = Trips.FirstOrDefault(x => x.Status == TripStatusDto.SkippedTemporary);
+                currentTripIndex = Trips.IndexOf(SelectedTrip) + 1;
+            }
+            else
+            {
+                OnTripsCompleted.InvokeAsync();
+            }
+            StateHasChanged();
+            Note = SelectedTrip.Note;
+            SelectedReason = SelectedTrip.SkipReason;
+           
+        }
+        catch (ValidationException ex)
+        {
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while saving trip status.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred while saving the trip status. Please try again.");
+        }
+    }
+
+    private string DisplayStatus(TripStatusDto status) => status switch
+    {
+        TripStatusDto.Completed => "✅ Completed",
+        TripStatusDto.SkippedTemporary => "⏳ Was Skipped",
+        TripStatusDto.SkippedPermanently => "🚫 Skipped permanently",
+        TripStatusDto.Ongoing => "🚗 Ongoing",
+        _ => "🕓 Pending"
+    };
+
+    private List<SkipReasonDto> SkipReasons = new()
+    {
+        new SkipReasonDto { Label = "Customer not available", Value = "CustomerUnavailable" },
+        new SkipReasonDto { Label = "Traffic or delay", Value = "TrafficDelay" },
+        new SkipReasonDto { Label = "Rescheduled", Value = "Rescheduled" },
+        new SkipReasonDto { Label = "Other", Value = "Other" }
+    };
+}

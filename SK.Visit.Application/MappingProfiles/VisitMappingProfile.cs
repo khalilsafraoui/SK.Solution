@@ -9,6 +9,7 @@ namespace SK.Visit.Application.MappingProfiles
         public VisitMappingProfile()
         {
             CreateMap<Destination, DestinationDto>().ReverseMap(); // Map between Destination and DestinationDto
+            CreateMap<Destination, TripDto>().ReverseMap(); // Map between Destination and TripDto
 
         }
     }

@@ -50,6 +50,9 @@ namespace SK.Visit.Infrastructure.PostgreSql.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("text");
+
                     b.Property<string>("CountryId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -87,6 +90,9 @@ namespace SK.Visit.Infrastructure.PostgreSql.Migrations
                         .HasColumnType("character varying(255)")
                         .HasAnnotation("ErrorMessage", "Name is missing..");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
                     b.Property<string>("OrderId")
                         .HasColumnType("text");
 
@@ -94,9 +100,15 @@ namespace SK.Visit.Infrastructure.PostgreSql.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SkipReason")
+                        .HasColumnType("text");
+
                     b.Property<string>("StateId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

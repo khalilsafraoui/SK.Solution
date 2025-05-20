@@ -7,6 +7,16 @@ namespace SK.Visit.Application.Interfaces
     {
         Task<List<Destination>> SaveDestinationsAsync(List<Destination> newDestinations);
 
-        Task<List<Destination>> GetDestinationsStartingFromTomorrowAsync();
+        Task<List<Destination>> GetDestinationsStartingFromSpecificDateAsync(DateTime date);
+
+        Task<List<Destination>> GetDestinationsByAgentAndDayAsync(string AgentId, DateTime date);
+
+        Task<Destination> UpdateArrivalTime(Destination destination);
+
+        Task<Destination> UpdateTripCompleted(Destination destination);
+
+        Task<Destination> UpdateTripSkippedTemporary(Destination destination);
+
+        Task<Destination> UpdateTripSkippedPermanently(Destination destination);
     }
 }

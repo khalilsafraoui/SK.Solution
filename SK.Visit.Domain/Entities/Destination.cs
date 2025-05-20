@@ -1,4 +1,7 @@
-﻿namespace SK.Visit.Domain.Entities
+﻿using SK.Visit.Domain.Enum;
+using System.Net.NetworkInformation;
+
+namespace SK.Visit.Domain.Entities
 {
     public class Destination : BaseEntity
     {
@@ -10,6 +13,8 @@
         public string AddressId { get; set; }
 
         public bool IsDelevery { get; set; } = false;
+
+        public string? CompanyName { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
@@ -21,5 +26,12 @@
         public string StateId { get; set; }
 
         public string CountryId { get; set; }
+
+        public string? ArrivalTime;
+        public string? FinishTime;
+        public string? Note { get; set; } = string.Empty;
+        public string? SkipReason { get; set; } = string.Empty;
+
+        public TripStatus Status { get; set; } = TripStatus.Pending;
     }
 }
