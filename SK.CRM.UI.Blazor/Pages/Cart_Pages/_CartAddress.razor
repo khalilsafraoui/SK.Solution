@@ -1,0 +1,210 @@
+﻿@using Microsoft.Extensions.Logging
+@using SK.Solution.Shared.Entities
+@using SK.Solution.Shared.Interfaces.GeoLocalisation
+@using System.ComponentModel.DataAnnotations
+@inject ICountryService countryService
+@inject IStateService stateService
+@inject ICityService cityService
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<_CartAddress> Logger
+
+<div class="card-body">
+
+    @if (addresses != null && addresses.Any())
+    {
+        <div class="form-floating py-3 col-12">
+            <RadzenDropDown Data="@addresses"
+            TextProperty="FullAddress"
+            ValueProperty="Id"
+            @bind-Value="AddressId"
+            Class="form-control"
+            Placeholder="Select Address"
+            Change="OnAddressChanged" />
+            <label>Select Address</label>
+        </div>
+
+       
+
+        @if (showCreateAddress)
+        {
+            @* Create Address Form *@
+            @CreateAddressForm()
+        }
+    }
+    else
+    {
+        @* If no addresses, show create form *@
+        @CreateAddressForm()
+    }
+
+</div>
+
+
+
+
+@code {
+    RenderFragment CreateAddressForm() => __builder =>
+    {
+        <div class="border rounded p-3 mt-3 bg-light">
+            <h5 class="text-primary mb-3">Create New Address</h5>
+            <EditForm Model="newAddress" OnValidSubmit="()=>SaveNewAddress(newAddress)">
+                <DataAnnotationsValidator />
+                <div class="row g-3">
+                    <div class="form-floating py-3 col-md-4">
+                        <InputSelect @bind-Value="newAddress.CountryId" class="form-select" id="Country">
+                            
+                            @foreach (var country in countries)
+                            {
+                                <option value="@country.Code">@country.Name</option>
+                            }
+                        </InputSelect>
+                        <label for="Country">Country</label>
+                        <ValidationMessage For="@(() => newAddress.CountryId)" />
+                    </div>
+
+                    <div class="form-floating py-3 col-md-4">
+                        <InputSelect @bind-Value="newAddress.StateId" class="form-select" id="State">
+                            
+                            @foreach (var state in states.Where(filter => filter.CountryCode == newAddress.CountryId).ToList())
+                            {
+                                <option value="@state.Code">@state.Name</option>
+                            }
+                        </InputSelect>
+                        <label for="State">State</label>
+                        <ValidationMessage For="@(() => newAddress.StateId)" />
+                    </div>
+
+                    <div class="form-floating py-3 col-md-4">
+                        <InputSelect @bind-Value="newAddress.CityId" class="form-select" id="City">
+                           
+                            @foreach (var city in cities.Where(filter => filter.StateCode == newAddress.StateId).ToList())
+                            {
+                                <option value="@city.Code">@city.Name</option>
+                            }
+                        </InputSelect>
+                        <label for="City">City</label>
+                        <ValidationMessage For="@(() => newAddress.CityId)" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <RadzenTextBox @bind-Value="newAddress.Street" Placeholder="Street" />
+                    </div>
+                    <div class="col-md-6">
+                        <RadzenTextBox @bind-Value="newAddress.ZipCode" Placeholder="ZIP Code" />
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end">
+                        <RadzenButton Text="Save Address" ButtonType="ButtonType.Submit" Style="margin-top: 10px;" />
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+        ;
+    };
+    [Parameter] public Guid AddressId { get; set; }
+    [Parameter] public EventCallback<Guid> AddressIdChanged { get; set; }
+    private List<AddressDto> addresses = new ();
+    private List<CountryDto> countries = new();
+    private List<StateDto> states = new();
+    private List<CityDto> cities = new();
+    [Parameter]
+    public string? CustomerId { get; set; }
+    //private Order order = new();
+    public OrderDto order { get; set; } = new OrderDto();
+    private AddressDto newAddress = new();
+    private bool showCreateAddress = false;
+    private Guid guidForCreate = Guid.NewGuid();
+    private async Task LoadAddresses()
+    {
+        if (!string.IsNullOrWhiteSpace(CustomerId))
+        {
+            var query = new GetCustomerAddressesQuery(Guid.Parse(CustomerId));
+            addresses = await Mediator.Send(query);
+            addresses.Add(new AddressDto() { Id = guidForCreate, FullAddress = "Create new Address" });
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAddresses(); // Load from DB
+
+        var defaultAddress = addresses.FirstOrDefault(a => a.IsDefault);
+        if (defaultAddress != null)
+        {
+            AddressId = defaultAddress.Id;
+            await AddressIdChanged.InvokeAsync(defaultAddress.Id);
+        }
+
+        countries = await countryService.GetAllCountriesAsync();
+        states = await stateService.GetAllStatesAsync();
+        cities = await cityService.GetAllCitiesAsync();
+    }
+
+    private async void OnAddressChanged(object value)
+    {
+        // Show address form only if "Create New Address" is selected (optional logic)
+        showCreateAddress = ((Guid)value == guidForCreate);
+        if(!showCreateAddress)
+        {
+            AddressId = (Guid)value;
+            await AddressIdChanged.InvokeAsync((Guid)value);
+        }
+    }
+
+    private async Task SaveNewAddress(AddressDto newAddress)
+    {
+        var addressParts = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(newAddress.Street))
+            addressParts.Add(newAddress.Street);
+
+        if (!string.IsNullOrEmpty(newAddress.CityId))
+            addressParts.Add(cities.Where(x => x.Code == newAddress.CityId).Select(y => y.Name).First());
+
+        if (!string.IsNullOrEmpty(newAddress.StateId))
+            addressParts.Add(states.Where(x => x.Code == newAddress.StateId).Select(y => y.Name).First());
+
+        if (!string.IsNullOrEmpty(newAddress.CountryId))
+            addressParts.Add(countries.Where(x => x.Code == newAddress.CountryId).Select(y => y.Name).First());
+
+
+        if (!string.IsNullOrWhiteSpace(newAddress.ZipCode))
+            addressParts.Add(newAddress.ZipCode);
+
+        newAddress.FullAddress = string.Join(", ", addressParts);
+        try
+        {
+            var query = new CreateCustomerAddressCommand(Guid.Parse(CustomerId), newAddress);
+            await Mediator.Send(query);
+            await LoadAddresses();
+            var defaultAddress = addresses.Last(x => x.Id != guidForCreate);
+            if (defaultAddress != null)
+            {
+                AddressId = defaultAddress.Id;
+                await AddressIdChanged.InvokeAsync(defaultAddress.Id);
+            }
+            showCreateAddress = false;
+            StateHasChanged();
+        }
+        catch (ValidationException ex)
+        {
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Saving or Updating An address.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+        }
+    
+    }
+
+    private async Task OnAddressChanged(ChangeEventArgs e)
+    {
+        if (Guid.TryParse(e.Value?.ToString(), out var selectedId))
+        {
+            AddressId = selectedId;
+            await AddressIdChanged.InvokeAsync(selectedId);
+        }
+    }
+}
+

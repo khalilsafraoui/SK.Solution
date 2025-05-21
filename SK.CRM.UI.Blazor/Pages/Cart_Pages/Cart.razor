@@ -2,6 +2,8 @@
 @using AutoMapper
 @using SK.CRM.Application.Dtos
 @using SK.Inventory.Application.Features.Products.Queries
+@using SK.Solution.Shared.Events
+@using SK.Solution.Shared.Interfaces.Identity
 
 
 @rendermode InteractiveServer
@@ -12,6 +14,8 @@
 @inject SharedStateService _SharedStateService
 @inject PaymentService _PaymentService
 @inject IMapper _mapper
+@inject IPublisher _publisher
+@inject ISharedUserServices _ShareUserServices
 @attribute [Authorize]
 <PageTitle>Cart</PageTitle>
 @if (IsProcessing)
@@ -67,6 +71,7 @@ else
                         <RadzenSteps SelectedIndex="@CurrentStep" Change="@(index => CurrentStep = index)" ShowStepsButtons="false">
                             <RadzenStepsItem Text="Cart Summary"></RadzenStepsItem>
                             <RadzenStepsItem Text="User Details"></RadzenStepsItem>
+                            <RadzenStepsItem Text="User Address"></RadzenStepsItem>
                             <RadzenStepsItem Text="Payment & Delivery"></RadzenStepsItem>
                         </RadzenSteps>
 
@@ -172,7 +177,21 @@ else
                             </RadzenCard>
                         }
 
-                        @if (CurrentStep == 2)
+                        @if(CurrentStep == 2)
+                        {
+                            <RadzenCard Class="shadow-lg p-4 radzen-card-responsive">
+                                <h4 class="text-center text-success fw-bold display-6">Address</h4>
+                                <_CartAddress CustomerId=@order.CustomerId.ToString() @bind-AddressId=@order.AddressId></_CartAddress>
+
+                                <div class="d-flex justify-content-between mt-3">
+                                    <RadzenButton Text="❮ Previous" Click="PreviousStep" ButtonStyle="ButtonStyle.Secondary" Class="px-4 py-2 fw-bold rounded" />
+                                    <RadzenButton Text="Next ❯" Click="NextStep" ButtonStyle="ButtonStyle.Primary" Class="px-4 py-2 fw-bold rounded" />
+                                </div>
+
+                            </RadzenCard>
+                        }
+
+                        @if (CurrentStep == 3)
                         {
                             <RadzenCard Class="shadow radzen-card-responsive">
                                 <div class="card-header text-success text-center display-6">Payment & Delivery</div>
@@ -216,6 +235,17 @@ else
         var user = authState.User;
         order.Email = user.FindFirst(u => u.Type.Contains("email"))?.Value;
         order.UserId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+        var query = new GetCustomerByUserIdQuery(order.UserId);
+        var customer = await Mediator.Send(query);
+        if (customer is null)
+        {
+            // create customer    
+            var userInfo = await _ShareUserServices.GetUserByIdAsync(order.UserId);
+            await _publisher.Publish(new UserRegisteredEvent(userInfo.UserId, userInfo.Email, userInfo.FirstName, userInfo.LastName), CancellationToken.None);
+            customer = await Mediator.Send(query);
+        }
+        order.CustomerId = customer.Id;
         order.Status = OrderStatus.StatusPending;	
         editContext = new EditContext(order);
     }
@@ -287,17 +317,18 @@ else
         }
 
 
-       
+
 
     }
     private int CurrentStep = 0;
-    private void NextStep()
+    private async void NextStep()
     {
         var isValid = editContext.Validate();
 
+        var id = order.PhoneNumber;
         if (isValid)
         {
-            if (CurrentStep < 2) CurrentStep++;
+            if (CurrentStep < 3) CurrentStep++;
         }
     }
 

@@ -37,6 +37,23 @@ namespace SK.Identity.Application.Account
             return result;
         }
 
+        public async Task<UserDto> GetUserByIdAsync(string id)
+        {
+            var user = _userManager.Users.Where(rr=>rr.Id == id).FirstOrDefault();
+            if(user == null)
+                return null;
+            var roles = await _userManager.GetRolesAsync(user);
+            var userDto = new UserDto
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Roles = roles.ToList()
+            };
+            return userDto;
+        }
+
         public async Task<List<UserDto>> GetUsersInRolesAsync(IEnumerable<string> roleNames)
         {
             var result = new List<UserDto>();

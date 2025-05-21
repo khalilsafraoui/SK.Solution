@@ -6,5 +6,7 @@ namespace SK.Solution.Shared.Interfaces.Identity
     {
         Task<List<UserDto>> GetUsersAsync();
         Task<List<UserDto>> GetUsersInRolesAsync(IEnumerable<string> roleNames);
+
+        Task<UserDto> GetUserByIdAsync(string id);
     }
 }
