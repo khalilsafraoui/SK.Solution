@@ -59,7 +59,6 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .HasColumnType("decimal(9,6)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("StateId")

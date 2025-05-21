@@ -1,10 +1,8 @@
 ﻿entityframework cmd 
-add-migration AddCustomerIdAndAddressId -context CrmDbContext -project SK.CRM.Infrastructure
+always check appsettings.json for connection string and DatabaseProvider should be set to "SqlServer" or "Postgres" depending on the database you are using.
 
-update-database -context CrmDbContext -project SK.CRM.Infrastructure
-Remove-Migration -Context CrmDbContext -project SK.CRM.Infrastructure
+add-migration NameIsNullableInAddress -context SK.CRM.Infrastructure.Persistence.CrmDbContext -project SK.CRM.Infrastructure
 
+update-database -context SK.CRM.Infrastructure.Persistence.CrmDbContext -project SK.CRM.Infrastructure
+Remove-Migration -Context SK.CRM.Infrastructure.Persistence.CrmDbContext -project SK.CRM.Infrastructure
 
-Pour PostgreSql
-add-migration AddCustomerIdAndAddressId -context CrmDbContext -project SK.CRM.Infrastructure.PostgreSql
-update-database -context CrmDbContext -project SK.CRM.Infrastructure.PostgreSql
