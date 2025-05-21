@@ -1,6 +1,9 @@
-﻿@rendermode InteractiveServer
+﻿@using System.ComponentModel.DataAnnotations
+@using Microsoft.Extensions.Logging
+@rendermode InteractiveServer
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
+@inject ILogger<_CustomerAddresses> Logger
 
 <_Address Addresses="@addresses" OnAddressSave="UpsertAddress" OnAddressDeleted="DeleteAddress"></_Address>
 
@@ -12,11 +15,20 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        try
         {
-            await LoadAddresses();
-            StateHasChanged();
+            if (firstRender)
+            {
+                await LoadAddresses();
+                StateHasChanged();
+            }
         }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Loading Address List.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+        }
+    
     }
 
     private async Task LoadAddresses()
@@ -30,22 +42,34 @@
 
     private async Task UpsertAddress(AddressDto addressDto)
     {
-
-        if (addressDto.Id != Guid.Empty)
+        try
         {
-            var query = new UpdateCustomerAddressCommand(addressDto);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Address Updated Successfully");
+            if (addressDto.Id != Guid.Empty)
+            {
+                var query = new UpdateCustomerAddressCommand(addressDto);
+                await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Address Updated Successfully");
+            }
+            else
+            {
+                var query = new CreateCustomerAddressCommand(Guid.Parse(CustomerId), addressDto);
+                await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Address Created Successfully");
+            }
+
+            await LoadAddresses();
+            StateHasChanged();
         }
-        else
+        catch (ValidationException ex)
         {
-            var query = new CreateCustomerAddressCommand(Guid.Parse(CustomerId), addressDto);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Address Created Successfully");
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Saving or Updating An address.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
         }
 
-        await LoadAddresses();
-        StateHasChanged();
     }
 
     private async Task DeleteAddress(Guid AddressId)
