@@ -1,0 +1,121 @@
+﻿@page "/addmanager"
+@using SK.Identity.Application.Features.Manager.Commands
+
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<SaveManager> Logger
+<PageTitle>Create Manager</PageTitle>
+
+<div class="container mt-5">
+    <h3>Manager Form</h3>
+    <EditForm Model="@managerModel" OnValidSubmit="@SaveUserAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <InputText class="form-control" @bind-Value="managerModel.FirstName" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <InputText class="form-control" @bind-Value="managerModel.LastName" />
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <InputText class="form-control" @bind-Value="managerModel.Email" />
+            </div>
+
+
+            <div class="col-md-6">
+                <label class="form-label">Password</label>
+                <InputText class="form-control" type="password" @bind-Value="managerModel.Password" />
+            </div>
+
+
+        </div>
+
+        <h6 class="mt-4">Role Assignment</h6>
+
+
+
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">Module Roles</h6>
+            </div>
+            <div class="card-body">
+                @foreach (var role in allRoles)
+                {
+                    <div class="form-check mb-2">
+                        <InputCheckbox class="form-check-input" @bind-Value="@managerModel.Roles[role]" />
+                        <label class="form-check-label ms-2">@role</label>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+        <!-- Save Button -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <RadzenButton Text="Back"
+            Icon="arrow_back"
+            ButtonStyle="ButtonStyle.Secondary"
+            Click="@GoBackToUserList"
+            Style="margin-top: 1rem;" />
+            <RadzenButton ButtonType="ButtonType.Submit"
+            Text="Save Changes"
+            Icon="save"
+            ButtonStyle="ButtonStyle.Primary"
+            Style="margin-top: 1rem;" />
+
+        </div>
+
+    </EditForm>
+</div>
+
+@code {
+    private List<string> allRoles = new List<string> { };
+
+    protected override void OnInitialized()
+    {
+        allRoles = RoleType.managerRoles;
+
+        foreach (var role in allRoles)
+        {
+            managerModel.Roles[role] = false;
+        }
+    }
+
+    private ManagerCreationDto managerModel { get; set; } = new ManagerCreationDto();
+
+    private async Task SaveUserAsync()
+    {
+        var HasRoleChecked = managerModel.Roles.Where(r => r.Value).Select(r => r.Key);
+        if (!HasRoleChecked.Any())
+        {
+            await _IJSRuntime.ToastrError("Select at least one module");
+            return;
+        }
+        try
+        {
+            var query = new CreateManagerCommand(managerModel);
+            await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("Manager Created Successfully");
+           
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while saving user.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred while saving the user. Please try again.");
+        }
+    }
+
+    private void GoBackToUserList()
+    {
+        NavigationManager.NavigateTo("/managers"); // Change "/users" to the actual path of your user list page
+    }
+}

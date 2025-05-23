@@ -1,1 +1,30 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
+@using SK.Identity.Application.Features.Manager.Commands
+@using SK.Identity.Application.Features.Manager.Queries
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Radzen
+@using Radzen.Blazor
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+
+@using Microsoft.AspNetCore.Authorization
+@using System.Globalization
+@using MediatR
+
+@using System.Collections.Generic
+@using Microsoft.Extensions.Logging
+@using SK.Solution.Shared.Interfaces.Identity
+@using SK.Solution.Shared.Model.Identity
+@using SK.Solution.Shared.Utility
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using SK.Identity.Domain.Entities
+
+@using SK.Identity.Application.Dtos
+@using Microsoft.EntityFrameworkCore
+@using SK.Identity.UI.Blazor.Extensions
+@using SK.Identity.Application.Features.Users.Commands
+@using SK.Identity.Application.Features.Users.Queries

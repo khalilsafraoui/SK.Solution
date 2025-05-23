@@ -1,0 +1,85 @@
+﻿@page "/users"
+
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<Users> Logger
+<div class="container mt-5">
+    <h2 class="mb-4">User Management</h2>
+
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" class="form-control w-25" placeholder="Search..." @bind="searchText" />
+        <button class="btn btn-primary" @onclick="AddUser">
+            <i class="bi bi-plus-circle me-1"></i> Add User
+        </button>
+    </div>
+
+    <table class="table table-hover table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Email</th>
+                <th>Roles</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in FilteredUsers)
+            {
+                <tr>
+                    <td>@user.Email</td>
+
+                    <td>
+                        @foreach (var role in user.Roles)
+                        {
+                            <span class="badge bg-primary me-1">@role</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => EditUser(user.UserId)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p class="text-muted">Total users: @FilteredUsers.Count</p>
+</div>
+
+@code {
+    private List<UserDto>? users = new();
+    private string searchText = "";
+
+    private List<UserDto> FilteredUsers =>
+        string.IsNullOrWhiteSpace(searchText)
+            ? users!
+            : users!.Where(u => u.Email!.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var query = new GetUsersWithSpecifcRolesQuery();
+            var result = await Mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                users = result.UserRoles;
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Listing users.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred while Listing users. Please try again.");
+        }
+    }
+
+    private void AddUser() => NavigationManager.NavigateTo("/adduser");
+
+    private void EditUser(string userId) => NavigationManager.NavigateTo($"/manage-user-roles/{userId}");
+}

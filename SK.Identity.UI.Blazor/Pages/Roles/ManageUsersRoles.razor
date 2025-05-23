@@ -1,0 +1,123 @@
+﻿@page "/manage-user-roles"
+
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject NavigationManager Navigation
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@rendermode InteractiveServer
+
+<h3 class="mb-3">Manage User Roles</h3>
+
+@if (users == null)
+{
+    <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+}
+else
+{
+    <RadzenDataGrid Data="@users" TItem="UserWithRoles" ShowPagingSummary="true" PageSize="10"
+                    Responsive="true" ShowPagination="true" RowRender="@RenderRow">
+        <Columns>
+            <RadzenDataGridColumn TItem="UserWithRoles" Property="Email" Title="User Email" />
+
+            @foreach (var role in allRoles)
+            {
+                <RadzenDataGridColumn TItem="UserWithRoles" Title="@role">
+                    <Template Context="user">
+                        <RadzenCheckBox @bind-Value="user.RoleSelections[role]" TValue="bool" />
+                    </Template>
+                </RadzenDataGridColumn>
+            }
+
+            <RadzenDataGridColumn TItem="UserWithRoles" Title="Action" Width="100px">
+                <Template Context="user">
+                    <RadzenButton Icon="save" Style="margin-left: 5px" ButtonStyle="ButtonStyle.Primary"
+                                  Size="ButtonSize.Small" Click="@(() => SaveUserRoles(user))" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}
+
+<RadzenNotification />
+
+@code {
+    private List<UserWithRoles> users;
+    private List<string> allRoles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        allRoles = await RoleManager.Roles.Select(r => r.Name).ToListAsync();
+        var userList = await UserManager.Users.ToListAsync();
+
+        users = new();
+
+        foreach (var user in userList)
+        {
+            var userRoles = await UserManager.GetRolesAsync(user);
+            var roleSelections = new Dictionary<string, bool>();
+
+            foreach (var role in allRoles)
+            {
+                roleSelections[role] = userRoles.Contains(role);
+            }
+
+            users.Add(new UserWithRoles
+            {
+                Id = user.Id,
+                Email = user.Email,
+                RoleSelections = roleSelections
+            });
+        }
+    }
+
+    private async Task SaveUserRoles(UserWithRoles userModel)
+    {
+        var user = await UserManager.FindByIdAsync(userModel.Id);
+        if (user == null)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "User not found.");
+            return;
+        }
+
+        var currentRoles = await UserManager.GetRolesAsync(user);
+        var selectedRoles = userModel.RoleSelections.Where(kv => kv.Value).Select(kv => kv.Key).ToList();
+
+        var rolesToAdd = selectedRoles.Except(currentRoles).ToList();
+        var rolesToRemove = currentRoles.Except(selectedRoles).ToList();
+
+        if (rolesToAdd.Any())
+        {
+            var resultAdd = await UserManager.AddToRolesAsync(user, rolesToAdd);
+            if (!resultAdd.Succeeded)
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Failed to add roles.");
+                return;
+            }
+        }
+
+        if (rolesToRemove.Any())
+        {
+            var resultRemove = await UserManager.RemoveFromRolesAsync(user, rolesToRemove);
+            if (!resultRemove.Succeeded)
+            {
+                NotificationService.Notify(NotificationSeverity.Error, "Failed to remove roles.");
+                return;
+            }
+        }
+
+        NotificationService.Notify(NotificationSeverity.Success, $"Roles updated for {user.Email}");
+    }
+
+    private void RenderRow(RowRenderEventArgs<UserWithRoles> args)
+    {
+        // Optional: You can add row coloring or custom logic here
+    }
+
+    public class UserWithRoles
+    {
+        public string Id { get; set; }
+        public string Email { get; set; }
+        public Dictionary<string, bool> RoleSelections { get; set; } = new();
+    }
+}

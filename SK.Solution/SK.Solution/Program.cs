@@ -15,15 +15,16 @@ using SK.Visit.Application.MappingProfiles;
 using Serilog;
 using SK.Solution.Shared.Interfaces.GeoLocalisation;
 using SK.Solution.Utility.Services;
+using SK.Identity.Application.MappingProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Module
 
 builder.Services.AddCrmModuleServices(builder.Configuration);  // Register services from the Customers module
-builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register services from the Inventory module
+builder.Services.AddInventoryModuleServices(builder.Configuration);  // Register services from the Inventory_Viewer module
 builder.Services.AddIdentityModuleServices(builder.Configuration);  // Register services from the Identity module
-builder.Services.AddNoteModuleServices(builder.Configuration);  // Register services from the Note module
-builder.Services.AddVisitModuleServices(builder.Configuration);  // Register services from the Visit module
+builder.Services.AddNoteModuleServices(builder.Configuration);  // Register services from the Note_Viewer module
+builder.Services.AddVisitModuleServices(builder.Configuration);  // Register services from the Visit_Viewer module
 builder.Services.AddSingleton<JsonFileService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IStateService, StateService>();
@@ -45,12 +46,14 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.G
     , typeof(SK.CRM.Application.Features.Customers.Queries.GetAllCustomersQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Products.Queries.GetAllProductsQuery).Assembly
     , typeof(SK.Inventory.Application.Features.Categories.Queries.GetAllCategoriesQuery).Assembly
+    , typeof(SK.Identity.Application.Features.Users.Commands.CreateUserCommand).Assembly
      , typeof(SK.Visit.Application.Features.Visit.Schedule.Queries.GetAllVisitPlanningStartingFromTomorrowQuery).Assembly
     ));
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAutoMapper(
     typeof(InventoryMappingProfile).Assembly,
     typeof(CrmMappingProfile).Assembly,
+     typeof(IdentityMappingProfile).Assembly,
     typeof(VisitMappingProfile).Assembly
 );
 var keyVaultUriString = builder.Configuration["KeyVault:Uri"];
@@ -110,6 +113,7 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(SK.CRM.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Note.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Visit.UI.Blazor._Imports).Assembly)
+    .AddAdditionalAssemblies(typeof(SK.Identity.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Inventory.UI.Blazor._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.

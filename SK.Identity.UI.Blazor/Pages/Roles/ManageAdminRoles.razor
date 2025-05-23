@@ -1,0 +1,151 @@
+﻿@page "/manage-admin-roles/{userId}"
+
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject NavigationManager Navigation
+@inject NotificationService NotificationService
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<ManageAdminRoles> Logger
+@rendermode InteractiveServer
+
+
+
+
+<div class="container mt-4">
+    <div class="shadow-sm p-4 rounded bg-white" style="max-width: 700px; margin: auto;">
+        
+            <h5 class="mb-0">Manage Roles for</h5>
+        <h4 class="mb-0"><strong>@formModel.UserEmail</strong></h4>
+           
+       
+        @if (isLoading)
+        {
+            <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+        }
+        else if (notFound)
+        {
+            <RadzenAlert Severity="AlertSeverity.Error" Style="margin-top: 1rem;">
+                Manager not found.
+            </RadzenAlert>
+        }
+        else
+        {
+            <RadzenCard Style="padding: 1rem;">
+                <RadzenTemplateForm TItem="UserRolesDto" Data="@formModel" Submit="@SaveChanges">
+                    @foreach (var group in formModel.AllRoles)
+                    {
+                        <RadzenFieldset Text="@group.Key" Style="margin-bottom: 1rem;">
+                            @foreach (var role in group.Value)
+                            {
+                                <div class="form-check mb-2">
+                                    <RadzenCheckBox class="form-check-input"
+                                    @bind-Value="formModel.RoleSelections[role]"
+                                    TValue="bool"
+                                    Style="margin-right: 8px;" />
+                                    <label class="form-check-label">@role</label>
+                                </div>
+                            }
+                        </RadzenFieldset>
+                    }
+                    <div class="alert alert-success" role="alert">
+                        <strong>Info:</strong> The selected roles determine which modules the manager can access and manage.
+                    </div>
+
+
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Note:</strong> Deselecting roles will permanently remove all associated roles currently assigned to the user. Please review your changes carefully before saving.
+                    </div>
+
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Important:</strong> Deselecting all roles from the manager will downgrade him to a regular user. A new manager will need to be created to maintain administrative access to the application.
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <RadzenButton Text="Back"
+                                      Icon="arrow_back"
+                                      ButtonStyle="ButtonStyle.Secondary"
+                                      Click="@GoBackToUserList"
+                                      Style="margin-top: 1rem;" />
+                    <RadzenButton ButtonType="ButtonType.Submit"
+                    Text="Save Changes"
+                    Icon="save"
+                    ButtonStyle="ButtonStyle.Primary"
+                    Style="margin-top: 1rem;" />
+                   
+                    </div>
+                </RadzenTemplateForm>
+            </RadzenCard>
+        }
+
+    </div>
+</div>
+
+<RadzenNotification />
+
+
+@code {
+    [Parameter] public string userId { get; set; }
+
+    private bool isLoading = true;
+    private bool notFound = false;
+
+    private UserRolesDto formModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        try
+        {
+            var query = new GetManagerWithRolesByIdQuery(userId);
+            var result = await Mediator.Send(query);
+            if (!result.IsSuccess)
+            {
+                notFound = true;
+            }
+            else
+            {
+                formModel = result.UserRoles;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while fetching Manager roles.");
+            notFound = true;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            var Command = new SaveManagerRolesCommand(formModel);
+            var result = await Mediator.Send(Command);
+            if (result.IsSuccess)
+            {
+                await _IJSRuntime.ToastrSuccess("Manager roles updated Successfully");
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while saving user Roles.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred while saving the user Roles. Please try again.");
+        }
+    }
+
+
+    
+
+    private void GoBackToUserList()
+    {
+        Navigation.NavigateTo("/managers"); 
+    }
+}

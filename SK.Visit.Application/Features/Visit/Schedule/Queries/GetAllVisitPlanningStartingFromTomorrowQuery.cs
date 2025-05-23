@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Options;
 using SK.Solution.Shared.Model.Identity;
+using SK.Solution.Shared.Utility;
 using SK.Visit.Application.Dtos;
 using SK.Visit.Application.Interfaces;
 using SK.Visit.Application.Settings;
@@ -29,7 +30,7 @@ namespace SK.Visit.Application.Features.Visit.Schedule.Queries
             var tomorrow = DateTime.Now.AddDays(_settings.NumberOfDaysToAddInScheduleGetAndSave).Date;
             var destinations = await _unitOfWork.DestinationsRepository.GetDestinationsStartingFromSpecificDateAsync(tomorrow);
            
-            List<UserDto> agents = await _unitOfWork.SharedUserServices.GetUsersInRolesAsync(new[] { "Admin", "Manager" });
+            List<UserDto> agents = await _unitOfWork.SharedUserServices.GetUsersInRolesAsync(new[] { RoleType.Visit_Representative, RoleType.Visit_Agent, RoleType.Visit_Dispatcher });
 
             agents.ForEach(agent =>
             {

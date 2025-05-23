@@ -1,10 +1,11 @@
 ﻿@page "/schedule"
+@using SK.Solution.Shared.Utility
 @rendermode InteractiveServer
 
 @inject IJSRuntime JS
 @inject IMediator Mediator
 @inject DestinationNotifier DestinationNotifier
-@attribute [Authorize(Roles = "Admin,Manager")]
+@attribute [Authorize(Roles = "Visit_Manager,Visit_Viewer,Visit_Coordinator")]
 
 
 

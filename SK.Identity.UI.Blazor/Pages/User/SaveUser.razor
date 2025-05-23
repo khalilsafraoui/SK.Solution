@@ -1,0 +1,82 @@
+﻿@page "/adduser"
+@rendermode InteractiveServer
+@inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<SaveUser> Logger
+<PageTitle>Create User</PageTitle>
+
+<div class="container mt-5">
+    <h3>User Form</h3>
+    <EditForm Model="@userModel" OnValidSubmit="@SaveUserAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">First Name</label>
+                <InputText class="form-control" @bind-Value="userModel.FirstName" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Last Name</label>
+                <InputText class="form-control" @bind-Value="userModel.LastName" />
+            </div>
+        </div>
+
+
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <InputText class="form-control" @bind-Value="userModel.Email" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Password</label>
+                <InputText class="form-control" type="password" @bind-Value="userModel.Password" />
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <RadzenButton Text="Back"
+            Icon="arrow_back"
+            ButtonStyle="ButtonStyle.Secondary"
+            Click="@GoBackToUserList"
+            Style="margin-top: 1rem;" />
+            <RadzenButton ButtonType="ButtonType.Submit"
+            Text="Save Changes"
+            Icon="save"
+            ButtonStyle="ButtonStyle.Primary"
+            Style="margin-top: 1rem;" />
+
+        </div>
+    </EditForm>
+</div>
+
+@code {
+
+    private UserCreationDto userModel { get; set; } = new UserCreationDto();
+
+    [Inject] public UserManager<ApplicationUser> UserManager { get; set; } = default!;
+
+    private async Task SaveUserAsync()
+    {
+        try
+        {
+            var query = new CreateUserCommand(userModel);
+            userModel = await Mediator.Send(query);
+            await _IJSRuntime.ToastrSuccess("User Created Successfully");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while saving user.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred while saving the user. Please try again.");
+        }
+    }
+
+    private void GoBackToUserList()
+    {
+        NavigationManager.NavigateTo("/users"); 
+    }
+   
+}
