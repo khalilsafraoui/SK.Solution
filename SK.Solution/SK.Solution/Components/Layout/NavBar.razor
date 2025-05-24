@@ -1,10 +1,4 @@
-﻿@using MediatR
-@using SK.CRM.Application.Features.ShoppingCart.Queries
-@using SK.CRM.UI.Blazor.Services
-@inject AuthenticationStateProvider _AuthenticationStateProvider
-@inject SharedStateService _SharedStateService
-@inject IMediator Mediator
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 <nav class="navbar navbar-expand-md navbar-dark bg-dark pb-4 pt-4">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="">
@@ -32,16 +26,7 @@
 						<span class="bi bi-box-seam" aria-hidden="true"></span> Products
 					</NavLink>
 				</li>
-				<li class="nav-item mx-2">
-					<NavLink class="nav-link" href="cartV2">
-						<span class="bi bi-cart3" aria-hidden="true"></span> Cart(@_SharedStateService.TotalCartCount)
-					</NavLink>
-				</li>
-				<li class="nav-item mx-2">
-					<NavLink class="nav-link" href="/orderV2/list">
-						<span class="bi bi-card-list" aria-hidden="true"></span> Order List
-					</NavLink>
-				</li>
+                <CrmBar />
 			</ul>
 			<ul class="d-flex navbar-nav mb-2 mb-md-0">
 				<AuthorizeView>
@@ -80,29 +65,6 @@
 </nav>
 
 @code{
-	protected override void OnInitialized()
-	{
-		_SharedStateService.OnChange += OnSharedStateChange;
-		GetInitialCount();
-	}
-	private void OnSharedStateChange()
-	{
-		InvokeAsync(StateHasChanged);
-	}
-
-	public async Task GetInitialCount()
-	{
-		var authState = await _AuthenticationStateProvider.GetAuthenticationStateAsync();
-		var user = authState.User;
-        var query = new GetTotalCartCountQuery(user?.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value);
-		_SharedStateService.TotalCartCount = 
-			await Mediator.Send(query);
-		var test = _SharedStateService.TotalCartCount;
-	}
-
-    public void Dispose()
-    {
-        _SharedStateService.OnChange -= OnSharedStateChange;
-    }
+	
 
 }
