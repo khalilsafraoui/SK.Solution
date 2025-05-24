@@ -1,5 +1,5 @@
-﻿@page "/notecategory/create"
-@page "/notecategory/update/{id:int}"
+﻿@attribute [Route(Routes.Note_Notes_Category_Create)]
+@attribute [Route(Routes.Note_Notes_Category_Edit)]
 @using Microsoft.AspNetCore.Authorization
 
 @using SK.Note.Domain.Entities
@@ -116,6 +116,6 @@ else
             await _IJSRuntime.ToastrSuccessWithDelay("Category Created Successfully");
         }
         IsProcessing = false;
-        _NavigationManager.NavigateTo("notecategory");
+        _NavigationManager.NavigateTo(Routes.Note_Notes_Categories);
     }
 }

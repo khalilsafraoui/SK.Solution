@@ -1,5 +1,4 @@
-﻿@page "/note/list"
-
+﻿@attribute [Route(Routes.Note_Notes)]
 @rendermode InteractiveServer
 @inject INoteCategoryRepository _INoteCategoryRepository
 @inject INoteRepository _INoteRepository
@@ -38,7 +37,7 @@ else
                     <i class="bi bi-translate me-2"></i> @(IsEnglish ? "Switch to FR" : "Switch to EN")
                 </button>
 
-                <a href="/note/create" class="btn btn-lg btn-primary d-flex align-items-center" style="width: 250px;">
+                <a href=@Routes.Note_Notes_Create class="btn btn-lg btn-primary d-flex align-items-center" style="width: 250px;">
                     <i class="bi bi-plus-square me-2"></i> Add New Note
                 </a>
             </div>
@@ -94,7 +93,7 @@ else
                                        
                                     </div>
                                     <div class="card-footer text-lg-end">
-                                        <a href="note/update/@SelectedTitle.Id" class="btn btn-primary">Edit</a>
+                                        <a href=@Routes.GetNoteEditUrl(SelectedTitle.Id) class="btn btn-primary">Edit</a>
                                         <button class="btn btn-danger" @onclick="()=>HandleDelete(SelectedTitle.Id)">Delete</button>
                                     </div>
                                 </div>

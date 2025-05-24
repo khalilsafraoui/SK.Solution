@@ -31,30 +31,7 @@
        <VisitMenu/>
 
         <!-- Notes -->
-        <AuthorizeView Roles="@($"{RoleType.Note_Manager},{RoleType.Note_Viewer}")">
-            <Authorized>
-        <div class="nav-item px-3">
-            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
-               data-bs-toggle="collapse" href="#notesMenu">
-                <span class="d-flex align-items-center gap-2">
-                    <i class="bi bi-journal-text-nav-menu"></i> <span>Notes Managment</span>
-                </span>
-                <i class="bi bi-chevron-down-nav-menu"></i>
-            </a>
-            <div class="collapse ps-3" id="notesMenu">
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/note/list" Match="NavLinkMatch.All">
-                    <i class="bi bi-journal-text-nav-menu"></i> <span>Notes</span>
-                </NavLink>
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/notecategory" Match="NavLinkMatch.All">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories</span>
-                </NavLink>
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/googlemap" Match="NavLinkMatch.All">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Google map</span>
-                </NavLink>
-            </div>
-        </div>
-            </Authorized>
-        </AuthorizeView>
+        <NoteMenu />
 
         <!-- Users -->
         <AuthorizeView Roles="@($"{RoleType.Note_Manager},{RoleType.Crm_Manager},{RoleType.Inventory_Manager},{RoleType.Visit_Manager},{RoleType.Admin}")">

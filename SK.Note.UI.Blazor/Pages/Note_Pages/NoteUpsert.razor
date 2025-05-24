@@ -1,5 +1,5 @@
-﻿@page "/note/create"
-@page "/note/update/{id:int}"
+﻿@attribute [Route(Routes.Note_Notes_Create)]
+@attribute [Route(Routes.Note_Notes_Edit)]
 
 @rendermode InteractiveServer
 @inject INoteCategoryRepository _INoteCategoryRepository1
@@ -74,7 +74,7 @@ else
                             </button>
                         </div>
                         <div class="col-6 col-md-3">
-                            <a href="note/list" class="btn btn-secondary form-control" disabled="@IsProcessing">
+                            <a href=@Routes.Note_Notes class="btn btn-secondary form-control" disabled="@IsProcessing">
                                 <i class="bi bi-arrow-bar-left"></i> Back to List
                             </a>
                         </div>
