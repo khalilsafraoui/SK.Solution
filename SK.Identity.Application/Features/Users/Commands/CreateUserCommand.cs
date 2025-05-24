@@ -22,6 +22,7 @@ namespace SK.Identity.Application.Features.Users.Commands
         {
             var user = _mapper.Map<ApplicationUser>(request.userCreationDto);
             user.UserName = request.userCreationDto.Email;
+            user.EmailConfirmed = true; // Assuming email confirmation is not required for user creation
             var result = await _userManager.CreateAsync(user, request.userCreationDto.Password);
 
             if (!result.Succeeded)
