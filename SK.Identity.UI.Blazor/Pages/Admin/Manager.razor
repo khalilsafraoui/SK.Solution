@@ -44,25 +44,32 @@
 @code {
     private UserDto? manager;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
-            var query = new GetManagerQuery();
-            var result = await Mediator.Send(query);
-            if (result.IsSuccess)
+            try
             {
-                manager = result.Manager;
+                var query = new GetManagerQuery();
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    manager = result.Manager;
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await _IJSRuntime.ToastrError(result.ErrorMessage);
+                Logger.LogError(ex, "Error while Retriving the Manager.");
+                await _IJSRuntime.ToastrError("An unexpected error occurred while Retriving the Manager. Please try again.");
             }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error while Retriving the Manager.");
-            await _IJSRuntime.ToastrError("An unexpected error occurred while Retriving the Manager. Please try again.");
+            finally
+            {
+                StateHasChanged();
+            }
         }
     }
 

@@ -80,13 +80,28 @@
 @code {
     private List<string> allRoles = new List<string> { };
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        allRoles = RoleType.managerRoles;
-
-        foreach (var role in allRoles)
+        if (firstRender)
         {
-            managerModel.Roles[role] = false;
+            try
+            {
+                allRoles = RoleType.managerRoles;
+
+                foreach (var role in allRoles)
+                {
+                    managerModel.Roles[role] = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while Listing users.");
+                await _IJSRuntime.ToastrError("An unexpected error occurred while Listing users. Please try again.");
+            }
+            finally
+            {
+                StateHasChanged();
+            }
         }
     }
 

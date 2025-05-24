@@ -78,30 +78,35 @@
 
     private UserRolesDto formModel = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        isLoading = true;
-        try
+        if (firstRender)
         {
-            var query = new GetUserWithRolesByIdQuery(userId);
-            var result = await Mediator.Send(query);
-            if (!result.IsSuccess)
+            isLoading = true;
+            try
             {
+                var query = new GetUserWithRolesByIdQuery(userId);
+                var result = await Mediator.Send(query);
+                if (!result.IsSuccess)
+                {
+                    notFound = true;
+                }
+                else
+                {
+                    formModel = result.UserRoles;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while fetching user roles.");
                 notFound = true;
             }
-            else
+            finally
             {
-                formModel = result.UserRoles;
+                isLoading = false;
+            
+                StateHasChanged();
             }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error while fetching user roles.");
-            notFound = true;
-        }
-        finally
-        {
-            isLoading = false;
         }
     }
 

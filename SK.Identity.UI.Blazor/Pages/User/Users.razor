@@ -59,23 +59,35 @@
 
     protected override async Task OnInitializedAsync()
     {
-        try
+       
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            var query = new GetUsersWithSpecifcRolesQuery();
-            var result = await Mediator.Send(query);
-            if (result.IsSuccess)
+            try
             {
-                users = result.UserRoles;
+                var query = new GetUsersWithSpecifcRolesQuery();
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    users = result.UserRoles;
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                await _IJSRuntime.ToastrError(result.ErrorMessage);
+                Logger.LogError(ex, "Error while Listing users.");
+                await _IJSRuntime.ToastrError("An unexpected error occurred while Listing users. Please try again.");
             }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error while Listing users.");
-            await _IJSRuntime.ToastrError("An unexpected error occurred while Listing users. Please try again.");
+            finally
+            {
+                StateHasChanged();
+            }
         }
     }
 

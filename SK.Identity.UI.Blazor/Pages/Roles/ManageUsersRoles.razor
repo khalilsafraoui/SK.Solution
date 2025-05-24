@@ -47,29 +47,39 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        allRoles = await RoleManager.Roles.Select(r => r.Name).ToListAsync();
-        var userList = await UserManager.Users.ToListAsync();
+        
+    }
 
-        users = new();
-
-        foreach (var user in userList)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            var userRoles = await UserManager.GetRolesAsync(user);
-            var roleSelections = new Dictionary<string, bool>();
+            allRoles = await RoleManager.Roles.Select(r => r.Name).ToListAsync();
+            var userList = await UserManager.Users.ToListAsync();
 
-            foreach (var role in allRoles)
+            users = new();
+
+            foreach (var user in userList)
             {
-                roleSelections[role] = userRoles.Contains(role);
+                var userRoles = await UserManager.GetRolesAsync(user);
+                var roleSelections = new Dictionary<string, bool>();
+
+                foreach (var role in allRoles)
+                {
+                    roleSelections[role] = userRoles.Contains(role);
+                }
+
+                users.Add(new UserWithRoles
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        RoleSelections = roleSelections
+                    });
             }
-
-            users.Add(new UserWithRoles
-            {
-                Id = user.Id,
-                Email = user.Email,
-                RoleSelections = roleSelections
-            });
+            StateHasChanged();
         }
     }
+
 
     private async Task SaveUserRoles(UserWithRoles userModel)
     {
