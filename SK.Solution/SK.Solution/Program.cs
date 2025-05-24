@@ -115,7 +115,7 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(SK.Visit.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Identity.UI.Blazor._Imports).Assembly)
     .AddAdditionalAssemblies(typeof(SK.Inventory.UI.Blazor._Imports).Assembly);
-
+app.MapFallback(() => Results.Redirect("/not-found"));
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 

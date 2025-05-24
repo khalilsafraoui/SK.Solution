@@ -7,7 +7,7 @@
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject ICurrentUserService CurrentUserService
-@attribute [Authorize(Roles = "Visit_Representative,Visit_Dispatcher,Visit_Agent")]
+@attribute [Authorize(Roles = RoleType.Visit_Representative + "," + RoleType.Visit_Dispatcher + "," + RoleType.Visit_Agent)]
 <PageTitle>Today's Trip</PageTitle>
 
 <div class="container my-5">
