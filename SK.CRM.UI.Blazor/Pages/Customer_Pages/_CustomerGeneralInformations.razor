@@ -96,7 +96,7 @@ else
             var query = new CreateCustomerGeneralInformationsCommand(customer);
             customer = await Mediator.Send(query);
             await _IJSRuntime.ToastrSuccess("Customer Created Successfully");
-            _NavigationManager.NavigateTo($"/customer/update/{customer.Id}");
+            _NavigationManager.NavigateTo(Routes.GetCustomerEditUrl(customer.Id));
         }
         IsProcessing = false;
 

@@ -1,5 +1,4 @@
-﻿@page "/orderV2/details/{id}"
-
+﻿@attribute [Route(Routes.Crm_Order_Details)]
 @rendermode InteractiveServer
 @inject NavigationManager _NavigationManager
 @inject IMediator Mediator
@@ -60,7 +59,7 @@ else
 
                 <div class="row">
                     <div class="col-5">
-                        <a href="orderV2/list" class="btn btn-secondary  m-2 p-2" style="width:150px;">Back to Orders</a>
+                        <a href=@Routes.Crm_Orders class="btn btn-secondary  m-2 p-2" style="width:150px;">Back to Orders</a>
                     </div>
                     <div class="col-7 text-end">
                         @if (order.Status != OrderStatus.StatusCancelled && order.Status != OrderStatus.StatusCompleted && IsAdmin == true)

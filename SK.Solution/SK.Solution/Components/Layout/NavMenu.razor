@@ -10,7 +10,8 @@
 </div>
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+<div class="nav-scrollable">
+
     <nav class="flex-column">
         <!-- Home -->
         <div class="nav-item px-3">
@@ -22,83 +23,12 @@
         
 
         <!-- Inventory -->
-        <AuthorizeView Roles="@($"{RoleType.Inventory_Manager},{RoleType.Inventory_Viewer},{RoleType.Inventory_Coordinator}")">
-            <Authorized>
-        <div class="nav-item px-3">
-            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
-               data-bs-toggle="collapse" href="#inventoryMenu">
-                <span class="d-flex align-items-center gap-2">
-                    <i class="bi bi-journal-text-nav-menu"></i> <span>Inventory</span>
-                </span>
-                <i class="bi bi-chevron-down-nav-menu"></i>
-            </a>
-            <div class="collapse ps-3" id="inventoryMenu">
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/productV2" Match="NavLinkMatch.All">
-                    <i class="bi bi-box-seam-nav-menu"></i> <span>Product</span>
-                </NavLink>
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/categoryV2" Match="NavLinkMatch.All">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Categories</span>
-                </NavLink>
-            </div>
-        </div>
-            </Authorized>
-        </AuthorizeView>
+        <InventoryMenu />
         <!-- CRM -->
-        <AuthorizeView Roles="@($"{RoleType.Crm_Manager},{RoleType.Crm_Viewer}")">
-            <Authorized>
-        <div class="nav-item px-3">
-            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
-               data-bs-toggle="collapse" href="#crmMenu">
-                <span class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-lines-fill-nav-menu"></i> <span>CRM</span>
-                </span>
-                <i class="bi bi-chevron-down-nav-menu"></i>
-            </a>
-            <div class="collapse ps-3" id="crmMenu">
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/prospectlist" Match="NavLinkMatch.All">
-                    <i class="bi bi-people-nav-menu"></i> <span>Prospects</span>
-                </NavLink>
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/customerlist" Match="NavLinkMatch.All">
-                    <i class="bi bi-people-fill-nav-menu"></i> <span>Customers</span>
-                </NavLink>
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/orderV2/list" Match="NavLinkMatch.All">
-                    <i class="bi bi-receipt-nav-menu"></i> <span>Orders</span>
-                </NavLink>
-            </div>
-        </div>
-            </Authorized>
-        </AuthorizeView>
+        <CrmMenu />
 
         <!-- Visits & deliveries  -->
-        <AuthorizeView Roles="@($"{RoleType.Visit_Manager},{RoleType.Visit_Viewer},{RoleType.Visit_Agent},{RoleType.Visit_Dispatcher},{RoleType.Visit_Representative},{RoleType.Visit_Coordinator}")">
-            <Authorized Context="GlobalVisitContext">
-        <div class="nav-item px-3">
-            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
-               data-bs-toggle="collapse" href="#visitsMenu">
-                <span class="d-flex align-items-center gap-2">
-                    <i class="bi bi-journal-text-nav-menu"></i> <span>Visits & Deliveries</span>
-                </span>
-                <i class="bi bi-chevron-down-nav-menu"></i>
-            </a>
-            <div class="collapse ps-3" id="visitsMenu">
-                        <AuthorizeView  Roles="@($"{RoleType.Visit_Manager},{RoleType.Visit_Viewer},{RoleType.Visit_Coordinator}")">
-                            <Authorized Context="ScheduleContext">
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/schedule" Match="NavLinkMatch.All">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Schedule</span>
-                </NavLink>
-                 </Authorized>
-                 </AuthorizeView>
-                        <AuthorizeView Roles="@($"{RoleType.Visit_Dispatcher},{RoleType.Visit_Representative},{RoleType.Visit_Agent}")">
-                             <Authorized Context="AgenTripContext">
-                <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href="/currenttrip" Match="NavLinkMatch.All">
-                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Trips</span>
-                </NavLink>
-                            </Authorized>
-                        </AuthorizeView>
-            </div>
-        </div>
-            </Authorized>
-        </AuthorizeView>
+       <VisitMenu/>
 
         <!-- Notes -->
         <AuthorizeView Roles="@($"{RoleType.Note_Manager},{RoleType.Note_Viewer}")">

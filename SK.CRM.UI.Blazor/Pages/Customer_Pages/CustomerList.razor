@@ -1,5 +1,4 @@
-﻿@page "/customerlist"
-
+﻿@attribute [Route(Routes.Crm_Customers)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
@@ -35,7 +34,7 @@ else
         <div class="card-body p-4">
             <div class="row pb-3">
                 <div class="col-12 ">
-                    <a href="/customer/create" class="btn btn-light" title="Add New Customer"><i class="bi bi-plus" ></i> </a>
+                    <a href=@Routes.Crm_Customer_Create class="btn btn-light" title="Add New Customer"><i class="bi bi-plus" ></i> </a>
                 </div>
             </div>
             <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
@@ -49,7 +48,7 @@ else
                     <RadzenDataGridColumn Property="IsDisabled" Title="Not Active" Width="160px" />
                     <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
                         <Template Context="customer">
-                            <RadzenButton Shade="Shade.Lighter" Text="Edit" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo($"/customer/update/{customer.Id}"))" />
+                            <RadzenButton Shade="Shade.Lighter" Text="Edit" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo(Routes.GetCustomerEditUrl(customer.Id)))" />
                             <RadzenButton Shade="Shade.Lighter" Text="Disable" ButtonStyle="ButtonStyle.Danger" Click="()=>HandleDelete(customer.Id)" />
                         </Template>
                     </RadzenDataGridColumn>
@@ -59,7 +58,7 @@ else
                     <div class="text-center p-4">
                         <p class="alert alert-secondary">No customers yet! Here's a tip:</p>
                         <blockquote class="blockquote">"Good customer management leads to better business decisions!"</blockquote>
-                        <RadzenButton Text="Add First Customer" ButtonStyle="ButtonStyle.Success" Click="@(()=>_NavigationManager.NavigateTo("/customer/create"))" />
+                        <RadzenButton Text="Add First Customer" ButtonStyle="ButtonStyle.Success" Click="@(()=>_NavigationManager.NavigateTo(Routes.Crm_Customer_Create))" />
                     </div>
                 </EmptyTemplate>
 

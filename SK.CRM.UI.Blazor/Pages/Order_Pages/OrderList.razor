@@ -1,5 +1,4 @@
-﻿@page "/orderV2/list"
-
+﻿@attribute [Route(Routes.Crm_Orders)]
 
 @rendermode InteractiveServer
 @inject IMediator Mediator
@@ -27,7 +26,7 @@ else
         <div class="card-body p-4">
             <div class="row pb-3" hidden>
                 <div class="col-12 text-end">
-                    <a href="/category/create" class="btn btn-lg btn-secondary" style="width:250px"><i class="bi bi-plus-square"></i> Add New Category</a>
+                    <a href=@Routes.Crm_Order_Create class="btn btn-lg btn-secondary" style="width:250px"><i class="bi bi-plus-square"></i> Add New Order</a>
                 </div>
             </div>
             @if (Orders.Any())
@@ -49,7 +48,7 @@ else
                         <RadzenDataGridColumn Property="Status" Title="Status" Width="160px" />
                         <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
                             <Template Context="order">
-                                <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo($"/orderV2/details/{order.Id}"))" />
+                                <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo(Routes.GetOrderDetailsUrl(order.Id)))" />
                             </Template>
                         </RadzenDataGridColumn>
                     </Columns>

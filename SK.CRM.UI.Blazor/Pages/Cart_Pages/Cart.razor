@@ -1,10 +1,4 @@
-﻿@page "/cartV2"
-@using AutoMapper
-@using SK.CRM.Application.Dtos
-@using SK.Inventory.Application.Features.Products.Queries
-@using SK.Solution.Shared.Events
-@using SK.Solution.Shared.Interfaces.Identity
-
+﻿@attribute [Route(Routes.Crm_Cart)]
 
 @rendermode InteractiveServer
 @inject IMediator Mediator
@@ -311,8 +305,9 @@ else
         {
             var command = new CreateOrderCommand(order);
             var result = await Mediator.Send(command);
-
-            _NavigationManager.NavigateTo($"/order/confirmed/{result.Id}/{result.UserId}");
+            
+            _NavigationManager.NavigateTo(Routes.GetOrderConfirmedUrl(result.Id, result.UserId));
+            
 
         }
 

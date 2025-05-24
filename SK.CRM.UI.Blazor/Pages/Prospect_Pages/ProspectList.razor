@@ -1,5 +1,4 @@
-﻿@page "/prospectlist"
-
+﻿@attribute [Route(Routes.Crm_Prospects)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
@@ -36,7 +35,7 @@ else
             
             <div class="row pb-3">
                 <div class="col-12 ">
-                    <a href="/prospect/create" class="btn btn-light" title="Add New Prospect"><i class="bi bi-plus"></i> </a>
+                    <a href=@Routes.Crm_Prospect_Create class="btn btn-light" title="Add New Prospect"><i class="bi bi-plus"></i> </a>
                 </div>
             </div>
             <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
@@ -49,7 +48,7 @@ else
                     <RadzenDataGridColumn Property="Email" Title="Email" Width="160px" />
                     <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
                         <Template Context="customer">
-                            <RadzenButton Shade="Shade.Lighter" Text="Edit" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo($"/prospect/update/{customer.Id}"))" />
+                            <RadzenButton Shade="Shade.Lighter" Text="Edit" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo(Routes.GetProspectEditUrl(customer.Id)))" />
                             <RadzenButton Shade="Shade.Lighter" Text="Delete" ButtonStyle="ButtonStyle.Danger" Click="()=>HandleDelete(customer.Id)" />
                         </Template>
                     </RadzenDataGridColumn>
@@ -59,7 +58,7 @@ else
                     <div class="text-center p-4">
                         <p class="alert alert-secondary">No Prospect yet! Here's a tip:</p>
                         <blockquote class="blockquote">"Good Prospect management leads to better business decisions!"</blockquote>
-                        <RadzenButton Text="Add First Prospect" ButtonStyle="ButtonStyle.Success" Click="@(()=>_NavigationManager.NavigateTo("/prospect/create"))" />
+                        <RadzenButton Text="Add First Prospect" ButtonStyle="ButtonStyle.Success" Click="@(()=>_NavigationManager.NavigateTo(Routes.Crm_Prospect_Create))" />
                     </div>
                 </EmptyTemplate>
             </RadzenDataGrid>

@@ -1,5 +1,5 @@
-﻿@page "/customer/create"
-@page "/customer/update/{id}"
+﻿@attribute [Route(Routes.Crm_Customer_Create)]
+@attribute [Route(Routes.Crm_Customer_Edit)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager
@@ -16,7 +16,7 @@ else
 
     <div class="rz-m-6">
         <RadzenBreadCrumb>
-            <RadzenBreadCrumbItem Path="/customerlist" Text="Customers" />
+            <RadzenBreadCrumbItem Path=@Routes.Crm_Customers Text="Customers" />
             <RadzenBreadCrumbItem Icon="add" Text=@(Id != null ? "Edit" : "Add") />
         </RadzenBreadCrumb>
     </div>

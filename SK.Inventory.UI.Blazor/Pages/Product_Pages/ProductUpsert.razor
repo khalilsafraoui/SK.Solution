@@ -1,6 +1,7 @@
 ﻿@page "/productV2/create"
 @page "/productV2/update/{id:int}"
-@using SK.Inventory.Application.Features.Categories.Queries
+@attribute [Route(Routes.Inventory_Product_Create)]
+@attribute [Route(Routes.Inventory_Product_Edit)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager
@@ -89,7 +90,7 @@ else
                             </button>
                         </div>
                         <div class="col-6 col-md-3">
-                            <a href="productV2" class="btn btn-secondary form-control" disabled="@IsProcessing">
+                            <a href=@Routes.Inventory_products class="btn btn-secondary form-control" disabled="@IsProcessing">
                                 <i class="bi bi-arrow-bar-left"></i> Back to List
                             </a>
                         </div>
@@ -161,7 +162,6 @@ else
             await _IJSRuntime.ToastrSuccessWithDelay("Product Created Successfully");
         }
         IsProcessing = false;
-        //_NavigationManager.NavigateTo("productV2");
     }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)

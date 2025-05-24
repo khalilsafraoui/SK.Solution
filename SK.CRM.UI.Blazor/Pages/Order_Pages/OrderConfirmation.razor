@@ -1,5 +1,5 @@
-﻿@page "/order/confirmation/{session_id}"
-@page "/order/confirmed/{orderId}/{userId}"
+﻿@attribute [Route(Routes.Crm_Order_Confirmation)]
+@attribute [Route(Routes.Crm_Order_Confirmed)]
 
 @inject PaymentService _paymentService
 @inject IMediator Mediator
@@ -54,7 +54,7 @@ else
 
                     <div class="text-center mt-4">
                         <NavLink class="btn btn-primary me-2" href="/">Go to Home</NavLink>
-                        <NavLink class="btn btn-secondary" href="/orderV2/list">View My Orders</NavLink>
+                        <NavLink class="btn btn-secondary" href=@Routes.Crm_Orders>View My Orders</NavLink>
                     </div>
 
                 </div>

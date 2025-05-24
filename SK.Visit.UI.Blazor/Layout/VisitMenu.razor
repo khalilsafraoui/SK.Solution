@@ -1,0 +1,29 @@
+﻿<AuthorizeView Roles="@($"{RoleType.Visit_Manager},{RoleType.Visit_Viewer},{RoleType.Visit_Agent},{RoleType.Visit_Dispatcher},{RoleType.Visit_Representative},{RoleType.Visit_Coordinator}")">
+            <Authorized Context="GlobalVisitContext">
+        <div class="nav-item px-3">
+            <a class="nav-link p-2 d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse" href="#visitsMenu">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-journal-text-nav-menu"></i> <span>Visits & Deliveries</span>
+                </span>
+                <i class="bi bi-chevron-down-nav-menu"></i>
+            </a>
+            <div class="collapse ps-3" id="visitsMenu">
+                        <AuthorizeView  Roles="@($"{RoleType.Visit_Manager},{RoleType.Visit_Viewer},{RoleType.Visit_Coordinator}")">
+                            <Authorized Context="ScheduleContext">
+                        <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href=@Routes.Visit_Schedule Match="NavLinkMatch.All">
+                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Schedule</span>
+                </NavLink>
+                 </Authorized>
+                 </AuthorizeView>
+                        <AuthorizeView Roles="@($"{RoleType.Visit_Dispatcher},{RoleType.Visit_Representative},{RoleType.Visit_Agent}")">
+                             <Authorized Context="AgenTripContext">
+                        <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href=@Routes.Visit_Currenttrip Match="NavLinkMatch.All">
+                    <i class="bi bi-tags-fill-nav-menu"></i> <span>Trips</span>
+                </NavLink>
+                            </Authorized>
+                        </AuthorizeView>
+            </div>
+        </div>
+            </Authorized>
+ </AuthorizeView>

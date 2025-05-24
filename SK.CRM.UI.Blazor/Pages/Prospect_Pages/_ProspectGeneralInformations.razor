@@ -96,7 +96,7 @@ else
             var query = new CreateProspectGeneralInformationsCommand(prospect);
             prospect = await Mediator.Send(query);
             await _IJSRuntime.ToastrSuccess("Prospect Created Successfully");
-            _NavigationManager.NavigateTo($"/prospect/update/{prospect.Id}");
+            _NavigationManager.NavigateTo(Routes.GetProspectEditUrl(prospect.Id));
         }
         IsProcessing = false;
 

@@ -1,9 +1,4 @@
-﻿@page "/currenttrip"
-@using System.Globalization
-@using Microsoft.AspNetCore.Components.Web
-@using SK.Visit.Application.Enum
-@using SK.Visit.Application.Features.Visit.AgentTrip.Queries
-@using SK.Visit.Application.Interfaces.Common
+﻿@attribute [Route(Routes.Visit_Currenttrip)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject ICurrentUserService CurrentUserService

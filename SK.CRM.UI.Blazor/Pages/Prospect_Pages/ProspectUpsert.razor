@@ -1,5 +1,5 @@
-﻿@page "/prospect/create"
-@page "/prospect/update/{id}"
+﻿@attribute [Route(Routes.Crm_Prospect_Create)]
+@attribute [Route(Routes.Crm_Prospect_Edit)]
 @using SK.CRM.Application.Features.Prospects.Commands
 @using SK.CRM.Application.Features.Prospects.Queries
 @rendermode InteractiveServer
@@ -16,7 +16,7 @@ else
 {
     <div class="rz-m-6">
         <RadzenBreadCrumb>
-            <RadzenBreadCrumbItem Path="/prospectlist" Text="Prospects" />
+            <RadzenBreadCrumbItem Path=@Routes.Crm_Prospects Text="Prospects" />
             <RadzenBreadCrumbItem Icon="add" Text=@(Id != null ? "Edit" : "Add") />
         </RadzenBreadCrumb>
     </div>
