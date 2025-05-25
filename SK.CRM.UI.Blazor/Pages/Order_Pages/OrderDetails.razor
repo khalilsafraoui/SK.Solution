@@ -63,7 +63,7 @@ else
                         <a href=@Routes.Crm_Orders class="btn btn-secondary  m-2 p-2" style="width:150px;">Back to Orders</a>
                     </div>
                     <div class="col-7 text-end">
-                        @if (order.Status != OrderStatus.StatusCancelled && order.Status != OrderStatus.StatusCompleted && IsAdmin == true)
+                        @if (order.Status != OrderStatus.StatusCancelled && order.Status != OrderStatus.StatusCompleted && IsCustomer == false)
                         {
                             <button class="btn btn-danger m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusCancelled)">Cancel Order</button>
                             @if (order.Status == OrderStatus.StatusPending)
@@ -92,7 +92,7 @@ else
     private OrderDto order = new OrderDto();
     private bool IsProcessing{ get; set; } = true;
 
-    private bool? IsAdmin { get; set; } = false;
+    private bool? IsCustomer { get; set; } = false;
     [CascadingParameter]
     public Task<AuthenticationState> authenticationStateTask { get; set; }
     protected override async Task OnInitializedAsync()
@@ -128,7 +128,7 @@ else
             var authState = await authenticationStateTask;
             var user = authState.User;
 
-            IsAdmin = user?.IsInRole(RoleType.Admin);
+            IsCustomer = user?.IsInRole(RoleType.Customer);
         }
     }
 }

@@ -16,11 +16,11 @@
 
 
         public const string Crm_Orders = "/orders";
-        public const string Crm_Order_Create = Crm_Customers + "/create";
-        public const string Crm_Order_Edit = Crm_Customers + "/edit/{id}";
-        public const string Crm_Order_Details = Crm_Customers + "/details/{id}";
-        public const string Crm_Order_Confirmation = Crm_Customers + "/confirmation/{session_id}";
-        public const string Crm_Order_Confirmed = Crm_Customers + "/confirmed/{orderId}/{userId}";
+        public const string Crm_Order_Create = Crm_Orders + "/create";
+        public const string Crm_Order_Edit = Crm_Orders + "/edit/{id}";
+        public const string Crm_Order_Details = Crm_Orders + "/details/{id}";
+        public const string Crm_Order_Confirmation = Crm_Orders + "/confirmation/{session_id}";
+        public const string Crm_Order_Confirmed = Crm_Orders + "/confirmed/{orderId}/{userId}";
 
         public static string GetOrderEditUrl(Guid id) => $"/orders/edit/{id}";
         public static string GetOrderDetailsUrl(Guid id) => $"/orders/details/{id}";

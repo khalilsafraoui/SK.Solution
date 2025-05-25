@@ -63,7 +63,7 @@ else
     public bool IsProcessing { get; set; } = true;
     private IEnumerable<OrderDto> Orders { get; set; } = new List<OrderDto>();
 
-    public bool? IsAdmin { get; set; } = true;
+    public bool? IsCustomer { get; set; } = true;
     public string? UserId { get; set; }
     [CascadingParameter]
     public Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -83,7 +83,7 @@ else
         IsProcessing = true;
         StateHasChanged();
         await CheckAuthorization();
-        if (IsAdmin == true)
+        if (IsCustomer == false)
         {
             var query = new GetAllOrdersQuery();
             Orders = await Mediator.Send(query);
@@ -103,7 +103,7 @@ else
             var authState = await authenticationStateTask;
             var user = authState.User;
 
-            IsAdmin = user?.IsInRole(RoleType.Admin);
+            IsCustomer = user?.IsInRole(RoleType.Customer);
             UserId = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
     }
