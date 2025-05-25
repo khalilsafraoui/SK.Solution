@@ -1,5 +1,6 @@
-﻿@page "/addmanager"
-@using SK.Identity.Application.Features.Manager.Commands
+﻿@attribute [Route(Routes.Identity_Manager_Create)]
+@attribute [Authorize(Roles = RoleType.Admin)]
+
 
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
@@ -131,6 +132,6 @@
 
     private void GoBackToUserList()
     {
-        NavigationManager.NavigateTo("/managers"); // Change "/users" to the actual path of your user list page
+        NavigationManager.NavigateTo(Routes.Identity_Manager);
     }
 }

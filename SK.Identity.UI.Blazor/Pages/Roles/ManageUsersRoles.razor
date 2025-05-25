@@ -1,5 +1,5 @@
-﻿@page "/manage-user-roles"
-
+﻿@attribute [Route(Routes.Identity_Manager_Users_Roles)]
+@attribute [Authorize(Roles = RoleType.Admin)]
 @inject UserManager<ApplicationUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 @inject NavigationManager Navigation

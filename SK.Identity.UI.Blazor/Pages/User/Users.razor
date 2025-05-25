@@ -1,5 +1,5 @@
-﻿@page "/users"
-
+﻿@attribute [Route(Routes.Identity_Users)]
+@attribute [Authorize(Roles = RoleType.Visit_Manager + "," + RoleType.Inventory_Manager + "," + RoleType.Note_Manager + "," + RoleType.Crm_Manager + "," + RoleType.Admin)]
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 @inject IMediator Mediator
@@ -91,7 +91,7 @@
         }
     }
 
-    private void AddUser() => NavigationManager.NavigateTo("/adduser");
+    private void AddUser() => NavigationManager.NavigateTo(Routes.Identity_Users_Create);
 
-    private void EditUser(string userId) => NavigationManager.NavigateTo($"/manage-user-roles/{userId}");
+    private void EditUser(string userId) => NavigationManager.NavigateTo(Routes.GetUserRolesEditUrl(userId));
 }

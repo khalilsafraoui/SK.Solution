@@ -1,4 +1,5 @@
-﻿@page "/adduser"
+﻿@attribute [Route(Routes.Identity_Users_Create)]
+@attribute [Authorize(Roles = RoleType.Visit_Manager + "," + RoleType.Inventory_Manager + "," + RoleType.Note_Manager + "," + RoleType.Crm_Manager + "," + RoleType.Admin)]
 @rendermode InteractiveServer
 @inject AuthenticationStateProvider _AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -76,7 +77,7 @@
 
     private void GoBackToUserList()
     {
-        NavigationManager.NavigateTo("/users"); 
+        NavigationManager.NavigateTo(Routes.Identity_Users); 
     }
    
 }

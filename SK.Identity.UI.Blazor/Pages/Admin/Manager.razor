@@ -1,5 +1,5 @@
-﻿@page "/managers"
-
+﻿@attribute [Route(Routes.Identity_Manager)]
+@attribute [Authorize(Roles = RoleType.Admin)]
 @inject NavigationManager NavigationManager
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
@@ -33,7 +33,7 @@
                         <span class="badge bg-primary me-1">@role</span>
                     }
                 </p>
-                <button class="btn btn-outline-primary w-100" @onclick="() => EditUser(manager.UserId)">
+                <button class="btn btn-outline-primary w-100" @onclick="() => EditManager(manager.UserId)">
                     <i class="bi bi-pencil me-1"></i> Manage Roles
                 </button>
             </div>
@@ -73,7 +73,7 @@
         }
     }
 
-    private void AddUser() => NavigationManager.NavigateTo("/addmanager");
+    private void AddUser() => NavigationManager.NavigateTo(Routes.Identity_Manager_Create);
 
-    private void EditUser(string userId) => NavigationManager.NavigateTo($"/manage-admin-roles/{userId}");
+    private void EditManager(string managerId) => NavigationManager.NavigateTo(Routes.GetManagerRolesEditUrl(managerId));
 }

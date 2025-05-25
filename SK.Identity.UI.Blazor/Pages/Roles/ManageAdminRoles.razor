@@ -1,5 +1,5 @@
-﻿@page "/manage-admin-roles/{userId}"
-
+﻿@attribute [Route(Routes.Identity_Manager_Roles_Edit)]
+@attribute [Authorize(Roles = RoleType.Admin)]
 @inject UserManager<ApplicationUser> UserManager
 @inject RoleManager<IdentityRole> RoleManager
 @inject NavigationManager Navigation
@@ -65,7 +65,7 @@
                         <RadzenButton Text="Back"
                                       Icon="arrow_back"
                                       ButtonStyle="ButtonStyle.Secondary"
-                                      Click="@GoBackToUserList"
+                                      Click="@GoBackToManager"
                                       Style="margin-top: 1rem;" />
                     <RadzenButton ButtonType="ButtonType.Submit"
                     Text="Save Changes"
@@ -149,8 +149,8 @@
 
     
 
-    private void GoBackToUserList()
+    private void GoBackToManager()
     {
-        Navigation.NavigateTo("/managers"); 
+        Navigation.NavigateTo(Routes.Identity_Manager); 
     }
 }

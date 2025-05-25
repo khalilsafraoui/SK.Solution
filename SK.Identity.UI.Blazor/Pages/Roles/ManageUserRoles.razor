@@ -1,5 +1,5 @@
-﻿@page "/manage-user-roles/{userId}"
-
+﻿@attribute [Route(Routes.Identity_Users_Roles_Edit)]
+@attribute [Authorize(Roles = RoleType.Visit_Manager + "," + RoleType.Inventory_Manager + "," + RoleType.Note_Manager + "," + RoleType.Crm_Manager + "," + RoleType.Admin)]
 @inject NavigationManager Navigation
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
@@ -134,6 +134,6 @@
 
     private void GoBackToUserList()
     {
-        Navigation.NavigateTo("/users");
+        Navigation.NavigateTo(Routes.Identity_Users);
     }
 }
