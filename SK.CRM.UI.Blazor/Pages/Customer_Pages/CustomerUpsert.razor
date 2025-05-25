@@ -1,5 +1,6 @@
 ﻿@attribute [Route(Routes.Crm_Customer_Create)]
 @attribute [Route(Routes.Crm_Customer_Edit)]
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager

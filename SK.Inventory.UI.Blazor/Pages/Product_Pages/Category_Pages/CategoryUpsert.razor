@@ -1,5 +1,6 @@
 ﻿@attribute [Route(Routes.Inventory_Category_Create)]
 @attribute [Route(Routes.Inventory_Category_Edit)]
+@attribute [Authorize(Roles = RoleType.Inventory_Manager + "," + RoleType.Inventory_Viewer)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager

@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @inject NavigationManager _NavigationManager
-@attribute [Authorize]
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
 
 <BsModal OnModalConfirmation="ConfirmDelete_Click"
     ButtonBootsrapStyle="btn-danger"

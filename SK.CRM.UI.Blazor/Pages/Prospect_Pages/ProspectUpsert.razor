@@ -1,7 +1,7 @@
 ﻿@attribute [Route(Routes.Crm_Prospect_Create)]
 @attribute [Route(Routes.Crm_Prospect_Edit)]
-@using SK.CRM.Application.Features.Prospects.Commands
-@using SK.CRM.Application.Features.Prospects.Queries
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager

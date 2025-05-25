@@ -8,7 +8,7 @@
 @inject NavigationManager _NavigationManager
 @inject IJSRuntime _IJSRuntime
 @inject AuthenticationStateProvider _AuthenticationStateProvider
-@attribute [Authorize]
+@attribute [Authorize(Roles = RoleType.Note_Manager + "," + RoleType.Note_Viewer)]
 <PageTitle>@(Id > 0 ? "Edit" : "Add") Note Category</PageTitle>
 @if (IsProcessing)
 {

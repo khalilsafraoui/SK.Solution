@@ -1,4 +1,5 @@
 ﻿@attribute [Route(Routes.Inventory_products)]
+@attribute [Authorize(Roles = RoleType.Inventory_Manager + "," + RoleType.Inventory_Viewer + "," + RoleType.Inventory_Coordinator)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager

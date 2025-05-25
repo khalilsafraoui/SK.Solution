@@ -1,4 +1,5 @@
 ﻿@attribute [Route(Routes.Inventory_Categories)]
+@attribute [Authorize(Roles = RoleType.Inventory_Manager + "," + RoleType.Inventory_Viewer)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime

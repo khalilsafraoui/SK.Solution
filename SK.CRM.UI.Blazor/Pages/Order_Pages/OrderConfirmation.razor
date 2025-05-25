@@ -1,6 +1,6 @@
 ﻿@attribute [Route(Routes.Crm_Order_Confirmation)]
 @attribute [Route(Routes.Crm_Order_Confirmed)]
-
+@attribute [Authorize(Roles = RoleType.Customer)]
 @inject PaymentService _paymentService
 @inject IMediator Mediator
 <PageTitle>Order Confirmation</PageTitle>
