@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SK.Inventory.Domain.Entities.Product
+﻿namespace SK.Inventory.Domain.Entities.Product
 {
     public class Category : BaseEntity
     {

@@ -27,21 +27,6 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Persistence
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
-
-            var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
-            v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
-
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                foreach (var property in entityType.GetProperties())
-                {
-                    if (property.ClrType == typeof(DateTime))
-                    {
-                        property.SetValueConverter(dateTimeConverter);
-                    }
-                }
-            }
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -51,11 +36,11 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedDate = DateTime.Now;
+                        entry.Entity.CreatedDate = DateTime.UtcNow;
                         entry.Entity.CreatedBy = await _currentUserService.GetUserIdAsync();
                         break;
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedDate = DateTime.Now;
+                        entry.Entity.LastModifiedDate = DateTime.UtcNow;
                         entry.Entity.LastModifiedBy = await _currentUserService.GetUserIdAsync();
                         break;
                 }
