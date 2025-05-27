@@ -6,6 +6,7 @@
 @inject NavigationManager _NavigationManager
 @inject IJSRuntime _IJSRuntime
 @inject IWebHostEnvironment _IWebHostEnvironment
+@inject IOptions<InventorySettings> options
 @if (IsProcessing)
 {
     <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -112,10 +113,11 @@ else
 
 
     private string? _directoryPath { get; set; }
-
+    
     protected override async Task OnInitializedAsync()
     {
-        _directoryPath = Path.Combine(_IWebHostEnvironment.WebRootPath,"images","product");
+        var productPathFromSettings = options.Value.ProductsImagesPath;
+        _directoryPath = Path.Combine(_IWebHostEnvironment.WebRootPath, productPathFromSettings);
     }
 
     [SupplyParameterFromForm(FormName = "ProductUpsertForm")]
@@ -178,7 +180,8 @@ else
         await using FileStream fileStream = new(filePath, FileMode.Create);
         await file.OpenReadStream(file.Size).CopyToAsync(fileStream);
         fileStream.Close();
-        product.ImageUrl = $"/images/product/{newFileName}";
+        var path = options.Value.ProductsImagesPath;
+        product.ImageUrl = $"{path}/{newFileName}";
         IsProcessing = false;
     }
 
