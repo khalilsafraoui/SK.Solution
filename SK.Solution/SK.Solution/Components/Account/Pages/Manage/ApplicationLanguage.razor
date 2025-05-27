@@ -1,0 +1,43 @@
+﻿@rendermode InteractiveServer
+    <select id="cultureSelect" class="form-select" @onchange="OnSelected" value="@SelectedCulture">
+        <option disabled value="">🌐 Choisissez une langue...</option>
+        <option value="fr-FR">🇫🇷 Français</option>
+        <option value="en-US">🇺🇸 English</option>
+        <option value="ar-TN">tn Arabic</option>
+    </select>
+@code {
+    [Inject] IJSRuntime JS { get; set; }
+    [Inject] NavigationManager Navigation { get; set; }
+
+    private string SelectedCulture { get; set; }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var culture = await JS.InvokeAsync<string>("blazorCulture.get");
+            if (!string.IsNullOrWhiteSpace(culture))
+            {
+                SelectedCulture = culture;
+            }
+            else
+            {
+                SelectedCulture = "fr-FR"; // valeur par défaut si rien n'est défini
+            }
+            StateHasChanged();
+        }
+}
+
+    async Task OnSelected(ChangeEventArgs e)
+    {
+        var culture = (string)e.Value;
+        var uri = new Uri(Navigation.Uri)
+            .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+        var query = $"?culture={Uri.EscapeDataString(culture)}&" +
+                    $"redirectionUri={Uri.EscapeDataString(uri)}";
+
+        Navigation.NavigateTo("/Culture/SetCulture" + query, forceLoad: true);
+    }
+}

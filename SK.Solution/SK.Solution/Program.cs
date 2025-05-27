@@ -16,6 +16,9 @@ using Serilog;
 using SK.Solution.Shared.Interfaces.GeoLocalisation;
 using SK.Solution.Utility.Services;
 using SK.Identity.Application.MappingProfiles;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Module
@@ -85,6 +88,22 @@ builder.Services.AddAuthorization();
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddControllers();
+builder.Services.AddLocalization();
+
+// Culture par défaut
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new List<CultureInfo>()
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("ar-TN"),
+                    new CultureInfo("fr")
+                };
+    options.DefaultRequestCulture = new RequestCulture("fr");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
 
 var app = builder.Build();
 StripeConfiguration.ApiKey = secretClient.GetSecret("StripeApiKey").Value.Value;
@@ -104,8 +123,12 @@ else
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
-
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()

@@ -6,7 +6,6 @@
     {
         <div class="sidebar">
             <NavMenu />
-
         </div>
     }
 
@@ -22,6 +21,9 @@
             <AuthorizeView >
                 <Authorized>
                  <div class="top-row px-4">
+                    <div class="nav-item px-3">
+                      <ApplicationLanguage />
+                    </div>
                 <div class="nav-item px-3">
                     <a class="nav-link p-2" href="Account/Manage">
                         <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name

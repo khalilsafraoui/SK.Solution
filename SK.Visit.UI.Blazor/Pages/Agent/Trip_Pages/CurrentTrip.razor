@@ -1,9 +1,11 @@
-﻿@attribute [Route(Routes.Visit_Currenttrip)]
+﻿
+@attribute [Route(Routes.Visit_Currenttrip)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject ICurrentUserService CurrentUserService
 @attribute [Authorize(Roles = RoleType.Visit_Representative + "," + RoleType.Visit_Dispatcher + "," + RoleType.Visit_Agent)]
-<PageTitle>Today's Trip</PageTitle>
+@inject IStringLocalizer<VisitTextRessources> _localizer
+<PageTitle>@_localizer["currentTrip_PageTitle"]</PageTitle>
 
 <div class="container my-5">
     @if(Trips.Any())
@@ -11,18 +13,16 @@
         <div class="shadow-lg rounded-4 p-4 mb-4 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                    <h2 class="mb-0">Today's Trip</h2>
+                    <h2 class="mb-0">@_localizer["currentTrip_PageTitle"]</h2>
                     <small class="text-muted">@DateTime.Today.ToString("D", CultureInfo.InvariantCulture)</small>
                 </div>
                 @if (Trips.Count(x => x.Status == TripStatusDto.Completed || x.Status == TripStatusDto.SkippedPermanently) != Trips.Count)
                 {
                     <button class="btn @(isTripStarted ? "btn-warning" : "btn-success") px-4 py-2 rounded-pill"
                     @onclick="() => OnStart()">
-                        @(isTripStarted ? "Pause Trip" : !InProgress ? "Start Trip" : "Resume Trip")
+                        @(isTripStarted ? @_localizer["currentTrip_PauseTrip_Button"] : !InProgress ? @_localizer["currentTrip_StartTrip_Button"] : @_localizer["currentTrip_ResumeTrip_Button"])
                     </button>
                 }
-
-
             </div>
             <div class="text-center">
                 <div class="progress" style="height: 20px;">
@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div class="mt-1 fw-semibold">
-                    @CompletedTrips / @TotalTrips Completed
+                    @CompletedTrips / @TotalTrips @_localizer["currentTrip_Completed_Message"]
                 </div>
             </div>
 
@@ -44,11 +44,11 @@
         <div class="shadow-lg rounded-4 p-4 mb-4 bg-light border">
             @if (Trips.Count(x => x.Status == TripStatusDto.Completed || x.Status == TripStatusDto.SkippedPermanently) != Trips.Count)
             {
-                <p class="text-primary fw-semibold mb-0">🔵 @(isTripStarted ? "Click (Pause Trip) above to Pause your trip for today." : !InProgress ? "Click (Start Trip) above to begin your trip for today." : "Click (Resume Trip) above to resume your trip for today.")</p>
+                <p class="text-primary fw-semibold mb-0">🔵 @(isTripStarted ? @_localizer["currentTrip_PauseTrip_Message"] : !InProgress ? @_localizer["currentTrip_StartTrip_Message"] : @_localizer["currentTrip_ResumeTrip_Message"])</p>
             }
             else
             {
-                <p class="text-primary fw-semibold mb-0">🔵 All of today's trips have been completed. Great job!</p>
+                <p class="text-primary fw-semibold mb-0">🔵 @_localizer["currentTrip_TripCompleted_Message"]</p>
             }
         </div>
         <CascadingValue Value="Trips">
@@ -66,12 +66,13 @@
     else
     {
         <div class="shadow-lg rounded-4 p-4 mb-4 bg-light border">
-            <p class="text-primary fw-semibold mb-0">🔵 There are no trips scheduled for today. Please check back later or tomorrow.</p>
+            <p class="text-primary fw-semibold mb-0">🔵 @_localizer["currentTrip_NoTrip_Message"]</p>
         </div>
     }
 </div>
 
 @code {
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

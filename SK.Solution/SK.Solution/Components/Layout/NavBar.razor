@@ -1,4 +1,7 @@
-﻿@rendermode InteractiveServer
+﻿@using Microsoft.Extensions.Localization
+@using SK.Solution.Resources
+@rendermode InteractiveServer
+@inject IStringLocalizer<MainTextResources> _localizer
 <nav class="navbar navbar-expand-md navbar-dark bg-dark pb-4 pt-4">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="">
@@ -13,27 +16,32 @@
 			<ul class="navbar-nav me-auto mb-2 mb-md-0">
 				<li class="nav-item mx-2">
 					<NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
-						<span class="bi bi-house-door" aria-hidden="true"></span> Home
+						<span class="bi bi-house-door" aria-hidden="true"></span> @_localizer["Home"]
 					</NavLink>
 				</li>
 				<li class="nav-item mx-2">
 					<NavLink class="nav-link" href="/#about">
-						<span class="bi bi-info-square" aria-hidden="true"></span> About us
+						<span class="bi bi-info-square" aria-hidden="true"></span> @_localizer["AboutUs"]
 					</NavLink>
 				</li>
 				<li class="nav-item mx-2">
 					<NavLink class="nav-link" href="/#product">
-						<span class="bi bi-box-seam" aria-hidden="true"></span> Products
+						<span class="bi bi-box-seam" aria-hidden="true"></span> @_localizer["Products"]
 					</NavLink>
 				</li>
                 <CrmBar />
 			</ul>
 			<ul class="d-flex navbar-nav mb-2 mb-md-0">
+				<li class="nav-item">
+					<div class="nav-link p-2">
+						<ApplicationLanguage />
+					</div>
+				</li>
 				<AuthorizeView>
 					<Authorized>
 						<li class="nav-item">
 							<NavLink class="nav-link p-2" href="Account/Manage">
-								Welcome, @context?.User?.Identity?.Name
+								@_localizer["Welcome"], @context?.User?.Identity?.Name
 							</NavLink>
 						</li>
 						<li class="nav-item">
@@ -41,20 +49,15 @@
 								<AntiforgeryToken />
 								<input type="hidden" name="ReturnUrl" value="" />
 								<button type="submit" class="nav-link btn btn-success">
-									<span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+									<span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> @_localizer["Logout"]
 								</button>
 							</form>
 						</li>
 					</Authorized>
 					<NotAuthorized>
 						<li class="nav-item">
-							<NavLink class="nav-link" href="Account/Register">
-								<span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-							</NavLink>
-						</li>
-						<li class="nav-item">
 							<NavLink class="nav-link btn btn-success" href="Account/Login">
-								<span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+								<span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> @_localizer["Login"]
 							</NavLink>
 						</li>
 					</NotAuthorized>
@@ -65,6 +68,4 @@
 </nav>
 
 @code{
-	
-
 }

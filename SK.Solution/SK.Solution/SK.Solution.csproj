@@ -52,4 +52,21 @@
     <None Include="wwwroot\geo\cities.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    
+    <Compile Update="Resources\MainTextRessources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MainTextRessources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    
+    <EmbeddedResource Update="Resources\MainTextRessources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MainTextRessources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
