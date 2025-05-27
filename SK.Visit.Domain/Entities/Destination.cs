@@ -27,8 +27,8 @@ namespace SK.Visit.Domain.Entities
 
         public string CountryId { get; set; }
 
-        public string? ArrivalTime;
-        public string? FinishTime;
+        public string? ArrivalTime { get; set; }
+        public string? FinishTime { get; set; }
         public string? Note { get; set; } = string.Empty;
         public string? SkipReason { get; set; } = string.Empty;
 

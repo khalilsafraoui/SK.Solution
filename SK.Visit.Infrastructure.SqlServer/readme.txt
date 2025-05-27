@@ -1,2 +1,2 @@
-﻿add-migration AddFieldsRelatedToTripInDestinationEntity -context SK.Visit.Infrastructure.SqlServer.Persistence.VisitDbContext -project SK.Visit.Infrastructure.SqlServer
+﻿add-migration AddFieldsRelatedToTripInDestinationEntityv2 -context SK.Visit.Infrastructure.SqlServer.Persistence.VisitDbContext -project SK.Visit.Infrastructure.SqlServer
 update-database -context SK.Visit.Infrastructure.SqlServer.Persistence.VisitDbContext -project SK.Visit.Infrastructure.SqlServer

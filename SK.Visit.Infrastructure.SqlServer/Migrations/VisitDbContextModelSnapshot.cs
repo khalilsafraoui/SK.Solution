@@ -46,6 +46,9 @@ namespace SK.Visit.Infrastructure.SqlServer.Migrations
                         .HasColumnType("nvarchar(500)")
                         .HasAnnotation("ErrorMessage", "AgentId is missing..");
 
+                    b.Property<string>("ArrivalTime")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CityId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -72,6 +75,9 @@ namespace SK.Visit.Infrastructure.SqlServer.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2")
                         .HasAnnotation("ErrorMessage", "Date is missing..");
+
+                    b.Property<string>("FinishTime")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDelevery")
                         .ValueGeneratedOnAdd()
