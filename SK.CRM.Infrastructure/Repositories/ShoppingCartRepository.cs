@@ -14,11 +14,10 @@ namespace SK.CRM.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<bool> ClearCartAsync(string? userId)
+        public async Task ClearCartAsync(string? userId)
         {
             var cartItems = await _context.ShoppingCarts.Where(x => x.UserId == userId).ToListAsync();
             _context.ShoppingCarts.RemoveRange(cartItems);
-            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<IEnumerable<ShoppingCart>> GetAllAsync(string? userId)
@@ -37,9 +36,8 @@ namespace SK.CRM.Infrastructure.Repositories
             return cartCount;
         }
 
-        public async Task<bool> UpdateCartAsync(string userId, int productId, int updateBy)
+        public async Task UpdateCartAsync(string userId, int productId, int updateBy)
         {
-            if (string.IsNullOrEmpty(userId)) return false;
             var cartItem = await _context.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
             if (cartItem == null)
             {
@@ -59,7 +57,6 @@ namespace SK.CRM.Infrastructure.Repositories
                     _context.ShoppingCarts.Remove(cartItem);
                 }
             }
-            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

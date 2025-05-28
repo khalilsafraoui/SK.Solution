@@ -9,18 +9,17 @@ namespace SK.CRM.Application.Features.Prospects.Queries
 
     public sealed class GetProspectByIdQueryHandler : IRequestHandler<GetProspectByIdQuery, CustomerDto?>
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetProspectByIdQueryHandler(ICustomerRepository customerRepository, IMapper mapper)
+        public GetProspectByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<CustomerDto?> Handle(GetProspectByIdQuery request, CancellationToken cancellationToken)
         {
-            var customer = await _customerRepository.GetByIdAsync(request.Id);
+            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(request.Id);
             return customer is null ? null : _mapper.Map<CustomerDto>(customer);
         }
     }

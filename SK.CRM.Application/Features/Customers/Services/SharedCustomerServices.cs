@@ -8,21 +8,21 @@ namespace SK.CRM.Application.Features.Customers.Services
 {
     public class SharedCustomerServices : ISharedCustomerServices
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public SharedCustomerServices(ICustomerRepository customerRepository, IMapper mapper)
+        public SharedCustomerServices(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
         public async Task<List<SharedCustomerDto>> GetCusomersAsync()
         {
-            return _mapper.Map<List<SharedCustomerDto>>(await _customerRepository.GetAllCustomersAsync()); 
+            return _mapper.Map<List<SharedCustomerDto>>(await _unitOfWork.CustomerRepository.GetAllCustomersAsync()); 
         }
 
         public async Task<List<SharedCustomerDestinationDto>> GetCusomersDestinationsAsync()
         {
-            List<Customer> customers = await _customerRepository.GetAllCustomersAsync();
+            List<Customer> customers = await _unitOfWork.CustomerRepository.GetAllCustomersAsync();
             List<SharedCustomerDestinationDto> customerDestinations = new List<SharedCustomerDestinationDto>();
             foreach (var customer in customers)
             {

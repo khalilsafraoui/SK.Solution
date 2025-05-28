@@ -9,18 +9,17 @@ namespace SK.CRM.Application.Features.Customers.Queries
 
     public sealed class GetCustomerGeneralInformationsByIdQueryHandler : IRequestHandler<GetCustomerGeneralInformationsByIdQuery, CustomerGeneralInformationsDto?>
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetCustomerGeneralInformationsByIdQueryHandler(ICustomerRepository customerRepository, IMapper mapper)
+        public GetCustomerGeneralInformationsByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<CustomerGeneralInformationsDto?> Handle(GetCustomerGeneralInformationsByIdQuery request, CancellationToken cancellationToken)
         {
-            var customer = await _customerRepository.GetCustomerByIdAsync(request.Id);
+            var customer = await _unitOfWork.CustomerRepository.GetCustomerByIdAsync(request.Id);
             return customer is null ? null : _mapper.Map<CustomerGeneralInformationsDto>(customer);
         }
     }

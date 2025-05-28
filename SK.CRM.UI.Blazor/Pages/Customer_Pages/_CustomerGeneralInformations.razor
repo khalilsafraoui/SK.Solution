@@ -2,7 +2,7 @@
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
 @inject NavigationManager _NavigationManager
-
+@inject ILogger<_CustomerGeneralInformations> Logger
 @if (IsProcessing)
 {
     <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -59,47 +59,42 @@ else
 @code {
     [Parameter]
     public string? CustomerId { get; set; }
-
+    [Parameter]
     public CustomerGeneralInformationsDto customer { get; set; } = new CustomerGeneralInformationsDto();
-    public bool IsProcessing { get; set; } = true;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadCastomer();
-            IsProcessing = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadCastomer()
-    {
-        if (!string.IsNullOrWhiteSpace(CustomerId))
-        {
-            var query = new GetCustomerGeneralInformationsByIdQuery(Guid.Parse(CustomerId));
-            customer = await Mediator.Send(query);
-        }
-    }
+    public bool IsProcessing { get; set; } = false;
 
     private async Task UpsertCustomer()
     {
-        IsProcessing = true;
-        if (customer.Id != Guid.Empty)
+        try
         {
-            var query = new UpdateCustomerGeneralInformationsCommand(customer);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Customer Updated Successfully");
+            IsProcessing = true;
+            if (customer.Id != Guid.Empty)
+            {
+                var query = new UpdateCustomerGeneralInformationsCommand(customer);
+                await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Customer Updated Successfully");
+            }
+            else
+            {
+                var query = new CreateCustomerGeneralInformationsCommand(customer);
+                customer = await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Customer Created Successfully");
+                _NavigationManager.NavigateTo(Routes.GetCustomerEditUrl(customer.Id));
+            }
         }
-        else
+        catch (ValidationException ex)
         {
-            var query = new CreateCustomerGeneralInformationsCommand(customer);
-            customer = await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Customer Created Successfully");
-            _NavigationManager.NavigateTo(Routes.GetCustomerEditUrl(customer.Id));
+            await _IJSRuntime.ToastrError(ex.Message);
         }
-        IsProcessing = false;
-
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Saving or Updating Customer General Informations.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
 }

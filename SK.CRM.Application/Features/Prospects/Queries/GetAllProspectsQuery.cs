@@ -9,18 +9,17 @@ namespace SK.CRM.Application.Features.Prospects.Queries
 
     public class GetAllProspectsQueryHandler : IRequestHandler<GetAllProspectsQuery, List<CustomerDto>>
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetAllProspectsQueryHandler(ICustomerRepository customerRepository, IMapper mapper)
+        public GetAllProspectsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<List<CustomerDto>> Handle(GetAllProspectsQuery request, CancellationToken cancellationToken)
         {
-            var customers = await _customerRepository.GetAllProspectAsync();
+            var customers = await _unitOfWork.CustomerRepository.GetAllProspectAsync();
             if(!customers.Any())
             {
                 return new List<CustomerDto>();

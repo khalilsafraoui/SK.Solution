@@ -36,7 +36,7 @@ namespace SK.CRM.Infrastructure.PostgreSql
                 throw new InvalidOperationException("Connection string is null or empty.");
 
             services.AddDbContext<CrmDbContext>(options =>
-                options.UseNpgsql(connectionString), ServiceLifetime.Transient);
+                options.UseNpgsql(connectionString));
 
             // Repositories spécifiques PostgreSQL
             services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -46,6 +46,8 @@ namespace SK.CRM.Infrastructure.PostgreSql
 
             // Générique
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            // Register UnitOfWork
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }

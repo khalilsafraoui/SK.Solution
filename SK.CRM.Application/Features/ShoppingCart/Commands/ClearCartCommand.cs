@@ -7,16 +7,16 @@ namespace SK.CRM.Application.Features.ShoppingCart.Commands
 
     public class ClearCartCommandHandler : IRequestHandler<ClearCartCommand, bool>
     {
-        private readonly IShoppingCartRepository _shoppingCartRepository;
-
-        public ClearCartCommandHandler(IShoppingCartRepository shoppingCartRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public ClearCartCommandHandler(IUnitOfWork unitOfWork)
         {
-            _shoppingCartRepository = shoppingCartRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(ClearCartCommand request, CancellationToken cancellationToken)
         {
-            return await _shoppingCartRepository.ClearCartAsync(request.userId);
+            await _unitOfWork.ShoppingCartRepository.ClearCartAsync(request.userId);
+            return await _unitOfWork.SaveChangesAsync()>0;
         }
     }
 }

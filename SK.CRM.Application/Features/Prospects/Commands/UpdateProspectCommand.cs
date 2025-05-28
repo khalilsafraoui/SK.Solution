@@ -11,23 +11,23 @@ namespace SK.CRM.Application.Features.Prospects.Commands
 
     public class UpdateProspectCommandHandler : IRequestHandler<UpdateProspectCommand, CustomerDto>
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public UpdateProspectCommandHandler(ICustomerRepository customerRepository, IMapper mapper)
+        public UpdateProspectCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<CustomerDto> Handle(UpdateProspectCommand request, CancellationToken cancellationToken)
         {
-            var customer = await _customerRepository.GetByIdAsync(request.Customer.Id)
+            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(request.Customer.Id)
                             ?? throw new NotFoundException(nameof(Customer), request.Customer.Id);
 
             _mapper.Map(request.Customer, customer);
 
-            var updated = await _customerRepository.UpdateAsync(customer);
+            var updated = await _unitOfWork.CustomerRepository.UpdateAsync(customer);
+            await _unitOfWork.SaveChangesAsync();
             if (!updated)
             {
                 throw new ApplicationException("Failed to update customer.");

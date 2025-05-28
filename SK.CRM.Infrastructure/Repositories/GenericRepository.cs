@@ -36,7 +36,6 @@ namespace SK.CRM.Infrastructure.Repositories
         public async Task<T> CreateAsync(T entity)
         {
             _dbSet.Add(entity);
-            await _context.SaveChangesAsync();
             return entity;
         }
 
@@ -46,7 +45,6 @@ namespace SK.CRM.Infrastructure.Repositories
             if (existingEntity == null) return false;
 
             _context.Entry(existingEntity).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
             return true;
         }
 
@@ -56,7 +54,6 @@ namespace SK.CRM.Infrastructure.Repositories
             if (entity == null) return false;
 
             _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
             return true;
         }
     }

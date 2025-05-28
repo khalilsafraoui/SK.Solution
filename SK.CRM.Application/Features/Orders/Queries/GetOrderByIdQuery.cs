@@ -9,18 +9,17 @@ namespace SK.CRM.Application.Features.Orders.Queries
 
     public sealed class GetOrderByIdHandler : IRequestHandler<GetOrderByIdQuery, OrderDto?>
     {
-        private readonly IOrderRepository _orderRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetOrderByIdHandler(IOrderRepository orderRepository, IMapper mapper)
+        public GetOrderByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<OrderDto?> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
         {
-            var order = await _orderRepository.GetByIdAsync(request.Id);
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(request.Id);
             return order is null ? null : _mapper.Map<OrderDto>(order);
         }
     }

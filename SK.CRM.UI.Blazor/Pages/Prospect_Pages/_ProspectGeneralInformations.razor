@@ -2,7 +2,7 @@
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
 @inject NavigationManager _NavigationManager
-
+@inject ILogger<_ProspectGeneralInformations> Logger
 @if (IsProcessing)
 {
     <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -59,47 +59,42 @@ else
 @code {
     [Parameter]
     public string? ProspectId { get; set; }
-
+    [Parameter]
     public ProspectGeneralInformationsDto prospect { get; set; } = new ProspectGeneralInformationsDto();
-    public bool IsProcessing { get; set; } = true;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadProspect();
-            IsProcessing = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadProspect()
-    {
-        if (!string.IsNullOrWhiteSpace(ProspectId))
-        {
-            var query = new GetProspectGeneralInformationsByIdQuery(Guid.Parse(ProspectId));
-            prospect = await Mediator.Send(query);
-        }
-    }
+    public bool IsProcessing { get; set; } = false;
 
     private async Task UpsertProspect()
     {
-        IsProcessing = true;
-        if (prospect.Id != Guid.Empty)
+        try
         {
-            var query = new UpdateProspectGeneralInformationsCommand(prospect);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Prospect Updated Successfully");
+            IsProcessing = true;
+            if (prospect.Id != Guid.Empty)
+            {
+                var query = new UpdateProspectGeneralInformationsCommand(prospect);
+                await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Prospect Updated Successfully");
+            }
+            else
+            {
+                var query = new CreateProspectGeneralInformationsCommand(prospect);
+                prospect = await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Prospect Created Successfully");
+                _NavigationManager.NavigateTo(Routes.GetProspectEditUrl(prospect.Id));
+            }
         }
-        else
+        catch (ValidationException ex)
         {
-            var query = new CreateProspectGeneralInformationsCommand(prospect);
-            prospect = await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Prospect Created Successfully");
-            _NavigationManager.NavigateTo(Routes.GetProspectEditUrl(prospect.Id));
+            await _IJSRuntime.ToastrError(ex.Message);
         }
-        IsProcessing = false;
-
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while upserting prospect");
+            await _IJSRuntime.ToastrError("An error occurred while saving the prospect. Please try again.");
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
     }
 
 }

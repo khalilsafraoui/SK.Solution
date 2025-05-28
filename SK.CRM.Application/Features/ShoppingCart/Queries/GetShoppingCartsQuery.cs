@@ -2,7 +2,6 @@
 using MediatR;
 using SK.CRM.Application.DTOs;
 using SK.CRM.Application.Interfaces;
-using SK.CRM.Domain.Entities;
 
 namespace SK.CRM.Application.Features.ShoppingCart.Queries
 {
@@ -10,18 +9,17 @@ namespace SK.CRM.Application.Features.ShoppingCart.Queries
 
     public sealed class GetShoppingCartsQueryHandler : IRequestHandler<GetShoppingCartsQuery, IEnumerable<ShoppingCartDto>>
     {
-        private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetShoppingCartsQueryHandler(IShoppingCartRepository shoppingCartRepository, IMapper mapper)
+        public GetShoppingCartsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _shoppingCartRepository = shoppingCartRepository ?? throw new ArgumentNullException(nameof(shoppingCartRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<ShoppingCartDto>> Handle(GetShoppingCartsQuery request, CancellationToken cancellationToken)
         {
-            var shippingCarts = await _shoppingCartRepository.GetAllAsync(request.userId);
+            var shippingCarts = await _unitOfWork.ShoppingCartRepository.GetAllAsync(request.userId);
             if (!shippingCarts.Any())
             {
                 return new List<ShoppingCartDto>();

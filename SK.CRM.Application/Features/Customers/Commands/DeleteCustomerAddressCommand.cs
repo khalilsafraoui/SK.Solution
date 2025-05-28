@@ -1,10 +1,5 @@
 ﻿using MediatR;
 using SK.CRM.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SK.CRM.Application.Features.Customers.Commands
 {
@@ -13,16 +8,15 @@ namespace SK.CRM.Application.Features.Customers.Commands
 
     public class DeleteCustomerAddressCommandHandler : IRequestHandler<DeleteCustomerAddressCommand, bool>
     {
-        private readonly IAddressRepository _addressRepository;
-
-        public DeleteCustomerAddressCommandHandler(IAddressRepository addressRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public DeleteCustomerAddressCommandHandler(IUnitOfWork unitOfWork)
         {
-            _addressRepository = addressRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DeleteCustomerAddressCommand request, CancellationToken cancellationToken)
         {
-            var address = await _addressRepository.GetByIdAsync(request.AddressId);
+            var address = await _unitOfWork.AddressRepository.GetByIdAsync(request.AddressId);
             if (address == null)
             {
                 return false; // Or throw an exception if preferred
@@ -33,7 +27,8 @@ namespace SK.CRM.Application.Features.Customers.Commands
                 return false; // Or throw an exception if preferred
             }
 
-            await _addressRepository.DeleteAsync(request.AddressId);
+            await _unitOfWork.AddressRepository.DeleteAsync(request.AddressId);
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

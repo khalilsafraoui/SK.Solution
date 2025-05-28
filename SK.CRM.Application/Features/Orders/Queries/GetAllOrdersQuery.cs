@@ -9,18 +9,17 @@ namespace SK.CRM.Application.Features.Orders.Queries
 
     public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, List<OrderDto>>
     {
-        private readonly IOrderRepository _orderRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetAllOrdersQueryHandler(IOrderRepository orderRepository, IMapper mapper)
+        public GetAllOrdersQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _orderRepository = orderRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<List<OrderDto>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
         {
-            var orders = await _orderRepository.GetAllAsync(request.userId);
+            var orders = await _unitOfWork.OrderRepository.GetAllAsync(request.userId);
             if(!orders.Any())
             {
                 return new List<OrderDto>();

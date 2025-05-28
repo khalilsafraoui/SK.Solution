@@ -6,6 +6,7 @@
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager
 @inject IJSRuntime _IJSRuntime
+@inject ILogger<ProspectUpsert> Logger
 @if (IsProcessing)
 {
     <div class="position-absolute w-75 h-75 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -31,19 +32,19 @@ else
         </div>
 
         <div class="card-body p-4">
-            <RadzenTabs Change=@OnChange TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
+            <RadzenTabs TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
                 <Tabs>
                     <RadzenTabsItem Text="General Informations">
-                        <_ProspectGeneralInformations ProspectId="@Id"></_ProspectGeneralInformations>
+                        <_ProspectGeneralInformations ProspectId="@Id" prospect="prospect"></_ProspectGeneralInformations>
 
                     </RadzenTabsItem>
                     <RadzenTabsItem Text="Addresses" Disabled="@(string.IsNullOrWhiteSpace(Id))">
-                        <_ProspectAddresses ProspectId="@Id"></_ProspectAddresses>
+                        <_ProspectAddresses ProspectId="@Id" addresses="addresses"></_ProspectAddresses>
                     </RadzenTabsItem>
 
                 </Tabs>
             </RadzenTabs>
-            
+
         </div>
 
     </div>
@@ -53,16 +54,51 @@ else
 @code {
     [Parameter]
     public string? Id { get; set; }
-
+    public ProspectGeneralInformationsDto prospect { get; set; } = new ProspectGeneralInformationsDto();
+    private List<AddressDto> addresses { get; set; } = new List<AddressDto>();
     public bool IsProcessing { get; set; } = false;
 
-    private void OnChange()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
+        if (firstRender)
+        {
+            try
+            {
+                //IsProcessing = true;
+                await LoadProspect();
+                await LoadAddresses();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while Loading Prospect with ID: " + Id);
+                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+        
+        }
+        IsProcessing = false;
     }
 
-    private async Task CanChange(StepsCanChangeEventArgs args)
+    private async Task LoadAddresses()
     {
-
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var query = new GetProspectAddressesQuery(Guid.Parse(Id));
+            addresses = await Mediator.Send(query);
+        }
     }
+
+    private async Task LoadProspect()
+    {
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var query = new GetProspectGeneralInformationsByIdQuery(Guid.Parse(Id));
+            prospect = await Mediator.Send(query);
+        }
+    }
+
 }

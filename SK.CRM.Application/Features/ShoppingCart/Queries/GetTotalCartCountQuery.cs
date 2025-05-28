@@ -7,16 +7,15 @@ namespace SK.CRM.Application.Features.ShoppingCart.Queries
 
     public sealed class GetTotalCartCountQueryHandler : IRequestHandler<GetTotalCartCountQuery, int>
     {
-        private readonly IShoppingCartRepository _shoppingCartRepository;
-
-        public GetTotalCartCountQueryHandler(IShoppingCartRepository shoppingCartRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public GetTotalCartCountQueryHandler(IUnitOfWork unitOfWork)
         {
-            _shoppingCartRepository = shoppingCartRepository ?? throw new ArgumentNullException(nameof(shoppingCartRepository));
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<int> Handle(GetTotalCartCountQuery request, CancellationToken cancellationToken)
         {
-            return await _shoppingCartRepository.GetTotalCartCountAsync(request.userId);
+            return await _unitOfWork.ShoppingCartRepository.GetTotalCartCountAsync(request.userId);
         }
     }
 }

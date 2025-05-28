@@ -7,16 +7,16 @@ namespace SK.CRM.Application.Features.ShoppingCart.Commands
 
     public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand, bool>
     {
-        private readonly IShoppingCartRepository _shoppingCartRepository;
-
-        public UpdateCartCommandHandler(IShoppingCartRepository shoppingCartRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public UpdateCartCommandHandler(IUnitOfWork unitOfWork)
         {
-            _shoppingCartRepository = shoppingCartRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
         {
-            return await _shoppingCartRepository.UpdateCartAsync(request.userId, request.productId, request.updateBy);
+             await _unitOfWork.ShoppingCartRepository.UpdateCartAsync(request.userId, request.productId, request.updateBy);
+             return await _unitOfWork.SaveChangesAsync()>0;
         }
     }
 }

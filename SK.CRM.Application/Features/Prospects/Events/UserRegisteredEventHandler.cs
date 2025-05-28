@@ -7,18 +7,18 @@ namespace SK.CRM.Application.Features.Prospects.Events
 {
     public class UserRegisteredEventHandler : INotificationHandler<UserRegisteredEvent>
     {
-        private readonly ICustomerRepository _customerRepository;
-
-        public UserRegisteredEventHandler(ICustomerRepository customerRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public UserRegisteredEventHandler(IUnitOfWork unitOfWork)
         {
-            _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(UserRegisteredEvent notification, CancellationToken cancellationToken)
         {
             var customer = new Customer(notification.UserId, notification.Email, notification.firstName, notification.lastName);
             
-            customer = await _customerRepository.CreateAsync(customer);
+            customer = await _unitOfWork.CustomerRepository.CreateAsync(customer);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

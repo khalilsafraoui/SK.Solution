@@ -1,23 +1,15 @@
 ﻿@rendermode InteractiveServer
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
-
+@inject ILogger<_ProspectAddresses> Logger
 <_Address Addresses="@addresses" OnAddressSave="UpsertAddress" OnAddressDeleted="DeleteAddress"></_Address>
 
 @code {
 
     [Parameter]
     public string? ProspectId { get; set; }
-    private List<AddressDto> addresses { get; set; } = new List<AddressDto>();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadAddresses();
-            StateHasChanged();
-        }
-    }
+    [Parameter]
+    public List<AddressDto> addresses { get; set; } = new List<AddressDto>();
 
     private async Task LoadAddresses()
     {
@@ -30,39 +22,60 @@
 
     private async Task UpsertAddress(AddressDto addressDto)
     {
-
-        if (addressDto.Id != Guid.Empty)
+        try
         {
-            var query = new UpdateProspectAddressCommand(addressDto);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Address Updated Successfully");
+            if (addressDto.Id != Guid.Empty)
+            {
+                var query = new UpdateProspectAddressCommand(addressDto);
+                await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Address Updated Successfully");
+            }
+            else
+            {
+                var query = new CreateProspectAddressCommand(Guid.Parse(ProspectId), addressDto);
+                await Mediator.Send(query);
+                await _IJSRuntime.ToastrSuccess("Address Created Successfully");
+            }
+
+            await LoadAddresses();
+            StateHasChanged();
         }
-        else
+        catch (ValidationException ex)
         {
-            var query = new CreateProspectAddressCommand(Guid.Parse(ProspectId), addressDto);
-            await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccess("Address Created Successfully");
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Saving or Updating An address.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
         }
 
-        await LoadAddresses();
-        StateHasChanged();
     }
 
     private async Task DeleteAddress(Guid AddressId)
     {
-        var query = new DeleteProspectAddressCommand(AddressId);
-        bool IsDeleted = await Mediator.Send(query);
-        if (IsDeleted)
+        try
         {
-            await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
-        }
-        else
-        {
-            await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
-        }
+            var query = new DeleteProspectAddressCommand(AddressId);
+            bool IsDeleted = await Mediator.Send(query);
+            if (IsDeleted)
+            {
+                await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
+            }
 
-        await LoadAddresses();
-        StateHasChanged();
+            await LoadAddresses();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while deleting address with ID: " + AddressId);
+            await _IJSRuntime.ToastrError("An unexpected error occurred while deleting the address. Please try again later.");
+        }
+    
     }
 
 }

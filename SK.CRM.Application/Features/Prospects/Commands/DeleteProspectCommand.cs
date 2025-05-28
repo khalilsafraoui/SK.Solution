@@ -9,22 +9,22 @@ namespace SK.CRM.Application.Features.Prospects.Commands
 
     public class DeleteProspectCommandHandler : IRequestHandler<DeleteProspectCommand, bool>
     {
-        private readonly ICustomerRepository _customerRepository;
-
-        public DeleteProspectCommandHandler(ICustomerRepository customerRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public DeleteProspectCommandHandler(IUnitOfWork unitOfWork)
         {
-            _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DeleteProspectCommand request, CancellationToken cancellationToken)
         {
-            var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
+            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(request.CustomerId);
             if (customer == null)
             {
                 return false; // Or throw an exception if preferred
             }
 
-            await _customerRepository.DeleteAsync(request.CustomerId);
+            await _unitOfWork.CustomerRepository.DeleteAsync(request.CustomerId);
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

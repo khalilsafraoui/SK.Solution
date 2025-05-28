@@ -14,7 +14,7 @@ namespace SK.CRM.Infrastructure
             var CRMConnectionString = configuration.GetConnectionString("CrmConnection") ?? throw new InvalidOperationException("Connection string 'CrmConnection' not found.");
 
             services.AddDbContext<CrmDbContext>(options =>
-               options.UseSqlServer(CRMConnectionString), ServiceLifetime.Transient);
+               options.UseSqlServer(CRMConnectionString));
 
             // Repositories spécifiques SQL Server
             services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -24,7 +24,8 @@ namespace SK.CRM.Infrastructure
 
             // Générique
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
+            // Register UnitOfWork
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }

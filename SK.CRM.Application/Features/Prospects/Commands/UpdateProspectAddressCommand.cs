@@ -11,23 +11,23 @@ namespace SK.CRM.Application.Features.Prospects.Commands
 
     public class UpdateProspectAddressCommandHandler : IRequestHandler<UpdateProspectAddressCommand>
     {
-        private readonly IAddressRepository _addressRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public UpdateProspectAddressCommandHandler(IAddressRepository addressRepository, IMapper mapper)
+        public UpdateProspectAddressCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _addressRepository = addressRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task Handle(UpdateProspectAddressCommand request, CancellationToken cancellationToken)
         {
-            var address = await _addressRepository.GetByIdAsync(request.Address.Id)
+            var address = await _unitOfWork.AddressRepository.GetByIdAsync(request.Address.Id)
                             ?? throw new NotFoundException(nameof(Address), request.Address.Id);
 
             _mapper.Map(request.Address, address);
 
-            await _addressRepository.UpdateAddressAsync(address);
+            await _unitOfWork.AddressRepository.UpdateAddressAsync(address);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

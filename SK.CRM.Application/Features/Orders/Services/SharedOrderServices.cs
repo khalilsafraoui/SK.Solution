@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using SK.CRM.Application.Enums;
+﻿using SK.CRM.Application.Enums;
 using SK.CRM.Application.Interfaces;
 using SK.CRM.Domain.Entities;
 using SK.Solution.Shared.Interfaces.Crm;
@@ -9,26 +8,22 @@ namespace SK.CRM.Application.Features.Orders.Services
 {
     public class SharedOrderServices: ISharedOrderServices
     {
-        private readonly IOrderRepository _orderRepository;
-        private readonly ICustomerRepository _customerRepository;
-        private readonly IAddressRepository _addressRepository;
+        private readonly IUnitOfWork _unitOfWork;
         
-        public SharedOrderServices(IOrderRepository orderRepository, ICustomerRepository customerRepository, IAddressRepository addressRepository)
+        public SharedOrderServices(IUnitOfWork unitOfWork)
         {
-            _orderRepository = orderRepository;
-            _customerRepository = customerRepository;
-            _addressRepository = addressRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<SharedOrderDestinationDto>> GetOrdersDestinaionsAsync()
         {
-            IEnumerable<Order> orders = await _orderRepository.GetOrdersByStatusAsync(OrderStatus.StatusReadyForPickUp);
+            IEnumerable<Order> orders = await _unitOfWork.OrderRepository.GetOrdersByStatusAsync(OrderStatus.StatusReadyForPickUp);
             List<SharedOrderDestinationDto> orderDestinations = new List<SharedOrderDestinationDto>();
             foreach (var order in orders) {
                 if (order.CustomerId == null) continue;
-                Customer customer = await _customerRepository.GetCustomerByIdAsync(order.CustomerId.Value);
+                Customer customer = await _unitOfWork.CustomerRepository.GetCustomerByIdAsync(order.CustomerId.Value);
                 if(order.AddressId == null) continue;
-                Address address = await _addressRepository.GetByIdAsync(order.AddressId.Value);
+                Address address = await _unitOfWork.AddressRepository.GetByIdAsync(order.AddressId.Value);
 
                 orderDestinations.Add(new SharedOrderDestinationDto
                     {

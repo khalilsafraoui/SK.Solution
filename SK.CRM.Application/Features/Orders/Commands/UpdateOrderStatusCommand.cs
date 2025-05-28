@@ -15,21 +15,20 @@ namespace SK.CRM.Application.Features.Orders.Commands
 
     public class UpdateOrderStatusCommandHandler : IRequestHandler<UpdateOrderStatusCommand, OrderDto>
     {
-        private readonly IOrderRepository _orderRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public UpdateOrderStatusCommandHandler(IOrderRepository orderRepository, IMapper mapper)
+        public UpdateOrderStatusCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _orderRepository = orderRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<OrderDto> Handle(UpdateOrderStatusCommand request, CancellationToken cancellationToken)
         {
-            var order = await _orderRepository.UpdateStatusAsync(request.orderId,request.status,request.paymentIntentId)
+            var order = await _unitOfWork.OrderRepository.UpdateStatusAsync(request.orderId,request.status,request.paymentIntentId)
                             ?? throw new NotFoundException(nameof(Order), request.orderId);
+            await _unitOfWork.SaveChangesAsync();
 
-           
             if (order is null)
             {
                 throw new ApplicationException("Failed to update customer.");

@@ -11,25 +11,8 @@
 
     [Parameter]
     public string? CustomerId { get; set; }
-    private List<AddressDto> addresses { get; set; } = new List<AddressDto>();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        try
-        {
-            if (firstRender)
-            {
-                await LoadAddresses();
-                StateHasChanged();
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error while Loading Address List.");
-            await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
-        }
-    
-    }
+    [Parameter]
+    public List<AddressDto> addresses { get; set; } = new List<AddressDto>();
 
     private async Task LoadAddresses()
     {
@@ -74,19 +57,28 @@
 
     private async Task DeleteAddress(Guid AddressId)
     {
-        var query = new DeleteCustomerAddressCommand(AddressId);
-        bool IsDeleted = await Mediator.Send(query);
-        if (IsDeleted)
+        try
         {
-            await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
-        }
-        else
-        {
-            await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
-        }
+            var query = new DeleteCustomerAddressCommand(AddressId);
+            bool IsDeleted = await Mediator.Send(query);
+            if (IsDeleted)
+            {
+                await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
+            }
 
-        await LoadAddresses();
-        StateHasChanged();
+            await LoadAddresses();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Deleting An address.");
+            await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+        }
+   
     }
 
 }

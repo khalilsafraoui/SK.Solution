@@ -40,7 +40,6 @@ namespace SK.CRM.Infrastructure.PostgreSql.Repositories
                 }
                 address.CustomerId = customerId;
                 _context.Addresses.Add(address);
-                await _context.SaveChangesAsync();
             }
         }
 
@@ -73,7 +72,6 @@ namespace SK.CRM.Infrastructure.PostgreSql.Repositories
                 address.IsDefault = updatedAddress.IsDefault;
                 _context.Attach(address);
                 _context.Entry(address).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
             }
         }
         

@@ -5,6 +5,7 @@
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager
 @inject IJSRuntime _IJSRuntime
+@inject ILogger<CustomerUpsert> Logger
 
 @if (IsProcessing)
 {
@@ -34,14 +35,14 @@ else
         <div class="card-body p-4">
            
 
-            <RadzenTabs Change=@OnChange TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
+            <RadzenTabs TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
                 <Tabs>
                     <RadzenTabsItem Text="General Informations">
-                        <_CustomerGeneralInformations CustomerId="@Id"></_CustomerGeneralInformations>
+                        <_CustomerGeneralInformations CustomerId="@Id" customer="customer"></_CustomerGeneralInformations>
                         
                     </RadzenTabsItem>
                     <RadzenTabsItem Text="Addresses" Disabled="@(string.IsNullOrWhiteSpace(Id))">
-                        <_CustomerAddresses CustomerId="@Id"></_CustomerAddresses>
+                        <_CustomerAddresses CustomerId="@Id" addresses="addresses"></_CustomerAddresses>
                     </RadzenTabsItem>
                     
                 </Tabs>
@@ -55,22 +56,52 @@ else
 @code {
     [Parameter]
     public string? Id { get; set; }
-
-
+    public CustomerGeneralInformationsDto customer { get; set; } = new CustomerGeneralInformationsDto();
+    public List<AddressDto> addresses { get; set; } = new List<AddressDto>();
 
     public bool IsProcessing { get; set; } = false;
     
-    
-   
-
-    private void OnChange()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-      
+        if (firstRender)
+        {
+            try
+            {
+               // IsProcessing = true;
+                await LoadCastomer();
+                await LoadAddresses();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while Loading Customer with ID: "+ Id);
+                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
+
+        }
+        IsProcessing = false;
     }
 
-    private async Task CanChange(StepsCanChangeEventArgs args)
+    private async Task LoadCastomer()
     {
-       
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var query = new GetCustomerGeneralInformationsByIdQuery(Guid.Parse(Id));
+            customer = await Mediator.Send(query);
+        }
+    }
+
+    private async Task LoadAddresses()
+    {
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var query = new GetCustomerAddressesQuery(Guid.Parse(Id));
+            addresses = await Mediator.Send(query);
+        }
     }
 
    

@@ -10,18 +10,17 @@ namespace SK.CRM.Application.Features.Customers.Queries
 
     public sealed class GetCustomerAddressesQueryHandler : IRequestHandler<GetCustomerAddressesQuery, List<AddressDto?>>
     {
-        private readonly IAddressRepository _addressRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public GetCustomerAddressesQueryHandler(IAddressRepository addressRepository, IMapper mapper)
+        public GetCustomerAddressesQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _addressRepository = addressRepository ?? throw new ArgumentNullException(nameof(addressRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<List<AddressDto?>> Handle(GetCustomerAddressesQuery request, CancellationToken cancellationToken)
         {
-            var addresses = await _addressRepository.GetAddressesForCustomerAsync(request.customerId);
+            var addresses = await _unitOfWork.AddressRepository.GetAddressesForCustomerAsync(request.customerId);
             if (!addresses.Any())
             {
                 return new List<AddressDto>();

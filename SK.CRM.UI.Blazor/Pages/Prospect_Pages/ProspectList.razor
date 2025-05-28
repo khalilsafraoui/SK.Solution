@@ -4,6 +4,7 @@
 @inject IJSRuntime _IJSRuntime
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+@inject ILogger<ProspectList> Logger
 @inject NavigationManager _NavigationManager
 @attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
 
@@ -32,14 +33,14 @@ else
         </div>
 
         <div class="card-body p-4">
-            
+
             <div class="row pb-3">
                 <div class="col-12 ">
                     <a href=@Routes.Crm_Prospect_Create class="btn btn-light" title="Add New Prospect"><i class="bi bi-plus"></i> </a>
                 </div>
             </div>
             <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                            Data="@customers" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single">
+            Data="@customers" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single">
 
                 <Columns>
                     <RadzenDataGridColumn Property="FirstName" Title="First Name" Width="120px" />
@@ -84,22 +85,26 @@ else
             {
                 // Sending GetAllCustomersQuery to the mediator
                 await LoadProspects();
-                IsProcessing = false;
-                StateHasChanged();
+                
             }
             catch (Exception ex)
             {
-                // Handle any errors that may occur
-                Console.WriteLine($"Error fetching customers: {ex.Message}");
+                Logger.LogError(ex, "Error while loading prospects.");
+                await _IJSRuntime.ToastrError("An unexpected error occurred while loading prospects. Please try again.");
             }
-           
+            finally
+            {
+                IsProcessing = false;
+                StateHasChanged();
+            }
+
         }
     }
 
     private async Task LoadProspects()
     {
-        var query = new GetAllProspectsQuery();
-        customers = await Mediator.Send(query);
+            var query = new GetAllProspectsQuery();
+            customers = await Mediator.Send(query);
     }
     private async Task HandleDelete(Guid id)
     {
@@ -109,25 +114,38 @@ else
 
     private async Task ConfirmDelete_Click(bool isConfirmed)
     {
-        IsProcessing = true;
-        await _IJSRuntime.InvokeVoidAsync("HideConfirmationModal");
-        if (isConfirmed && DeleteProspectID != Guid.Empty)
+        try
         {
-            var query = new DeleteProspectCommand(DeleteProspectID);
-            var result = await Mediator.Send(query);
-            if (result)
+            IsProcessing = true;
+            await _IJSRuntime.InvokeVoidAsync("HideConfirmationModal");
+            if (isConfirmed && DeleteProspectID != Guid.Empty)
             {
-                await _IJSRuntime.ToastrSuccess("Prospect Delete Successfully");
+                var query = new DeleteProspectCommand(DeleteProspectID);
+                var result = await Mediator.Send(query);
+                if (result)
+                {
+                    await _IJSRuntime.ToastrSuccess("Prospect Delete Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError("Prospect Delete InSuccessfully");
+                }
+                await LoadProspects();
+                StateHasChanged();
             }
-            else
-            {
-                await _IJSRuntime.ToastrError("Prospect Delete InSuccessfully");
-            }
-            await LoadProspects();
-            StateHasChanged();
+            DeleteProspectID = Guid.Empty;
         }
-        DeleteProspectID = Guid.Empty;
-        IsProcessing = false;
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while performing prospect delete.");
+
+            await _IJSRuntime.ToastrError("An unexpected error occurred while performing prospect delete. Please try again.");
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+
     }
 }
 

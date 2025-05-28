@@ -9,22 +9,22 @@ namespace SK.CRM.Application.Features.Customers.Commands
 
     public class DisableCustomerCommandHandler : IRequestHandler<DisableCustomerCommand, bool>
     {
-        private readonly ICustomerRepository _customerRepository;
-
-        public DisableCustomerCommandHandler(ICustomerRepository customerRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public DisableCustomerCommandHandler(IUnitOfWork unitOfWork)
         {
-            _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DisableCustomerCommand request, CancellationToken cancellationToken)
         {
-            var customer = await _customerRepository.GetByIdAsync(request.CustomerId);
+            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(request.CustomerId);
             if (customer == null)
             {
                 return false; // Or throw an exception if preferred
             }
 
-            await _customerRepository.DisableCustomerAsync(request.CustomerId);
+            await _unitOfWork.CustomerRepository.DisableCustomerAsync(request.CustomerId);
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

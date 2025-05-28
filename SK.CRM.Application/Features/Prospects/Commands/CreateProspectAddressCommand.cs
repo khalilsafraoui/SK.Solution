@@ -9,18 +9,19 @@ namespace SK.CRM.Application.Features.Prospects.Commands
     public sealed record CreateProspectAddressCommand(Guid CustomerId,AddressDto Address) : IRequest;
     public class CreateProspectAddressCommandHandler : IRequestHandler<CreateProspectAddressCommand>
     {
-        private readonly IAddressRepository _addressRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public CreateProspectAddressCommandHandler(IAddressRepository addressRepository, IMapper mapper)
+        public CreateProspectAddressCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _addressRepository = addressRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task Handle(CreateProspectAddressCommand request, CancellationToken cancellationToken)
         {
             var address = _mapper.Map<Address>(request.Address);
-            await _addressRepository.AddAddressToCustomerAsync(request.CustomerId,address);
+            await _unitOfWork.AddressRepository.AddAddressToCustomerAsync(request.CustomerId,address);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

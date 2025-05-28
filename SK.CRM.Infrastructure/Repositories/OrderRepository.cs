@@ -18,7 +18,6 @@ namespace SK.CRM.Infrastructure.Repositories
         {
             order.OrderDate = DateTime.UtcNow;
             await _context.Orders.AddAsync(order);
-            await _context.SaveChangesAsync();
             return order;
         }
 
@@ -60,7 +59,6 @@ namespace SK.CRM.Infrastructure.Repositories
                 {
                     order.PaymentIntentId = paymentIntentId;
                 }
-                await _context.SaveChangesAsync();
             }
             return order;
         }
