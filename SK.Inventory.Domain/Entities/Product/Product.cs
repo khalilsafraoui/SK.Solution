@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SK.Inventory.Domain.Entities.Product
+﻿namespace SK.Inventory.Domain.Entities.Product
 {
     public class Product : BaseEntity
     {

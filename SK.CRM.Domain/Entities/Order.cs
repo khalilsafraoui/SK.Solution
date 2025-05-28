@@ -15,25 +15,25 @@ namespace SK.CRM.Domain.Entities
 
         public Address Address { get; set; }
 
-        [Required]
+        
         [Display(Name = "Order Total")]
         public double OrderTotal { get; set; }
-        [Required]
+        
         public DateTime OrderDate { get; set; }
 
-        [Required]
-        [Display(Name = "Order Total")]
+        
+        [Display(Name = "Status")]
         public string Status { get; set; }
 
-        [Required]
+       
         [Display(Name = "Name")]
         public string Name { get; set; }
 
-        [Required]
+        
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
 
-        [Required]
+        
         [Display(Name = "Email")]
         public string Email { get; set; }
 

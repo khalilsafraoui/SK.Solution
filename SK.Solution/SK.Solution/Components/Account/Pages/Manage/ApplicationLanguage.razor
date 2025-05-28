@@ -30,7 +30,7 @@
         }
 }
 
-    async Task OnSelected(ChangeEventArgs e)
+    void OnSelected(ChangeEventArgs e)
     {
         var culture = (string)e.Value;
         var uri = new Uri(Navigation.Uri)

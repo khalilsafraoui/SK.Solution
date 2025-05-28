@@ -1,13 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SK.CRM.Application.Interfaces.Common;
 using SK.CRM.Domain.Entities;
+using SK.CRM.Infrastructure.PostgreSql.Configuration.Customers;
+using SK.CRM.Infrastructure.PostgreSql.Configuration.Orders;
+using SK.CRM.Infrastructure.PostgreSql.Configuration.Shopping;
 
 namespace SK.CRM.Infrastructure.PostgreSql.Persistence
 {
     public class CrmDbContext : DbContext
     {
         public CrmDbContext(DbContextOptions<CrmDbContext> options) : base(options) { }
+        private readonly ICurrentUserService? _currentUserService;
 
+        public CrmDbContext(DbContextOptions<CrmDbContext> options, ICurrentUserService currentUserService)
+            : base(options)
+        {
+            _currentUserService = currentUserService;
+        }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -17,32 +26,30 @@ namespace SK.CRM.Infrastructure.PostgreSql.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Customer>().HasKey(c => c.Id);
-            modelBuilder.Entity<Order>().HasKey(c => c.Id);
-            modelBuilder.Entity<OrderDetail>().HasKey(c => c.Id);
-            modelBuilder.Entity<Address>().HasKey(c => c.Id);
-            modelBuilder.Entity<Address>()
-                        .Property(a => a.Latitude)
-                        .HasColumnType("decimal(9,6)");
+            modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+            modelBuilder.ApplyConfiguration(new AddressConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderDetailsConfiguration());
+            modelBuilder.ApplyConfiguration(new ShoppingCartConfiguration());
+        }
 
-            modelBuilder.Entity<Address>()
-                        .Property(a => a.Longitude)
-                        .HasColumnType("decimal(9,6)");
-
-            var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
-            v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(),
-            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
-
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        {
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
             {
-                foreach (var property in entityType.GetProperties())
+                switch (entry.State)
                 {
-                    if (property.ClrType == typeof(DateTime))
-                    {
-                        property.SetValueConverter(dateTimeConverter);
-                    }
+                    case EntityState.Added:
+                        entry.Entity.CreatedDate = DateTime.UtcNow;
+                        entry.Entity.CreatedBy = await _currentUserService.GetUserIdAsync();
+                        break;
+                    case EntityState.Modified:
+                        entry.Entity.LastModifiedDate = DateTime.UtcNow;
+                        entry.Entity.LastModifiedBy = await _currentUserService.GetUserIdAsync();
+                        break;
                 }
             }
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

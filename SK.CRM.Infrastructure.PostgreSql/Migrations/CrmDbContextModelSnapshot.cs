@@ -36,6 +36,12 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
 
@@ -51,6 +57,12 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
 
                     b.Property<bool>("IsDeliveryAddress")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("Latitude")
                         .HasColumnType("decimal(9,6)");
@@ -90,6 +102,12 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DeliveryMethod")
                         .IsRequired()
                         .HasColumnType("text");
@@ -107,6 +125,12 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
 
                     b.Property<bool>("IsProspect")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -137,36 +161,54 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<Guid?>("AddressId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("ErrorMessage", "Please enter Email..");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("ErrorMessage", "Please enter name..");
 
                     b.Property<DateTime>("OrderDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasAnnotation("ErrorMessage", "Please Select order date..");
 
                     b.Property<double>("OrderTotal")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasAnnotation("ErrorMessage", "Total order is missing..");
 
                     b.Property<string>("PaymentIntentId")
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("ErrorMessage", "Please enter Phone number..");
 
                     b.Property<string>("SessionId")
                         .HasColumnType("text");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasAnnotation("ErrorMessage", "Status is missing..");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -187,10 +229,23 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<double>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("double precision");
 
                     b.Property<int>("ProductId")
@@ -207,7 +262,10 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", t =>
+                        {
+                            t.HasCheckConstraint("CK_OrderDetails_Quantity_Positive", "\"Quantity\" > 0");
+                        });
                 });
 
             modelBuilder.Entity("SK.CRM.Domain.Entities.ShoppingCart", b =>
@@ -218,6 +276,18 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
 
                     b.Property<int>("Count")
                         .HasColumnType("integer");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");

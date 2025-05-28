@@ -16,7 +16,7 @@ namespace SK.CRM.Infrastructure.Repositories
 
         public async Task<Order> CreateAsync(Order order)
         {
-            order.OrderDate = DateTime.Now;
+            order.OrderDate = DateTime.UtcNow;
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
             return order;

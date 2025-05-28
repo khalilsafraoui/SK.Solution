@@ -18,8 +18,10 @@ namespace SK.Inventory.Infrastructure.SqlServer.Configuration.Products
                   .HasPrecision(18, 2)
                   .IsRequired();
 
-            builder.HasCheckConstraint("CK_Product_Price", "[Price] >= 0.01 AND [Price] <= 1000");
-
+            builder.ToTable(t =>
+            {
+                t.HasCheckConstraint("CK_Product_Price", "[Price] >= 0.01 AND [Price] <= 1000");
+            });
             builder.Property(p => p.SpecialTag)
                   .HasMaxLength(150); // Optional
 
