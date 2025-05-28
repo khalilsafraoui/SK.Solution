@@ -1,6 +1,6 @@
-﻿@using SK.Solution.Utility
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider _AuthenticationStateProvider
+@inject IStringLocalizer<MainTextResources> _localizer
 <div class="page">
     @if (_navMenuVisible)
     {
@@ -34,7 +34,7 @@
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="" />
                         <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left text-black" aria-hidden="true"></span> Logout
+                                    <span class="bi bi-arrow-bar-left text-black" aria-hidden="true"></span> @_localizer["Logout"]
                         </button>
                     </form>
                 </div>

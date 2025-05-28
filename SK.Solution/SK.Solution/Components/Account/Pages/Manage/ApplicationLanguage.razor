@@ -1,9 +1,9 @@
 ﻿@rendermode InteractiveServer
     <select id="cultureSelect" class="form-select" @onchange="OnSelected" value="@SelectedCulture">
-        <option disabled value="">🌐 Choisissez une langue...</option>
-        <option value="fr-FR">🇫🇷 Français</option>
-        <option value="en-US">🇺🇸 English</option>
-        <option value="ar-TN">tn Arabic</option>
+        
+        <option value="fr-FR">🇫🇷</option>
+        <option value="en-US">🇺🇸</option>
+        <option value="ar-TN">tn</option>
     </select>
 @code {
     [Inject] IJSRuntime JS { get; set; }
