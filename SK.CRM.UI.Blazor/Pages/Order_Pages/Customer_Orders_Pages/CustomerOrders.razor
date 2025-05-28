@@ -1,10 +1,11 @@
-﻿@attribute [Route(Routes.Crm_Orders)]
-@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+﻿@attribute [Route(Routes.Crm_Customer_Orders)]
+@attribute [Authorize(Roles = RoleType.Customer)]
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject NavigationManager _NavigationManager
-@inject ILogger<OrderList> Logger
+@inject ILogger<CustomerOrders> Logger
 @inject IJSRuntime _IJSRuntime
+@inject ICurrentUserService _CurrentUserService
 @attribute [Authorize]
 <PageTitle>Orders</PageTitle>
 @if (IsProcessing)
@@ -50,7 +51,7 @@ else
                         <RadzenDataGridColumn Property="Status" Title="Status" Width="160px" />
                         <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
                             <Template Context="order">
-                                <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo(Routes.GetOrderDetailsUrl(order.Id)))" />
+                                <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo(Routes.GetCustomerOrderDetailsUrl(order.Id)))" />
                             </Template>
                         </RadzenDataGridColumn>
                     </Columns>
@@ -64,32 +65,35 @@ else
 @code {
     public bool IsProcessing { get; set; } = true;
     private IEnumerable<OrderDto> Orders { get; set; } = new List<OrderDto>();
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             try
             {
+                IsProcessing = true;
                 await LoadOrders();
+                
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error loading orders");
-                await _IJSRuntime.ToastrError("An error occurred while loading orders. Please try again later.");
+                Logger.LogError(ex, "Error while fetching customer Orders.");
+                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
             }
             finally
             {
                 IsProcessing = false;
                 StateHasChanged();
             }
-        
+       
         }
     }
 
     private async Task LoadOrders()
     {
-        var query = new GetAllOrdersQuery();
+        var UserId = await _CurrentUserService.GetUserIdAsync();
+        var query = new GetAllOrdersQuery(UserId.ToString());
         Orders = await Mediator.Send(query);
     }
 }

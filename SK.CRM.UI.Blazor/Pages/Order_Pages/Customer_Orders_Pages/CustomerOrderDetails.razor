@@ -1,10 +1,10 @@
-﻿@attribute [Route(Routes.Crm_Order_Details)]
-@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+﻿@attribute [Route(Routes.Crm_Customer_Order_Details)]
+@attribute [Authorize(Roles = RoleType.Customer)]
 @rendermode InteractiveServer
 @inject NavigationManager _NavigationManager
 @inject IMediator Mediator
 @inject IJSRuntime _JSRuntime
-@inject ILogger<OrderList> Logger
+@inject ILogger<CustomerOrderDetails> Logger
 
 <PageTitle>Order Details</PageTitle>
 @if (IsProcessing)
@@ -63,25 +63,6 @@ else
                     <div class="col-5">
                         <a href=@Routes.Crm_Orders class="btn btn-secondary  m-2 p-2" style="width:150px;">Back to Orders</a>
                     </div>
-                    <div class="col-7 text-end">
-                        @if (order.Status != OrderStatus.StatusCancelled && order.Status != OrderStatus.StatusCompleted)
-                        {
-                            <button class="btn btn-danger m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusCancelled)">Cancel Order</button>
-                            @if (order.Status == OrderStatus.StatusPending)
-                            {
-                                <button class="btn btn-primary m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusApproved)">Approve</button>
-                            }
-                            @if (order.Status == OrderStatus.StatusApproved)
-                            {
-                                <button class="btn btn-primary m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusReadyForPickUp)">Ready for Pickup</button>
-                            }
-                            @if (order.Status == OrderStatus.StatusReadyForPickUp)
-                            {
-                                <button class="btn btn-success m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusCompleted)">Completed</button>
-                            }
-                        }
-
-                    </div>
                 </div>
             </div>
         </div>
@@ -105,32 +86,13 @@ else
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error fetching order details for ID: {OrderId}", id);
-                await _JSRuntime.ToastrError("Failed to load order details. Please try again later.");
+                await _JSRuntime.ToastrError("An error occurred while fetching order details. Please try again later.");
             }
             finally
             {
                 IsProcessing = false;
                 StateHasChanged();
             }
-        }
-    }
-
-    private async Task UpdateOrderStatus(string status)
-    {
-        try
-        {
-            var command = new UpdateOrderStatusCommand(order.Id, status, "");
-            order = await Mediator.Send(command);
-            await _JSRuntime.ToastrSuccess("Order Status Updated Successfully");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error updating order status for ID: {OrderId}", order.Id);
-            await _JSRuntime.ToastrError("Failed to update order status. Please try again later.");
-        }
-        finally
-        {
-            StateHasChanged();
         }
     }
 }

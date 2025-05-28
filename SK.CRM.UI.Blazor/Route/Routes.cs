@@ -14,6 +14,9 @@
         public const string Crm_Customer_Edit = Crm_Customers + "/edit/{id}";
         public static string GetCustomerEditUrl(Guid id) => $"/customers/edit/{id}";
 
+        public const string Crm_Customer_Orders = "/customers/orders";
+        public const string Crm_Customer_Order_Details = Crm_Customer_Orders + "/details/{id}";
+        public static string GetCustomerOrderDetailsUrl(Guid id) => $"/customers/orders/details/{id}";
 
         public const string Crm_Orders = "/orders";
         public const string Crm_Order_Create = Crm_Orders + "/create";
