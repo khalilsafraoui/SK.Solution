@@ -16,21 +16,24 @@
 
         public const string Crm_Customer_Orders = "/customers/orders";
         public const string Crm_Customer_Order_Details = Crm_Customer_Orders + "/details/{id}";
+        public const string Crm_Customer_Order_Confirmation = Crm_Customer_Orders + "/confirmation/{session_id}";
+        public const string Crm_Customer_Order_Confirmed = Crm_Customer_Orders + "/confirmed/{orderId}/{userId}";
         public static string GetCustomerOrderDetailsUrl(Guid id) => $"/customers/orders/details/{id}";
+        public static string GetCustomerOrderConfirmationUrl(string baseUri) => $"{baseUri}customers/orders/confirmation/{{CHECKOUT_SESSION_ID}}";
+        public static string GetCustomerOrderConfirmedUrl(Guid orderId, string userId) => $"/customers/orders/confirmed/{orderId}/{userId}";
 
         public const string Crm_Orders = "/orders";
         public const string Crm_Order_Create = Crm_Orders + "/create";
         public const string Crm_Order_Edit = Crm_Orders + "/edit/{id}";
         public const string Crm_Order_Details = Crm_Orders + "/details/{id}";
-        public const string Crm_Order_Confirmation = Crm_Orders + "/confirmation/{session_id}";
-        public const string Crm_Order_Confirmed = Crm_Orders + "/confirmed/{orderId}/{userId}";
+        
 
         public static string GetOrderEditUrl(Guid id) => $"/orders/edit/{id}";
         public static string GetOrderDetailsUrl(Guid id) => $"/orders/details/{id}";
-        public static string GetOrderConfirmationUrl(string sessionId) => $"/orders/confirmation/{sessionId}";
-        public static string GetOrderConfirmedUrl(Guid orderId, string userId) => $"/orders/confirmed/{orderId}/{userId}";
+       
 
 
         public const string Crm_Cart = "/cart";
+        public static string GetCartUrl(string baseUri) => $"{baseUri}cart";
     }
 }

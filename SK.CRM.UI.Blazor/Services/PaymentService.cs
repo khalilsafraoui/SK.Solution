@@ -7,6 +7,7 @@ using MediatR;
 using SK.CRM.Application.Features.Orders.Queries;
 using SK.CRM.Application.Features.Orders.Commands;
 using SK.CRM.Application.Enums;
+using SK.CRM.UI.Blazor.Route;
 
 namespace SK.CRM.UI.Blazor.Services
 {
@@ -41,8 +42,8 @@ namespace SK.CRM.UI.Blazor.Services
 
             var options = new SessionCreateOptions
             {
-                SuccessUrl = $"{_navigationManager.BaseUri}order/confirmation/{{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{_navigationManager.BaseUri}cart",
+                SuccessUrl = Routes.GetCustomerOrderConfirmationUrl(_navigationManager.BaseUri),
+                CancelUrl = Routes.GetCartUrl(_navigationManager.BaseUri),
                 LineItems = lineItems,
                 Mode = "payment",
             };

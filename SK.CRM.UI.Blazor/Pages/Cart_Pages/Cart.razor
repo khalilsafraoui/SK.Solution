@@ -306,7 +306,7 @@ else
             var command = new CreateOrderCommand(order);
             var result = await Mediator.Send(command);
             
-            _NavigationManager.NavigateTo(Routes.GetOrderConfirmedUrl(result.Id, result.UserId));
+            _NavigationManager.NavigateTo(Routes.GetCustomerOrderConfirmedUrl(result.Id, result.UserId));
             
 
         }

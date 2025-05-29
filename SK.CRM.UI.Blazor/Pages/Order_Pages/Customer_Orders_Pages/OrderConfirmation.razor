@@ -1,5 +1,5 @@
-﻿@attribute [Route(Routes.Crm_Order_Confirmation)]
-@attribute [Route(Routes.Crm_Order_Confirmed)]
+﻿@attribute [Route(Routes.Crm_Customer_Order_Confirmation)]
+@attribute [Route(Routes.Crm_Customer_Order_Confirmed)]
 @attribute [Authorize(Roles = RoleType.Customer)]
 @inject PaymentService _paymentService
 @inject IMediator Mediator
@@ -54,7 +54,7 @@ else
 
                     <div class="text-center mt-4">
                         <NavLink class="btn btn-primary me-2" href="/">Go to Home</NavLink>
-                        <NavLink class="btn btn-secondary" href=@Routes.Crm_Orders>View My Orders</NavLink>
+                        <NavLink class="btn btn-secondary" href=@Routes.Crm_Customer_Orders>View My Orders</NavLink>
                     </div>
 
                 </div>
