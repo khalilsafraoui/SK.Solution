@@ -1,0 +1,2 @@
+﻿add-migration InitialMigration -context SK.Identity.Infrastructure.SqlSerer.Persistence.AppDbContext -project SK.Identity.Infrastructure.SqlServer
+update-database -context SK.Identity.Infrastructure.SqlSerer.Persistence.AppDbContext -project SK.Identity.Infrastructure.SqlServer
