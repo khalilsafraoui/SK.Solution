@@ -1,2 +1,2 @@
-﻿add-migration addbaseentityfieldsToAllTable -context SK.CRM.Infrastructure.PostgreSql.Persistence.CrmDbContext -project SK.CRM.Infrastructure.PostgreSql
+﻿add-migration addFieldsoQuoteTable -context SK.CRM.Infrastructure.PostgreSql.Persistence.CrmDbContext -project SK.CRM.Infrastructure.PostgreSql
 update-database -context SK.CRM.Infrastructure.PostgreSql.Persistence.CrmDbContext -project SK.CRM.Infrastructure.PostgreSql

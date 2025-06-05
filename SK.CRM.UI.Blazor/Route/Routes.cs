@@ -35,5 +35,19 @@
 
         public const string Crm_Cart = "/cart";
         public static string GetCartUrl(string baseUri) => $"{baseUri}cart";
+
+        public const string Crm_Customer_Quotes = "/customers/quotes";
+        public const string Crm_Customer_Quote_Details = Crm_Customer_Quotes + "/details/{id}";
+
+        public static string GetCustomerQuoteDetailsUrl(Guid id) => $"/customers/quotes/details/{id}";
+
+        public const string Crm_Quotes = "/quotes";
+        public const string Crm_Quote_Create = Crm_Quotes + "/create";
+        public const string Crm_Quote_Edit = Crm_Quotes + "/edit/{id}";
+        public const string Crm_Quote_Details = Crm_Quotes + "/details/{id}";
+
+
+        public static string GetQuoteEditUrl(Guid id) => $"/quotes/edit/{id}";
+        public static string GetQuoteDetailsUrl(Guid id) => $"/quotes/details/{id}";
     }
 }

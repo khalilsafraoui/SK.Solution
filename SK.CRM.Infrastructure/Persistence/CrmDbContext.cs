@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SK.CRM.Application.Interfaces.Common;
 using SK.CRM.Domain.Entities;
+using SK.CRM.Domain.Entities.Quote;
 using SK.CRM.Infrastructure.Configuration.Customers;
 using SK.CRM.Infrastructure.Configuration.Orders;
+using SK.CRM.Infrastructure.Configuration.Quotes;
 using SK.CRM.Infrastructure.Configuration.Shopping;
 
 namespace SK.CRM.Infrastructure.Persistence
@@ -23,6 +25,9 @@ namespace SK.CRM.Infrastructure.Persistence
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
+        public DbSet<Quote> Quotes { get; set; }
+        public DbSet<QuoteItem> QuoteItems { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,6 +36,8 @@ namespace SK.CRM.Infrastructure.Persistence
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderDetailsConfiguration());
             modelBuilder.ApplyConfiguration(new ShoppingCartConfiguration());
+            modelBuilder.ApplyConfiguration(new QuoteConfiguration());
+            modelBuilder.ApplyConfiguration(new QuoteItemConfiguration());
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())

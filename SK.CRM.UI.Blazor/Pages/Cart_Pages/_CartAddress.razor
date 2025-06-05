@@ -99,7 +99,7 @@
         ;
     };
     [Parameter] public Guid AddressId { get; set; }
-    [Parameter] public EventCallback<Guid> AddressIdChanged { get; set; }
+    [Parameter] public EventCallback<AddressDto> AddressIdChanged { get; set; }
     private List<AddressDto> addresses = new ();
     private List<CountryDto> countries = new();
     private List<StateDto> states = new();
@@ -128,7 +128,7 @@
         if (defaultAddress != null)
         {
             AddressId = defaultAddress.Id;
-            await AddressIdChanged.InvokeAsync(defaultAddress.Id);
+            await AddressIdChanged.InvokeAsync(defaultAddress);
         }
 
         countries = await countryService.GetAllCountriesAsync();
@@ -143,7 +143,7 @@
         if(!showCreateAddress)
         {
             AddressId = (Guid)value;
-            await AddressIdChanged.InvokeAsync((Guid)value);
+            await AddressIdChanged.InvokeAsync(addresses.First(x=>x.Id == (Guid)value));
         }
     }
 
@@ -177,7 +177,7 @@
             if (defaultAddress != null)
             {
                 AddressId = defaultAddress.Id;
-                await AddressIdChanged.InvokeAsync(defaultAddress.Id);
+                await AddressIdChanged.InvokeAsync(defaultAddress);
             }
             showCreateAddress = false;
             StateHasChanged();
@@ -199,7 +199,7 @@
         if (Guid.TryParse(e.Value?.ToString(), out var selectedId))
         {
             AddressId = selectedId;
-            await AddressIdChanged.InvokeAsync(selectedId);
+            await AddressIdChanged.InvokeAsync(addresses.First(x => x.Id == selectedId));
         }
     }
 }

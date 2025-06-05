@@ -1,0 +1,297 @@
+﻿@using SK.CRM.Application.DTOs.Quote
+@using SK.CRM.Application.Features.Quotes.Commands
+@inject IMediator Mediator
+@inject SharedStateService _SharedStateService
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<_CartAddress> Logger
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    @if (shoppingCarts.Any())
+    {
+        <div class="container py-4">
+            <div class="row justify-content-center mb-4">
+                <div class="col-12 col-md-9 pt-4">
+                    <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                        <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">
+                            🛒 Your Cart Overview
+                        </h4>
+
+
+                        <div class="card-body overflow-auto p-0">
+                            <RadzenDataGrid @ref="ordersGrid"
+                            Data="@shoppingCarts"
+                            TItem="ShoppingCartDto"
+                            AllowFiltering="true"
+                            AllowPaging="true"
+                            PageSize="5"
+                            AllowSorting="true"
+                            EditMode="@editMode"
+                            Responsive="true">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="ShoppingCartDto">
+                                        <Template Context="item">
+                                            <img src="@(item.Product?.ImageUrl ?? "/images/default.png")"
+                                            alt="Product Image"
+                                            style="width: 80px; height: 80px; object-fit: cover;" class="rounded shadow-sm" />
+                                        </Template>
+                                    </RadzenDataGridColumn>
+
+                                    <RadzenDataGridColumn TItem="ShoppingCartDto" Property="Product.Name" Title="Product" />
+
+                                    <RadzenDataGridColumn Title="Quantity">
+                                        <Template Context="order">@order.newCount</Template>
+                                        <EditTemplate Context="order">
+                                            <RadzenNumeric @bind-Value="order.newCount" Style="width: 100%;" Min="1" Max="10000" />
+                                        </EditTemplate>
+                                    </RadzenDataGridColumn>
+
+                                    <RadzenDataGridColumn Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Right"
+                                    Frozen="true" FrozenPosition="FrozenColumnPosition.Right">
+                                        <Template Context="order">
+                                            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                                            class="me-1 my-1" Click="@(args => EditRow(order))" @onclick:stopPropagation="true" />
+                                            <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                                            class="my-1" Click="@(args => DeleteRow(order))" @onclick:stopPropagation="true" />
+                                        </Template>
+                                        <EditTemplate Context="order">
+                                            <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                                            Click="@(() => SaveRow(order))" class="me-1" aria-label="Save" />
+                                            <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                                            class="me-1" Click="@(() => CancelEdit(order))" aria-label="Cancel" />
+                                            <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium"
+                                            Click="@(args => DeleteRow(order))" aria-label="Delete" />
+                                        </EditTemplate>
+                                    </RadzenDataGridColumn>
+                                </Columns>
+                            </RadzenDataGrid>
+                        </div>
+                    </RadzenCard>
+                </div>
+
+                <div class="col-12 col-md-3 d-flex flex-column gap-3 pt-4">
+                    <RadzenCard Class="p-4 shadow radzen-card-responsive" Style="min-width: 300px;">
+                        <h4 class="fw-bold" style="color: purple;">
+                            👤 Personal Information
+                        </h4>
+
+                        <div class="card-body p-0">
+                            <div class="form-floating py-2">
+                                <InputText @bind-Value="customerGeneralInformationsDto.Email" class="form-control" id="Email" disabled />
+                                <label for="Email">Email Address</label>
+                            </div>
+
+                            <div class="form-floating py-2">
+                                <InputText @bind-Value="customerGeneralInformationsDto.FirstName" class="form-control" id="Name" disabled />
+                                <label for="Name">Name</label>
+                            </div>
+
+                            <div class="form-floating py-2">
+                                <InputText @bind-Value="customerGeneralInformationsDto.PhoneNumber" class="form-control" id="PhoneNumber" disabled />
+                                <label for="PhoneNumber">Phone Number</label>
+                            </div>
+                        </div>
+                    </RadzenCard>
+
+                    <RadzenCard Class="p-4 shadow radzen-card-responsive" Style="min-width: 300px;">
+                        <h4 class="fw-bold" style="color: purple;">
+                            📍 Delivery Address
+                        </h4>
+
+                        <_CartAddress CustomerId="@customerGeneralInformationsDto.Id.ToString()" AddressIdChanged="@(address => SelectedAddress(address))" />
+                    </RadzenCard>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-12">
+                    <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                        <h5 class="fw-bold" style="color: purple; letter-spacing: 1px;">
+                            📝 Additional Notes
+                        </h5>
+
+                        <RadzenTextArea @bind-Value="noteText"
+                        Placeholder="Écrivez votre note ici..."
+                        Style="width: 100%; min-height: 150px;" />
+                        <div class="text-end mt-4">
+                            <RadzenButton Text="Place Quote" Click="ProcessQuoteCreation"
+                            ButtonStyle="ButtonStyle.Success" Icon="send"
+                            Disabled="@IsQuoteCreationStarted"
+                            Style="background-color: purple; color: white;" />
+                        </div>
+                    </RadzenCard>
+                </div>
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <div class="p-4">
+            <RadzenAlert Severity="Severity.Warning">Your cart is Empty! Add items to cart.</RadzenAlert>
+        </div>
+    }
+
+}
+
+@code {
+    [Parameter]
+    public EventCallback Reload { get; set; }
+    [Parameter]
+    public IEnumerable<ShoppingCartDto> shoppingCarts { get; set; } = new List<ShoppingCartDto>();
+
+    [Parameter]
+    public string UserId { get; set; } = string.Empty;
+    [Parameter]
+    public string Email { get; set; } = string.Empty;
+    [Parameter]
+    public CustomerGeneralInformationsDto customerGeneralInformationsDto { get; set; } = new();
+
+    private bool IsProcessing { get; set; } = true;
+    private bool StartQuoteCreation { get; set; } = false;
+    public Guid AddressId { get; set; } = Guid.Empty;
+    public string FullAddress { get; set; } = string.Empty;
+    private string noteText;
+    RadzenDataGrid<ShoppingCartDto> ordersGrid;
+    List<ShoppingCartDto> ordersToUpdate = new List<ShoppingCartDto>();
+    DataGridEditMode editMode = DataGridEditMode.Single;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (shoppingCarts.Any())
+        {
+
+            StateHasChanged();
+        }
+        IsProcessing = false;
+    }
+
+    private async Task UpdateOrderItem(int productId, int updateBy)
+    {
+        //add product to cart
+        var command = new UpdateCartQuantityCommand(UserId, productId, updateBy);
+        var cart = await Mediator.Send(command);
+
+        var query = new GetTotalCartCountQuery(UserId);
+
+        _SharedStateService.TotalCartCount = await Mediator.Send(query);
+        await Reload.InvokeAsync();
+    }
+
+    void DeleteRow(ShoppingCartDto item)
+    {
+        UpdateOrderItem(item.ProductId, 0); // tu peux ajuster pour appeler une version adaptée
+    }
+
+    void CancelEdit(ShoppingCartDto item)
+    {
+        Reset(item);
+        item.newCount = item.Count;
+        ordersGrid.CancelEditRow(item);
+    }
+
+
+    async Task EditRow(ShoppingCartDto order)
+    {
+        if (!ordersGrid.IsValid) return;
+
+        if (editMode == DataGridEditMode.Single)
+        {
+            Reset();
+        }
+
+        ordersToUpdate.Add(order);
+        await ordersGrid.EditRow(order);
+    }
+
+    void Reset(ShoppingCartDto order)
+    {
+        ordersToUpdate.Remove(order);
+    }
+    void Reset()
+    {
+        ordersToUpdate.Clear();
+    }
+
+    async Task SaveRow(ShoppingCartDto order)
+    {
+        await ordersGrid.UpdateRow(order);
+        await UpdateOrderItem(order.ProductId, order.newCount);
+        Reset();
+    }
+    private bool IsQuoteCreationStarted { get; set; } = false;
+    private async Task ProcessQuoteCreation()
+    {
+        if (AddressId == Guid.Empty)
+        {
+            await _IJSRuntime.ToastrError("Please select a delivery address before placing the quote.");
+            return;
+        }
+        if (ordersToUpdate.Any())
+        {
+            await _IJSRuntime.ToastrError("You have an item still being edited. Please save or cancel the changes before placing the quote.");
+            return;
+        }
+        QuoteDto quote = new QuoteDto();
+        quote.CustomerId = customerGeneralInformationsDto.Id;
+        quote.Customer = customerGeneralInformationsDto;
+        quote.FullName = $"{customerGeneralInformationsDto.FirstName} {customerGeneralInformationsDto.LastName}";
+        quote.FullAddress = FullAddress;
+        quote.UserId = UserId;
+        quote.AddressId = AddressId;
+        quote.Notes = noteText;
+
+        foreach (var item in shoppingCarts)
+        {
+            QuoteItemDto orderDetail = new QuoteItemDto
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Count,
+                    UnitPrice = Convert.ToDouble(item.Product.Price),
+                    ProductName = item.Product.Name
+                };
+            quote.Items.Add(orderDetail);
+        }
+        try
+        {
+            IsQuoteCreationStarted = true;
+            var command = new CreateQuoteRequestCommand(quote);
+            var result = await Mediator.Send(command);
+            if (!result.IsSuccess)
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+                return;
+            }
+            await _IJSRuntime.ToastrSuccess("Quote created successfully!");
+            await Task.Delay(3000); // Optional delay for user feedback
+            var clearcommand = new ClearCartCommand(UserId);
+            await Mediator.Send(clearcommand);
+            _SharedStateService.TotalCartCount = 0;
+            await Reload.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating quote");
+            await _IJSRuntime.ToastrError("An error occurred while creating the quote. Please try again.");
+            return;
+        }
+        finally
+        {
+            IsQuoteCreationStarted = false;
+        }
+    
+
+        //     _NavigationManager.NavigateTo(Routes.GetCustomerOrderConfirmedUrl(result.Id, result.UserId));
+    }
+
+    private void SelectedAddress(AddressDto selectedAddress)
+    {
+        FullAddress = selectedAddress.FullAddress;
+        AddressId = selectedAddress.Id;
+    }
+}

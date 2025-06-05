@@ -56,6 +56,22 @@ namespace SK.CRM.Infrastructure.Repositories
             _dbSet.Remove(entity);
             return true;
         }
+
+        public async Task DeleteRangeAsync(Func<T, bool> predicate)
+        {
+                var itemsToRemove = _context.Set<T>().Where(predicate).ToList();
+
+                if (itemsToRemove.Any())
+                {
+                    // Remove each item
+                    _context.Set<T>().RemoveRange(itemsToRemove);
+                }
+        }
+
+        public async Task CreateRangeAsync(List<T> entity)
+        {
+             await _context.AddRangeAsync(entity);
+        }
     }
 
 }

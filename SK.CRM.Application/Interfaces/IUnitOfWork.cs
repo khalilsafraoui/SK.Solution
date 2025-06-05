@@ -12,6 +12,10 @@ namespace SK.CRM.Application.Interfaces
 
         IShoppingCartRepository ShoppingCartRepository { get; }
 
+        IQuoteRepository QuoteRepository { get; }
+
+        IQuoteItemRepository QuoteItemRepository { get; }
+
         ISharedUserServices SharedUserServices { get; }
 
         Task<int> SaveChangesAsync();

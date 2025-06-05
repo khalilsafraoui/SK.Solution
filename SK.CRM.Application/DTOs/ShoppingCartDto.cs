@@ -16,5 +16,8 @@ namespace SK.CRM.Application.DTOs
 
         public int Count { get; set; }
 
+        public int newCount { get; set; }
+        public bool IsEditing { get; set; } = false;
+
     }
 }

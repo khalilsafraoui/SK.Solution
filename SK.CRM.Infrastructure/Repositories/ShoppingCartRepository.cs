@@ -2,6 +2,7 @@
 using SK.CRM.Application.Interfaces;
 using SK.CRM.Domain.Entities;
 using SK.CRM.Infrastructure.Persistence;
+using SK.Inventory.Domain.Entities.Product;
 
 
 namespace SK.CRM.Infrastructure.Repositories
@@ -52,6 +53,29 @@ namespace SK.CRM.Infrastructure.Repositories
             else
             {
                 cartItem.Count += updateBy;
+                if (cartItem.Count < 1)
+                {
+                    _context.ShoppingCarts.Remove(cartItem);
+                }
+            }
+        }
+
+        public async Task UpdateCartWithNewQuantityAsync(string userId, int productId, int newQuantiy)
+        {
+            var cartItem = await _context.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
+            if (cartItem == null)
+            {
+                var cart = new ShoppingCart
+                {
+                    UserId = userId,
+                    ProductId = productId,
+                    Count = newQuantiy
+                };
+                await _context.ShoppingCarts.AddAsync(cart);
+            }
+            else
+            {
+                cartItem.Count = newQuantiy;
                 if (cartItem.Count < 1)
                 {
                     _context.ShoppingCarts.Remove(cartItem);

@@ -1,0 +1,284 @@
+﻿@using SK.CRM.Application.DTOs.Quote
+@using SK.CRM.Application.Features.Quotes.Commands
+@using SK.CRM.Application.Features.Quotes.Queries
+@attribute [Route(Routes.Crm_Customer_Quote_Details)]
+@attribute [Authorize(Roles = RoleType.Customer)]
+@rendermode InteractiveServer
+@inject NavigationManager _NavigationManager
+@inject IMediator Mediator
+@inject IJSRuntime _JSRuntime
+@inject ILogger<CustomerQuoteDetails> Logger
+
+<PageTitle>Quote Details</PageTitle>
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+
+
+    <div class="container py-4">
+        <div class="row justify-content-center mb-4">
+
+            <div class="col-12 col-md-12 pt-4">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">
+                        📝 Quote
+                    </h4>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <p><strong>Quote ID: </strong>@quote.Id</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p><strong>Address: </strong>@quote.FullAddress</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <p><strong>Status: </strong>@quote.Status</p>
+                        </div>
+
+
+
+
+                        <div class="col-md-4">
+                            <p><strong>Created: </strong>@quote.CreatedDate.ToString("dd/MM/yyyy")</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Expires: </strong>@quote.ExpirationDate?.ToString("dd/MM/yyyy")</p>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Notes:</label>
+                            <div>@quote.Notes</div>
+                        </div>
+                    </div>
+                </RadzenCard>
+            </div>
+
+
+            <div class="col-12 col-md-12 pt-4">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">
+                        📋 Items
+                    </h4>
+
+
+                    <div class="card-body overflow-auto p-0">
+                        <RadzenDataGrid @ref="quoteItemsGrid"
+                        Data="@quote.Items"
+                        TItem="QuoteItemDto"
+                        AllowFiltering="true"
+                        AllowPaging="true"
+                        PageSize="5"
+                        AllowSorting="true"
+                        Responsive="true">
+                            <Columns>
+                                <RadzenDataGridColumn Title="Product">
+                                    <Template Context="quoteItem">@quoteItem.ProductName</Template>
+                                </RadzenDataGridColumn>
+
+                                <RadzenDataGridColumn Title="Unit Price">
+                                    <Template Context="quoteItem">@quoteItem.UnitPrice</Template>
+                                </RadzenDataGridColumn>
+
+                                <RadzenDataGridColumn Title="Quantity">
+                                    <Template Context="quoteItem">@quoteItem.Quantity</Template>
+                                </RadzenDataGridColumn>
+                                @if (quote.Status == QuoteStatus.StatusQuoted || quote.Status == QuoteStatus.StatusAccepted || quote.Status == QuoteStatus.StatusRejected || quote.Status == QuoteStatus.StatusExpired)
+                                {
+                                    <RadzenDataGridColumn Title="Discount Rate">
+                                        <Template Context="quoteItem">@quoteItem.DiscountRate</Template>
+                                    </RadzenDataGridColumn>
+
+                                    <RadzenDataGridColumn Title="Total">
+                                        <Template Context="quoteItem">@quoteItem.TotalAfterDiscount</Template>
+                                    </RadzenDataGridColumn>
+                                }
+
+
+                            </Columns>
+                        </RadzenDataGrid>
+                    </div>
+                </RadzenCard>
+            </div>
+
+            @if (@quote.Status == QuoteStatus.StatusAccepted || @quote.Status == QuoteStatus.StatusQuoted || @quote.Status == QuoteStatus.StatusRejected || @quote.Status == QuoteStatus.StatusExpired)
+            {
+                <div class="col-12 col-md-12 pt-4">
+                    <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Subtotal:</label>
+                            <div>@quote.Subtotal?.ToString("C", CultureInfo.CurrentCulture)</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Global Discount (%):</label>
+                            <div>@(quote.GlobalDiscountRate * 100)%</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Tax:</label>
+                            <div>@quote.TaxAmount?.ToString("C", CultureInfo.CurrentCulture) (@(quote.TaxRate * 100)%)</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Total:</label>
+                            <div>@quote.Total?.ToString("C", CultureInfo.CurrentCulture)</div>
+                        </div>
+                    </div>
+                </RadzenCard>
+            </div>
+            }
+
+
+            <div class="col-12 col-md-12 pt-4">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+
+                        <!-- Left-aligned Back button -->
+                        <RadzenButton Text="Back to Quotes"
+                        Icon="arrow_back"
+                        Style="min-width: 160px;"
+                        ButtonStyle="ButtonStyle.Light"
+                        Click="@OnBackToQuotes" />
+
+                        <!-- Right-aligned action buttons -->
+                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                            @if (quote.Status == QuoteStatus.StatusAccepted)
+                            {
+                                <RadzenButton Text="Proceed to Order"
+                                Icon="swap_horiz"
+                                Style="min-width: 160px;"
+                                ButtonStyle="ButtonStyle.Primary"
+                                Click="@OnProceedToOrder" />
+                            }
+                            @if (quote.Status == QuoteStatus.StatusQuoted)
+                            {
+                                <RadzenButton Text="Accept"
+                                Icon="check"
+                                Style="min-width: 120px;"
+                                ButtonStyle="ButtonStyle.Success"
+                                Click="@OnAccept" />
+
+                                <RadzenButton Text="Reject"
+                                Icon="cancel"
+                                Style="min-width: 120px;"
+                                ButtonStyle="ButtonStyle.Danger"
+                                Click="@OnReject" />
+                            }
+                            @if (quote.Status != QuoteStatus.StatusRejected && quote.Status != QuoteStatus.StatusCancelled)
+                            {
+                                <RadzenButton Text="Cancel"
+                                Icon="close"
+                                Style="min-width: 120px;"
+                                ButtonStyle="ButtonStyle.Light"
+                                Click="@OnCancel" />
+                            }
+                        </div>
+                    </div>
+                </RadzenCard>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+}
+@code{
+    [Parameter]
+    public string id { get; set; }
+    private QuoteDto quote = new QuoteDto();
+    private bool IsProcessing{ get; set; } = true;
+    RadzenDataGrid<QuoteItemDto> quoteItemsGrid;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadQuote();
+        }
+    }
+
+    private async Task LoadQuote()
+    {
+        try
+        {
+            var query = new GetQuoteByIdQuery(Guid.Parse(id));
+            var result = await Mediator.Send(query);
+            if (!result.IsSuccess)
+            {
+                await _JSRuntime.ToastrError(result.ErrorMessage);
+                _NavigationManager.NavigateTo(Routes.Crm_Orders);
+            }
+
+            quote = result.QuoteDto;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error fetching Quote details for ID: {Id}", id);
+            await _JSRuntime.ToastrError("An error occurred while fetching quote details. Please try again later.");
+        }
+        finally
+        {
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+    private async Task UpdateStatus(string newStatus)
+    {
+        try
+        {
+            var command = new UpdateQuoteStatusCommand(quote.Id, newStatus);
+            var result = await Mediator.Send(command);
+
+            if (result.IsSuccess)
+            {
+                await _JSRuntime.ToastrSuccess("Quote Status updated successfully.");
+            }
+            else
+            {
+                await _JSRuntime.ToastrError(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while updating quote status.");
+            await _JSRuntime.ToastrError("An error occurred while updating quote status.");
+        }
+        finally
+        {
+            await LoadQuote();
+        }
+    }
+    async Task OnAccept()
+    {
+        await UpdateStatus(QuoteStatus.StatusAccepted);
+    }
+
+    async Task OnReject()
+    {
+        await UpdateStatus(QuoteStatus.StatusRejected);
+    }
+
+    async Task OnCancel()
+    {
+        await UpdateStatus(QuoteStatus.StatusCancelled);
+    }
+
+    void OnProceedToOrder()
+    {
+        // Logic to create an order from a quote
+    }
+
+    void OnBackToQuotes()
+    {
+        _NavigationManager.NavigateTo(Routes.Crm_Customer_Quotes);
+    }
+}
+

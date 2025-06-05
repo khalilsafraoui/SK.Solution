@@ -1,0 +1,102 @@
+﻿@using SK.CRM.Application.DTOs.Quote
+@using SK.CRM.Application.Features.Quotes.Queries
+@attribute [Route(Routes.Crm_Customer_Quotes)]
+@attribute [Authorize(Roles = RoleType.Customer)]
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject NavigationManager _NavigationManager
+@inject ILogger<CustomerQuotes> Logger
+@inject IJSRuntime _IJSRuntime
+@inject ICurrentUserService _CurrentUserService
+@attribute [Authorize]
+<PageTitle>Quotes</PageTitle>
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 m-4">
+
+        <div class="card-header bg-black bg-gradient m-lg-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2"> Quotes</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row pb-3" hidden>
+                <div class="col-12 text-end">
+                    <a href=@Routes.Crm_Order_Create class="btn btn-lg btn-secondary" style="width:250px"><i class="bi bi-plus-square"></i> Add New Quote</a>
+                </div>
+            </div>
+            @if (Quotes.Any())
+            {
+                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@Quotes" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" >
+                    <Columns>
+                        <RadzenDataGridColumn Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" />
+                        <RadzenDataGridColumn Property="CreatedDate" Title="Creation Date" FormatString="{0:d}" Width="160px" />
+                        <RadzenDataGridColumn Property="Status" Title="Status" Width="160px" />
+                        <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
+                            <Template Context="quote">
+                                <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo(Routes.GetCustomerQuoteDetailsUrl(quote.Id)))" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </div>
+
+    </div>
+}
+
+@code {
+    public bool IsProcessing { get; set; } = true;
+    private IEnumerable<QuoteDto> Quotes { get; set; } = new List<QuoteDto>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                IsProcessing = true;
+                await LoadQuotes();
+                
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while fetching customer Quotes.");
+                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+            }
+            finally
+            {
+                IsProcessing = false;
+                StateHasChanged();
+            }
+       
+        }
+    }
+
+    private async Task LoadQuotes()
+    {
+        var UserId = await _CurrentUserService.GetUserIdAsync();
+        var query = new GetAllQuotesQuery(UserId.ToString());
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            Quotes = result.QuotesDto;
+        }
+        else
+        {
+            Logger.LogError("Failed to load quotes: {Error}", result.ErrorMessage);
+            await _IJSRuntime.ToastrError("Failed to load quotes. Please try again later.");
+        }
+    }
+}
+

@@ -6,6 +6,7 @@ namespace SK.CRM.Application.Interfaces
     {
         // You can add custom methods specific to ShoppingCart, if needed
         public Task UpdateCartAsync(string userId, int product, int updateBy);
+        public Task UpdateCartWithNewQuantityAsync(string userId, int product, int newQuantiy);
 
         public Task<IEnumerable<ShoppingCart>> GetAllAsync(string? userId);
 

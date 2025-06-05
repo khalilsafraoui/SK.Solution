@@ -12,5 +12,8 @@ namespace SK.CRM.Application.Interfaces
         Task<T> CreateAsync(T entity);
         Task<bool> UpdateAsync(T entity);
         Task<bool> DeleteAsync(Guid id);
+
+        Task DeleteRangeAsync(Func<T, bool> predicate);
+        Task CreateRangeAsync(List<T> entity);
     }
 }

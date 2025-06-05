@@ -43,6 +43,8 @@ namespace SK.CRM.Infrastructure.PostgreSql
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IQuoteRepository, QuoteRepository>();
+            services.AddScoped<IQuoteItemRepository, QuoteItemRepository>();
 
             // Générique
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
