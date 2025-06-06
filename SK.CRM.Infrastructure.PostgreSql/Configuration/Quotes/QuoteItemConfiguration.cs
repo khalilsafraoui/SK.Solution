@@ -33,6 +33,9 @@ namespace SK.CRM.Infrastructure.PostgreSql.Configuration.Quotes
 
             builder.Property(qi => qi.QuoteId)
                 .IsRequired();
+
+            builder.Property(p => p.TaxRate)
+                  .HasDefaultValue(0);
         }
     }
 }

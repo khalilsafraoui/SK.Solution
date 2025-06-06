@@ -12,6 +12,8 @@
 
         // Discount for this item (in percentage, e.g., 0.05 for 5%)
         public double DiscountRate { get; set; } = 0;
-       
+
+        public double TaxRate { get; set; }
+
     }
 }

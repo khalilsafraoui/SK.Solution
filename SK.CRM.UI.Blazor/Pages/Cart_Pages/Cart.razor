@@ -14,7 +14,7 @@
 <PageTitle>Cart</PageTitle>
 @if (IsOrderProcessing)
 {
-    <_CartToOrderV2 customerGeneralInformationsDto=@customerGeneralInformationsDto Email=@Email UserId=@UserId shoppingCarts=@shoppingCarts Reload="ReloadShoppingCart"></_CartToOrderV2>
+    <_CartToOrder customerGeneralInformationsDto=@customerGeneralInformationsDto Email=@Email UserId=@UserId shoppingCarts=@shoppingCarts Reload="ReloadShoppingCart"></_CartToOrder>
 }
 else
 {
@@ -26,7 +26,7 @@ else
 
 
 
-    private bool IsOrderProcessing { get; set; } = true;
+    private bool IsOrderProcessing { get; set; } = false;
     private bool IsProcessing { get; set; } = true;
     public CustomerGeneralInformationsDto customerGeneralInformationsDto { get; set; } = new();
     public string UserId { get; set; } = string.Empty;

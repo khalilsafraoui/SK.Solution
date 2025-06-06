@@ -253,7 +253,9 @@ else
                     ProductId = item.ProductId,
                     Quantity = item.Count,
                     UnitPrice = Convert.ToDouble(item.Product.Price),
-                    ProductName = item.Product.Name
+                    ProductName = item.Product.Name,
+                    DiscountRate = item.Product.DiscountRate,
+                    TaxRate = item.Product.TaxRate,
                 };
             quote.Items.Add(orderDetail);
         }

@@ -41,7 +41,15 @@ namespace SK.CRM.Infrastructure.PostgreSql.Persistence
 
         public void Dispose()
         {
-            _context.Dispose();
+            try
+            {
+                _context.Dispose();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                Console.WriteLine($"Error disposing UnitOfWork: {ex.Message}");
+            }
         }
     }
 

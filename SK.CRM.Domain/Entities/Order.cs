@@ -42,5 +42,7 @@ namespace SK.CRM.Domain.Entities
         public string? PaymentIntentId { get; set; }
 
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+
+        public string? FullAddress { get; set; }
     }
 }

@@ -175,6 +175,9 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .HasColumnType("text")
                         .HasAnnotation("ErrorMessage", "Please enter Email..");
 
+                    b.Property<string>("FullAddress")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
@@ -235,6 +238,11 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<double>("DiscountRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0);
+
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
 
@@ -257,6 +265,11 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
+
+                    b.Property<double>("TaxRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0);
 
                     b.HasKey("Id");
 
@@ -372,6 +385,11 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<Guid>("QuoteId")
                         .HasColumnType("uuid");
 
+                    b.Property<double>("TaxRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0);
+
                     b.Property<double?>("UnitPrice")
                         .IsRequired()
                         .HasPrecision(18, 2)
@@ -459,13 +477,11 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
 
             modelBuilder.Entity("SK.CRM.Domain.Entities.Quote.QuoteItem", b =>
                 {
-                    b.HasOne("SK.CRM.Domain.Entities.Quote.Quote", "Quote")
+                    b.HasOne("SK.CRM.Domain.Entities.Quote.Quote", null)
                         .WithMany("Items")
                         .HasForeignKey("QuoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Quote");
                 });
 
             modelBuilder.Entity("SK.CRM.Domain.Entities.Customer", b =>

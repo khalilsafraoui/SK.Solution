@@ -41,5 +41,7 @@ namespace SK.CRM.Application.DTOs
         public string? PaymentIntentId { get; set; }
 
         public ICollection<OrderDetailDto> OrderDetails { get; set; } = new List<OrderDetailDto>();
+
+        public string? FullAddress { get; set; }
     }
 }

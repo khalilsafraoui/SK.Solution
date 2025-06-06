@@ -15,5 +15,9 @@ namespace SK.CRM.Domain.Entities
         public double Price { get; set; }
 
         public string ProductName { get; set; }
+
+        public double DiscountRate { get; set; }
+
+        public double TaxRate { get; set; }
     }
 }

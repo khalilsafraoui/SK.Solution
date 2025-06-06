@@ -23,6 +23,12 @@ namespace SK.CRM.Infrastructure.PostgreSql.Configuration.Orders
 
             builder.Property(entity => entity.ProductName)
                 .IsRequired();
+
+            builder.Property(p => p.DiscountRate)
+                 .HasDefaultValue(0);
+
+            builder.Property(p => p.TaxRate)
+                  .HasDefaultValue(0);
         }
     }
 }
