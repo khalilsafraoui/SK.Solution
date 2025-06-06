@@ -23,5 +23,19 @@ namespace SK.CRM.Application.DTOs
 
         [Required]
         public string ProductName { get; set; }
+
+        public double DiscountRate { get; set; } = 0;
+
+        public double TaxRate { get; set; } = 0;
+
+        public double? TotalBeforeDiscount => Quantity * Price;
+
+        public double? DiscountAmount => TotalBeforeDiscount * DiscountRate;
+
+        public double? TotalAfterDiscount => TotalBeforeDiscount - DiscountAmount;
+
+        public double? TaxAmount => TotalAfterDiscount * TaxRate;
+
+        public double? TotalAfterDiscountAndTax => TotalAfterDiscount + TaxAmount;
     }
 }

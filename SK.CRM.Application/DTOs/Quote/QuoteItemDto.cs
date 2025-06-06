@@ -15,10 +15,16 @@
         // Discount for this item (in percentage, e.g., 0.05 for 5%)
         public double DiscountRate { get; set; } = 0;
 
+        public double TaxRate { get; set; } = 0;
+
         public double? TotalBeforeDiscount => Quantity * UnitPrice;
 
         public double? DiscountAmount => TotalBeforeDiscount * DiscountRate;
 
         public double? TotalAfterDiscount => TotalBeforeDiscount - DiscountAmount;
+
+        public double? TaxAmount => TotalAfterDiscount * TaxRate;
+
+        public double? TotalAfterDiscountAndTax => TotalAfterDiscount + TaxAmount;
     }
 }

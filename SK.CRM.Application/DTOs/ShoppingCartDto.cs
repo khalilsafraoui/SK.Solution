@@ -19,5 +19,16 @@ namespace SK.CRM.Application.DTOs
         public int newCount { get; set; }
         public bool IsEditing { get; set; } = false;
 
+        // Computed field: unit price after discount and tax
+        public double? TotalBeforeDiscount => Count * Convert.ToDouble(Product.Price);
+
+        public double? DiscountAmount => TotalBeforeDiscount * Product.DiscountRate;
+
+        public double? TotalAfterDiscount => TotalBeforeDiscount - DiscountAmount;
+
+        public double? TaxAmount => TotalAfterDiscount * Product.TaxRate;
+
+        public double? TotalAfterDiscountAndTax => TotalAfterDiscount + TaxAmount;
+
     }
 }

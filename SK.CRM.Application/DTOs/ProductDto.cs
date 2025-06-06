@@ -23,5 +23,9 @@ namespace SK.CRM.Application.Dtos
         public CategoryDto Category { get; set; }
 
         public string? ImageUrl { get; set; }
+
+        public double DiscountRate { get; set; } = 0.05;
+
+        public double TaxRate { get; set; } = 0.20;
     }
 }
