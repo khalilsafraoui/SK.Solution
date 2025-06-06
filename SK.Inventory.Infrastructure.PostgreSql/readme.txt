@@ -1,2 +1,2 @@
-﻿add-migration AuditableEntity -context SK.Inventory.Infrastructure.PostgreSql.Persistence.InventoryDbContext -project SK.Inventory.Infrastructure.PostgreSql
+﻿add-migration adddiscountandtaxrate -context SK.Inventory.Infrastructure.PostgreSql.Persistence.InventoryDbContext -project SK.Inventory.Infrastructure.PostgreSql
 update-database -context SK.Inventory.Infrastructure.PostgreSql.Persistence.InventoryDbContext -project SK.Inventory.Infrastructure.PostgreSql

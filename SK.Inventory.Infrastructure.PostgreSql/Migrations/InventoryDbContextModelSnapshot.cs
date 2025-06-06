@@ -73,6 +73,11 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<double>("DiscountRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0);
+
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -96,6 +101,11 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Migrations
                     b.Property<string>("SpecialTag")
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<double>("TaxRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.0);
 
                     b.HasKey("Id");
 

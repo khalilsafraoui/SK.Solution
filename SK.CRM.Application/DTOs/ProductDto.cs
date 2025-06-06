@@ -24,8 +24,8 @@ namespace SK.CRM.Application.Dtos
 
         public string? ImageUrl { get; set; }
 
-        public double DiscountRate { get; set; } = 0.05;
+        public double DiscountRate { get; set; } = 0;
 
-        public double TaxRate { get; set; } = 0.20;
+        public double TaxRate { get; set; } = 0;
     }
 }

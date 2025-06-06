@@ -33,6 +33,12 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Configuration.Products
                   .WithMany()
                   .HasForeignKey(p => p.CategoryId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(p => p.DiscountRate)
+                 .HasDefaultValue(0);
+
+            builder.Property(p => p.TaxRate)
+                  .HasDefaultValue(0);
         }
     }
 }

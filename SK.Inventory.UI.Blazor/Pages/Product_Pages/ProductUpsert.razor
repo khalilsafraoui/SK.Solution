@@ -45,11 +45,28 @@ else
                         <label for="SpecialTag">Special Tag</label>
                         <ValidationMessage For="@(()=> product.SpecialTag)" />
                     </div>
-
-                    <div class="form-floating py-3 col-12">
+                    <div class="row">
+                    <div class="form-floating py-3 col-4">
                         <InputNumber @bind-Value="product.Price" class="form-control" id="Price" DisplayName="Price" />
                         <label for="Price">Price</label>
                         <ValidationMessage For="@(()=> product.Price)" />
+                    </div>
+                    <div class="form-floating py-3 col-2">
+                        <InputNumber @bind-Value="product.DiscountRate" class="form-control" id="DiscountRate" min="0" max="1" step="0.01" DisplayName="Discount Rate" />
+                        <label for="DiscountRate">Discount Rate</label>
+                        <ValidationMessage For="@(()=> product.DiscountRate)" />
+                    </div>
+                    <div class="form-floating py-3 col-2">
+                            <p>@(Math.Round(product.DiscountRate * 100)) %</p>
+                     </div>
+                    <div class="form-floating py-3 col-2">
+                            <InputNumber @bind-Value="product.TaxRate" class="form-control" id="TaxRate" min="0" max="1" step="0.01" DisplayName="Tax Rate" />
+                        <label for="TaxRate">Tax Rate</label>
+                        <ValidationMessage For="@(()=> product.TaxRate)" />
+                    </div>
+                        <div class="form-floating py-3 col-2">
+                            <p>@(Math.Round(product.TaxRate * 100))%</p>
+                        </div>
                     </div>
                     <div class="form-floating py-3 col-12">
                         <InputSelect @bind-Value="product.CategoryId" class="form-select" id="category" DisplayName="category" >
@@ -113,7 +130,7 @@ else
 
 
     private string? _directoryPath { get; set; }
-    
+
     protected override async Task OnInitializedAsync()
     {
         var productPathFromSettings = options.Value.ProductsImagesPath;
@@ -150,6 +167,22 @@ else
     private async Task UpsertProduct()
     {
         IsProcessing = true;
+        if (product.DiscountRate > 1)
+        {
+            product.DiscountRate = 1;
+        }
+        if (product.DiscountRate < 0)
+        {
+            product.DiscountRate = 0;
+        }
+        if (product.TaxRate > 1)
+        {
+            product.TaxRate = 1;
+        }
+        if (product.TaxRate < 0)
+        {
+            product.TaxRate = 0;
+        }
         if(product.Id > 0)
         {
             var query = new UpdateProductCommand(product);

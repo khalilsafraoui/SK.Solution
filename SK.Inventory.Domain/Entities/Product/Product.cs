@@ -15,5 +15,9 @@
         public Category Category { get; set; }
 
         public string? ImageUrl { get; set; }
+
+        public double DiscountRate { get; set; }
+
+        public double TaxRate { get; set; }
     }
 }
