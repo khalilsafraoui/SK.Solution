@@ -17,7 +17,7 @@ namespace SK.CRM.Infrastructure.Repositories
         {
             if (!string.IsNullOrEmpty(userId))
             {
-                return await _context.Quotes.Where(o => o.UserId == userId).ToListAsync();
+                return await _context.Quotes.Where(o => o.UserId == userId).AsNoTracking().ToListAsync();
             }
             return await _context.Quotes.ToListAsync();
         }

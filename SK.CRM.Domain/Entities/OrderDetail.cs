@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SK.CRM.Domain.Entities
+﻿namespace SK.CRM.Domain.Entities
 {
     public class OrderDetail : BaseEntity
     {

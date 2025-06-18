@@ -186,7 +186,7 @@ else
                         Click="@OnBackToQuotes" />
 
                         <!-- Right-aligned action buttons -->
-                        @if (quote.Status != QuoteStatus.StatusCancelled)
+                        @if (quote.Status != QuoteStatus.StatusCancelled && quote.Status != QuoteStatus.StatusCompleted && quote.Status != QuoteStatus.StatusRejected)
                         {
                             <div class="d-flex flex-wrap gap-2 justify-content-end">
                                 @if (quote.Status == QuoteStatus.StatusSubmitted)

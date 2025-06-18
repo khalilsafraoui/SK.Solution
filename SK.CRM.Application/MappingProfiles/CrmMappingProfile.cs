@@ -2,6 +2,7 @@
 using SK.CRM.Application.Dtos;
 using SK.CRM.Application.DTOs;
 using SK.CRM.Application.DTOs.Quote;
+using SK.CRM.Application.MappingProfiles.Converter;
 using SK.CRM.Domain.Entities;
 using SK.CRM.Domain.Entities.Quote;
 using SK.Solution.Shared.Model.Crm;
@@ -25,6 +26,8 @@ namespace SK.CRM.Application.MappingProfiles
             CreateMap<SharedAddressDto, Address>().ReverseMap(); // Map between SharedAddressDto and AddressDto
             CreateMap<Quote, QuoteDto>().ReverseMap(); // Map between Quote and QuoteDto
             CreateMap<QuoteItem, QuoteItemDto>().ReverseMap(); // Map between QuoteItem and QuoteItemDto
+            CreateMap<Quote, Order>().ConvertUsing<QuoteToOrderConverter>(); // Map between QuoteDto and Order
+            CreateMap<QuoteItem, OrderDetail>().ConvertUsing<QuoteItemToOrderDetailConverter>(); // Map between QuoteItemDto and OrderDetail
         }
     }
 }

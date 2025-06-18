@@ -171,7 +171,7 @@ else
                                 ButtonStyle="ButtonStyle.Danger"
                                 Click="@OnReject" />
                             }
-                            @if (quote.Status != QuoteStatus.StatusRejected && quote.Status != QuoteStatus.StatusCancelled)
+                            @if (quote.Status != QuoteStatus.StatusRejected && quote.Status != QuoteStatus.StatusCancelled && quote.Status != QuoteStatus.StatusCompleted)
                             {
                                 <RadzenButton Text="Cancel"
                                 Icon="close"
@@ -271,10 +271,33 @@ else
         await UpdateStatus(QuoteStatus.StatusCancelled);
     }
 
-    void OnProceedToOrder()
+    private async Task OnProceedToOrder()
     {
-        // Logic to create an order from a quote
+        try
+        {
+            IsProcessing = true;
+
+            var createOrderCommand = new CreateOrderFromQuoteCommand(Guid.Parse(id));
+            var orderResult = await Mediator.Send(createOrderCommand);
+
+            if (!orderResult.IsSuccess)
+            {
+                await _JSRuntime.ToastrError(orderResult.ErrorMessage);
+                return;
+            }
+            _NavigationManager.NavigateTo(Routes.GetCustomerOrderConfirmedUrl(orderResult.OrderDto.Id, quote.UserId));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occurred while processing the order for ID: {Id}", id);
+            await _JSRuntime.ToastrError("An error occurred while processing the order. Please try again later.");
+        }
+        finally
+        {
+            await LoadQuote();
+        }
     }
+
 
     void OnBackToQuotes()
     {

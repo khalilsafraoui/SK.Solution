@@ -6,7 +6,9 @@
         public static string StatusSubmitted = "Submitted"; // e.g., when The customer submitted the quote request; waiting for supplier response.
         public static string StatusUnderReview = "UnderReview"; // e.g., when The supplier is reviewing the request.
         public static string StatusQuoted = "Quoted"; // e.g., when The supplier has responded with pricing and sent the official quote.
-        
+
+
+        public static string StatusCompleted = "Completed"; // e.g., Quote fulfilled through order creation.
         public static string StatusAccepted = "Accepted"; // e.g., when the customer accepts the quote
         public static string StatusRejected = "Rejected"; // e.g., when the customer rejects the quote
         public static string StatusCancelled = "Cancelled"; // e.g., when the quote is cancelled by the seller or customer
