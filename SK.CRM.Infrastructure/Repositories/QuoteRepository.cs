@@ -45,5 +45,18 @@ namespace SK.CRM.Infrastructure.Repositories
             }
             return order;
         }
+
+        public async Task<IEnumerable<Quote>> GetByStatusesAsync(IEnumerable<string> statuses, string? userId = null)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return await _context.Quotes
+                    .Where(q => statuses.Contains(q.Status))
+                    .ToListAsync();
+            }
+            return await _context.Quotes
+                .Where(q => q.UserId == userId && statuses.Contains(q.Status))
+                .ToListAsync();
+        }
     }
 }

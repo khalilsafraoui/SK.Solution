@@ -11,5 +11,7 @@ namespace SK.CRM.Application.Interfaces
         public Task<Quote> UpdateStatusAsync(Guid orderId, string status);
 
         public Task<IEnumerable<Quote>> GetQuoteByStatusAsync(string status);
+
+        Task<IEnumerable<Quote>> GetByStatusesAsync(IEnumerable<string> statuses, string? userId = null);
     }
 }
