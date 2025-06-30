@@ -104,7 +104,13 @@ else
     private async Task LoadCustomers()
     {
         var query = new GetAllCustomersQuery();
-        customers = await Mediator.Send(query);
+        var result = await Mediator.Send(query);
+        if (!result.IsSuccess)
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+            return;
+        }
+        customers = result.Customers;
     }
     private async Task HandleDelete(Guid id)
     {

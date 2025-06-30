@@ -1,4 +1,5 @@
 ﻿using SK.Solution.Shared.Interfaces.Identity;
+using SK.Solution.Shared.Interfaces.Inventory.Product;
 
 namespace SK.CRM.Application.Interfaces
 {
@@ -17,6 +18,8 @@ namespace SK.CRM.Application.Interfaces
         IQuoteItemRepository QuoteItemRepository { get; }
 
         ISharedUserServices SharedUserServices { get; }
+
+        ISharedProductServices SharedProductServices { get; }
 
         Task<int> SaveChangesAsync();
     }

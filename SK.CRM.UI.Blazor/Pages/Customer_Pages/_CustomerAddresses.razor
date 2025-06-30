@@ -19,7 +19,15 @@
         if (!string.IsNullOrWhiteSpace(CustomerId))
         {
             var query = new GetCustomerAddressesQuery(Guid.Parse(CustomerId));
-            addresses = await Mediator.Send(query);
+            var result = await Mediator.Send(query);
+            if (!result.IsSuccess)
+            {
+                addresses = new List<AddressDto>();
+            }
+            else
+            {
+                addresses = result.Addresses;
+            }
         }
     }
 

@@ -3,7 +3,7 @@
     public class Quote : BaseEntity
     {
        
-        public string UserId { get; set; } // The user who created the quote
+        public string? UserId { get; set; } // The user who created the quote
 
         public Guid CustomerId { get; set; }
         

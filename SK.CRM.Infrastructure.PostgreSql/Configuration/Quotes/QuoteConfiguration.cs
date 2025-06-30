@@ -15,9 +15,6 @@ namespace SK.CRM.Infrastructure.PostgreSql.Configuration.Quotes
                 .IsRequired()
                 .HasAnnotation("ErrorMessage", "Status is missing..");
 
-            builder.Property(q => q.UserId)
-          .IsRequired();
-
             builder.Property(q => q.CustomerId)
                 .IsRequired();
 

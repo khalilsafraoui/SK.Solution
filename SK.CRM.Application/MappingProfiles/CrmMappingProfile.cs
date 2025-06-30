@@ -6,6 +6,7 @@ using SK.CRM.Application.MappingProfiles.Converter;
 using SK.CRM.Domain.Entities;
 using SK.CRM.Domain.Entities.Quote;
 using SK.Solution.Shared.Model.Crm;
+using SK.Solution.Shared.Model.Inventory.Product;
 
 namespace SK.CRM.Application.MappingProfiles
 {
@@ -28,6 +29,7 @@ namespace SK.CRM.Application.MappingProfiles
             CreateMap<QuoteItem, QuoteItemDto>().ReverseMap(); // Map between QuoteItem and QuoteItemDto
             CreateMap<Quote, Order>().ConvertUsing<QuoteToOrderConverter>(); // Map between QuoteDto and Order
             CreateMap<QuoteItem, OrderDetail>().ConvertUsing<QuoteItemToOrderDetailConverter>(); // Map between QuoteItemDto and OrderDetail
+            CreateMap<Quote_ProductsDto, SharedProductForCrmDto>().ReverseMap(); // Map between Quote_ProductsDto and SharedProductForCrmDto
         }
     }
 }

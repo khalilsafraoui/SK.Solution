@@ -208,7 +208,7 @@ else
 
     private async Task LoadActiveQuotes()
     {
-        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusAccepted, QuoteStatus.StatusQuoted, QuoteStatus.StatusSubmitted, QuoteStatus.StatusUnderReview });
+        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusAccepted, QuoteStatus.StatusQuoted, QuoteStatus.StatusSubmitted, QuoteStatus.StatusUnderReview, QuoteStatus.StatusDraft });
         var result = await Mediator.Send(query);
         if (result.IsSuccess)
         {
@@ -243,8 +243,7 @@ else
 
     async Task OnCreateNewQuote()
     {
-        // Implement save changes logic here
-        await _IJSRuntime.ToastrSuccess("Changes saved successfully.");
+        _NavigationManager.NavigateTo(Routes.Crm_Quote_Create);
     }
 
 

@@ -341,7 +341,6 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .HasDefaultValue(0.0);
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

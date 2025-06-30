@@ -20,7 +20,7 @@
             <label>Select Address</label>
         </div>
 
-       
+
 
         @if (showCreateAddress)
         {
@@ -49,7 +49,7 @@
                 <div class="row g-3">
                     <div class="form-floating py-3 col-md-4">
                         <InputSelect @bind-Value="newAddress.CountryId" class="form-select" id="Country">
-                            
+
                             @foreach (var country in countries)
                             {
                                 <option value="@country.Code">@country.Name</option>
@@ -61,7 +61,7 @@
 
                     <div class="form-floating py-3 col-md-4">
                         <InputSelect @bind-Value="newAddress.StateId" class="form-select" id="State">
-                            
+
                             @foreach (var state in states.Where(filter => filter.CountryCode == newAddress.CountryId).ToList())
                             {
                                 <option value="@state.Code">@state.Name</option>
@@ -73,7 +73,7 @@
 
                     <div class="form-floating py-3 col-md-4">
                         <InputSelect @bind-Value="newAddress.CityId" class="form-select" id="City">
-                           
+
                             @foreach (var city in cities.Where(filter => filter.StateCode == newAddress.StateId).ToList())
                             {
                                 <option value="@city.Code">@city.Name</option>
@@ -116,7 +116,16 @@
         if (!string.IsNullOrWhiteSpace(CustomerId))
         {
             var query = new GetCustomerAddressesQuery(Guid.Parse(CustomerId));
-            addresses = await Mediator.Send(query);
+            var result = await Mediator.Send(query);
+            if (!result.IsSuccess)
+            {
+                addresses = new List<AddressDto>();
+            }
+            else
+            {
+                addresses = result.Addresses;
+            }
+
             addresses.Add(new AddressDto() { Id = guidForCreate, FullAddress = "Create new Address" });
         }
     }

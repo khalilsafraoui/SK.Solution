@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SK.Inventory.Domain\SK.Inventory.Domain.csproj" />
+    <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

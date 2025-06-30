@@ -1,5 +1,6 @@
 ﻿using SK.Solution.Shared.Interfaces.Identity;
 using SK.CRM.Application.Interfaces;
+using SK.Solution.Shared.Interfaces.Inventory.Product;
 
 namespace SK.CRM.Infrastructure.PostgreSql.Persistence
 {
@@ -20,9 +21,10 @@ namespace SK.CRM.Infrastructure.PostgreSql.Persistence
         public IQuoteRepository QuoteRepository { get; private set; }
 
         public IQuoteItemRepository QuoteItemRepository { get; private set; }
+        public ISharedProductServices SharedProductServices { get; private set; }
 
         public UnitOfWork(
-        CrmDbContext context, ISharedUserServices sharedUserServices, IAddressRepository addressRepository, ICustomerRepository customerRepository, IOrderRepository orderRepository, IShoppingCartRepository shoppingCartRepository, IQuoteRepository quoteRepository, IQuoteItemRepository quoteItemRepository)
+        CrmDbContext context, ISharedUserServices sharedUserServices, IAddressRepository addressRepository, ICustomerRepository customerRepository, IOrderRepository orderRepository, IShoppingCartRepository shoppingCartRepository, IQuoteRepository quoteRepository, IQuoteItemRepository quoteItemRepository, ISharedProductServices sharedProductServices)
         {
             _context = context;
             SharedUserServices = sharedUserServices;
@@ -32,6 +34,7 @@ namespace SK.CRM.Infrastructure.PostgreSql.Persistence
             ShoppingCartRepository = shoppingCartRepository;
             QuoteRepository = quoteRepository;
             QuoteItemRepository = quoteItemRepository;
+            SharedProductServices = sharedProductServices;
         }
 
         public async Task<int> SaveChangesAsync()
