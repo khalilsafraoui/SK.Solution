@@ -47,17 +47,29 @@ namespace SK.CRM.Infrastructure.PostgreSql.Repositories
             return order;
         }
 
-        public async Task<IEnumerable<Quote>> GetByStatusesAsync(IEnumerable<string> statuses, string? userId = null)
+        public async Task<(IEnumerable<Quote> Quotes, int TotalCount)> GetByStatusesAsync(
+            IEnumerable<string> statuses,
+            int pageIndex,
+            int pageSize,
+            string? userId = null)
         {
-            if (string.IsNullOrEmpty(userId))
+            var query = _context.Quotes.AsNoTracking()
+                .Where(q => statuses.Contains(q.Status));
+
+            if (!string.IsNullOrEmpty(userId))
             {
-                return await _context.Quotes
-                    .Where(q => statuses.Contains(q.Status))
-                    .ToListAsync();
+                query = query.Where(q => q.UserId == userId);
             }
-            return await _context.Quotes
-                .Where(q => q.UserId == userId && statuses.Contains(q.Status))
+
+            var totalCount = await query.CountAsync();
+
+            var pagedQuotes = await query
+                .OrderBy(q => q.Id) // Always order before skip/take
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return (pagedQuotes, totalCount);
         }
     }
 }

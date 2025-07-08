@@ -20,43 +20,68 @@ else
 {
     <div class="container py-4">
         <div class="row justify-content-center mb-4">
-            <div class="col-12 col-md-12 pt-4">
-                <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <div class="row align-items-center text-center text-md-start">
+            @if (selectedIndex != 3)
+            {
+                <div class="col-12 pt-4">
+                    <RadzenCard class="p-4 shadow radzen-card-responsive">
+                        <div class="row align-items-center justify-content-between">
 
-                        <!-- Left: Back button -->
-                        <div class="col-12 col-md-4 mb-2 mb-md-0 d-flex justify-content-center justify-content-md-start">
-                            <RadzenButton Text="Back to Dashboard"
-                            Icon="arrow_back"
-                            Style="min-width: 160px;"
-                            ButtonStyle="ButtonStyle.Light"
-                            />
-                        </div>
-
-                        <!-- Center: Title -->
-                        <div class="col-12 col-md-4 mb-2 mb-md-0 d-flex justify-content-center">
-                            <h4 class="m-0">
-                                Quote Creation @if (selectedCustomer?.Any() == true)
+                            <!-- Left: Title -->
+                            <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                                <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                    Quote Creation : 
+                                </h2>
+                                @if (selectedIndex >= 0)
                                 {
-                                    <p>
-                                        for @selectedCustomer[0].FirstName @selectedCustomer[0].LastName
-                                    </p>
+                                    @if (selectedCustomer?.Any() == true)
+                                    {
+                                        <p>
+                                            Step 1 : Selected customer : @selectedCustomer[0].FirstName @selectedCustomer[0].LastName
+                                        </p>
+
+                                    }
+                                    else
+                                    {
+                                        <p>Step 1 : Select a customer</p>
+                                    }
                                 }
-                            </h4>
+                                @if (selectedIndex >= 1)
+                                {
+                                    @if (selectedAddress?.Any() == true)
+                                    {
+                                        <p>
+                                            Step 2 : Selected Address : @selectedAddress[0].FullAddress
+                                        </p>
+
+                                    }
+                                    else
+                                    {
+                                        <p>Step 2 : Select an Address</p>
+                                    }
+                                }
+
+                                @if (selectedIndex == 2)
+                                {
+                                    @if (selectedItems?.Any() == true)
+                                    {
+                                        <p>
+                                            Step 3 : Selected Item(s) : @selectedItems.Count
+                                        </p>
+
+                                    }
+                                    else
+                                    {
+                                        <p>Step 3 : Select an Item(s)</p>
+                                    }
+                                }
+                            </div>
+
+
+
                         </div>
-
-                        @* <!-- Right: Create New Quote -->
-                        <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end">
-                            <RadzenButton Text="Create New Quote"
-                                          Icon="add_circle"
-                                          Style="min-width: 160px;"
-                                          ButtonStyle="ButtonStyle.Primary"
-                                          Click="@OnCreateNewQuote" />
-                        </div> *@
-
-                    </div>
-                </RadzenCard>
-            </div>
+                    </RadzenCard>
+                </div>
+            }
 
             @if(selectedIndex == 0)
             { 
@@ -375,19 +400,19 @@ else
             {
                 await LoadCustomerAddresses();
                 selectedIndex++;
+                selectedAddress?.Clear();
             }
         }
-
-        if (selectedIndex == 1)
+        else if (selectedIndex == 1)
         {
             if (selectedAddress is not null && selectedAddress.Any())
             {
                 await LoadProduct();
                 selectedIndex++;
+                selectedItems?.Clear();
             }
         }
-
-        if (selectedIndex == 2)
+        else if (selectedIndex == 2)
         {
             if (selectedItems is not null && selectedItems.Any())
             {

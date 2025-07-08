@@ -7,9 +7,9 @@ using SK.CRM.Application.Interfaces;
 
 namespace SK.CRM.Application.Features.Quotes.Queries
 {
-    public sealed record GetAllQuotesByStatusQuery(string[] statuses, string? userId = null) : IRequest<(bool IsSuccess, List<QuoteDto>? QuotesDto, string ErrorMessage)>;
+    public sealed record GetAllQuotesByStatusQuery(string[] statuses,int pageIndex = 0,int pageSize = 0, string? userId = null) : IRequest<(bool IsSuccess, List<QuoteDto>? QuotesDto, int TotalCount, string ErrorMessage)>;
 
-    public class GetAllQuotesByStatusQueryHandler : IRequestHandler<GetAllQuotesByStatusQuery, (bool IsSuccess, List<QuoteDto>? QuotesDto, string ErrorMessage)>
+    public class GetAllQuotesByStatusQueryHandler : IRequestHandler<GetAllQuotesByStatusQuery, (bool IsSuccess, List<QuoteDto>? QuotesDto, int TotalCount, string ErrorMessage)>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -21,22 +21,22 @@ namespace SK.CRM.Application.Features.Quotes.Queries
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, List<QuoteDto>? QuotesDto, string ErrorMessage)> Handle(GetAllQuotesByStatusQuery request, CancellationToken cancellationToken)
+        public async Task<(bool IsSuccess, List<QuoteDto>? QuotesDto, int TotalCount, string ErrorMessage)> Handle(GetAllQuotesByStatusQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var quotes = await _unitOfWork.QuoteRepository.GetByStatusesAsync(request.statuses,request.userId);
-                if (!quotes.Any())
+                var result = await _unitOfWork.QuoteRepository.GetByStatusesAsync(request.statuses, request.pageIndex, request.pageSize, request.userId);
+                if (!result.Quotes.Any())
                 {
-                    return (false, new List<QuoteDto>(), "No quotes found");
+                    return (false, new List<QuoteDto>(),0, "No quotes found");
                 }
-                return (true, _mapper.Map<List<QuoteDto>>(quotes), string.Empty);
+                return (true, _mapper.Map<List<QuoteDto>>(result.Quotes), result.TotalCount, string.Empty);
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it as needed
                 _logger.LogError(ex, "An error occurred while retrieving quotes: {Message}", ex.Message);
-                return (false, null, "An unexpected error occurred while retrieving quotes. Please try again later.");
+                return (false, null, 0, "An unexpected error occurred while retrieving quotes. Please try again later.");
 
             }
         }

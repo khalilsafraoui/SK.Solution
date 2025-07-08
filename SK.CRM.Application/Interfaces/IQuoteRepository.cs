@@ -12,6 +12,7 @@ namespace SK.CRM.Application.Interfaces
 
         public Task<IEnumerable<Quote>> GetQuoteByStatusAsync(string status);
 
-        Task<IEnumerable<Quote>> GetByStatusesAsync(IEnumerable<string> statuses, string? userId = null);
+        Task<(IEnumerable<Quote> Quotes, int TotalCount)> GetByStatusesAsync(IEnumerable<string> statuses, int pageIndex,
+            int pageSize, string? userId = null);
     }
 }

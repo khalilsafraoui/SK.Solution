@@ -20,29 +20,22 @@ else
 {
     <div class="container py-4">
         <div class="row justify-content-center mb-4">
-            <div class="col-12 col-md-12 pt-4">
-                <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <div class="row align-items-center text-center text-md-start">
+            <div class="col-12 pt-4">
+                <RadzenCard class="p-4 shadow radzen-card-responsive">
+                    <div class="row align-items-center justify-content-between">
 
-                        <!-- Left: Back button -->
-                        <div class="col-12 col-md-4 mb-2 mb-md-0 d-flex justify-content-center justify-content-md-start">
-                            <RadzenButton Text="Back to Dashboard"
-                            Icon="arrow_back"
-                            Style="min-width: 160px;"
-                            ButtonStyle="ButtonStyle.Light"
-                            Click="@OnBackToQuotes" />
-                        </div>
-
-                        <!-- Center: Title -->
-                        <div class="col-12 col-md-4 mb-2 mb-md-0 d-flex justify-content-center">
-                            <h4 class="m-0">Quotes</h4>
+                        <!-- Left: Title -->
+                        <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                            <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                Quotes
+                            </h2>
                         </div>
 
                         <!-- Right: Create New Quote -->
-                        <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end">
-                            <RadzenButton Text="Create New Quote"
+                        <div class="col-12 col-md-auto d-flex justify-content-center justify-content-md-end">
+                            <RadzenButton Text="Create"
                             Icon="add_circle"
-                            Style="min-width: 160px;"
+                            Style="min-width: 160px; background-color: purple; border-color: purple; color: white;"
                             ButtonStyle="ButtonStyle.Primary"
                             Click="@OnCreateNewQuote" />
                         </div>
@@ -53,25 +46,27 @@ else
 
             <div class="col-12 col-md-12 pt-4">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <RadzenTabs @bind-SelectedIndex=@selectedIndex Change="@OnTabChange">
+                    <RadzenTabs @bind-SelectedIndex=@selectedIndex Change="OnTabChange">
                         <Tabs>
                             <RadzenTabsItem Text="Active">
                                 <RadzenDataGrid @ref="quotesGrid"
                                 Data="@QuotesDto"
+                                LoadData="@LoadActiveQuotes"
                                 TItem="QuoteDto"
                                 AllowFiltering="true"
                                 AllowPaging="true"
                                 PageSizeOptions="new int[] {5, 10, 20, 50}"
                                 PageSize="10"
+                                Count="@totalQuotesCount"
                                 AllowSorting="true"
                                 Responsive="true">
 
                                     <Columns>
-                                        <RadzenDataGridColumn Title="Id">
+                                        @*  <RadzenDataGridColumn Title="Id">
                                             <Template Context="quoteItem">@quoteItem.Id</Template>
-                                        </RadzenDataGridColumn>
+                                        </RadzenDataGridColumn> *@
 
-                                        <RadzenDataGridColumn Title="Full Name">
+                                        <RadzenDataGridColumn Title="Customer">
                                             <Template Context="quoteItem">
                                                 <div>
                                                     <strong>@quoteItem.FullName</strong><br />
@@ -96,6 +91,7 @@ else
                                             <Template Context="quote">
                                                 <RadzenButton Shade="Shade.Lighter"
                                                 Text="Details"
+                                                Style="background-color: purple; border-color: purple; color: white;"
                                                 ButtonStyle="ButtonStyle.Primary"
                                                 Click="@(() => _NavigationManager.NavigateTo(Routes.GetQuoteDetailsUrl(quote.Id)))" />
                                             </Template>
@@ -113,13 +109,15 @@ else
                             </RadzenTabsItem>
                             <RadzenTabsItem Text="Completed">
 
-                                <RadzenDataGrid @ref="quotesGrid"
+                                <RadzenDataGrid @ref="completedquotesGrid"
                                 Data="@CompletedQuotesDto"
+                                LoadData="@LoadCompletedQuotes"
                                 TItem="QuoteDto"
                                 AllowFiltering="true"
                                 AllowPaging="true"
                                 PageSizeOptions="new int[] {5, 10, 20, 50}"
                                 PageSize="10"
+                                Count="@totalCompletedQuotesCount"
                                 AllowSorting="true"
                                 Responsive="true">
 
@@ -177,42 +175,44 @@ else
 }
 
 @code {
-    public bool IsProcessing { get; set; } = true;
+    public bool IsProcessing { get; set; } = false;
     int selectedIndex = 0;
+    int totalQuotesCount = 0;
+    int totalCompletedQuotesCount = 0;
+    private bool shouldReloadSecondGrid = false;
     private IEnumerable<QuoteDto> QuotesDto { get; set; } = new List<QuoteDto>();
     private IEnumerable<QuoteDto> CompletedQuotesDto { get; set; } = new List<QuoteDto>();
     RadzenDataGrid<QuoteDto> quotesGrid;
+    RadzenDataGrid<QuoteDto> completedquotesGrid;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                IsProcessing = true;
-                await LoadActiveQuotes();
+            await quotesGrid.Reload();
 
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error while fetching Quotes.");
-                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
-            }
-            finally
-            {
-                IsProcessing = false;
-                StateHasChanged();
-            }
+            StateHasChanged();
+        }
 
+        if (shouldReloadSecondGrid)
+        {
+            await completedquotesGrid.Reload();
+            shouldReloadSecondGrid = false;
+            StateHasChanged();
         }
     }
 
-    private async Task LoadActiveQuotes()
+    private async Task LoadActiveQuotes(LoadDataArgs arg)
     {
-        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusAccepted, QuoteStatus.StatusQuoted, QuoteStatus.StatusSubmitted, QuoteStatus.StatusUnderReview, QuoteStatus.StatusDraft });
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
+        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusAccepted, QuoteStatus.StatusQuoted, QuoteStatus.StatusSubmitted, QuoteStatus.StatusUnderReview, QuoteStatus.StatusDraft }, pageIndex, pageSize);
         var result = await Mediator.Send(query);
         if (result.IsSuccess)
         {
             QuotesDto = result.QuotesDto;
+            totalQuotesCount = result.TotalCount;
+            StateHasChanged();
         }
         else
         {
@@ -221,13 +221,18 @@ else
         }
     }
 
-    private async Task LoadCompletedQuotes()
+    private async Task LoadCompletedQuotes(LoadDataArgs arg)
     {
-        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusExpired, QuoteStatus.StatusCancelled, QuoteStatus.StatusCompleted });
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
+        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusExpired, QuoteStatus.StatusCancelled, QuoteStatus.StatusCompleted }, pageIndex, pageSize);
         var result = await Mediator.Send(query);
         if (result.IsSuccess)
         {
             CompletedQuotesDto = result.QuotesDto;
+            totalCompletedQuotesCount = result.TotalCount;
+            StateHasChanged();
         }
         else
         {
@@ -249,20 +254,10 @@ else
 
     private async Task OnTabChange(int index)
     {
-        switch (index)
+        if (index == 1)
         {
-            case 0: // Active Quotes tab
-                if (!QuotesDto.Any())
-                    await LoadActiveQuotes();
-                break;
-
-            case 1: // Completed Quotes tab
-                if (!CompletedQuotesDto.Any())
-                    await LoadCompletedQuotes();
-                break;
+            shouldReloadSecondGrid = true;
         }
-
-        StateHasChanged();
     }
 
 }
