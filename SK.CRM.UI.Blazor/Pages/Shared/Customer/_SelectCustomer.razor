@@ -1,0 +1,101 @@
+﻿@inject IJSRuntime _IJSRuntime
+@inject ILogger<_SelectCustomer> Logger
+@inject IMediator Mediator
+
+<div class="col-12 col-md-12 pt-1">
+    <RadzenCard Class="p-4 shadow radzen-card-responsive">
+        <RadzenDataGrid @ref="customerGrid"
+        Data="@customers"
+        TItem="CustomerDto"
+        AllowFiltering="true"
+        AllowPaging="true"
+        PageSizeOptions="new int[] {5, 10, 20, 50}"
+        PageSize="10"
+        AllowSorting="true"
+        Responsive="true"
+        SelectionMode="DataGridSelectionMode.Single" RowSelect="@OnCustomerSelected">
+
+            <Columns>
+                <RadzenDataGridColumn Title="Select Customer">
+                    <Template Context="quoteItem">
+                        <div>
+                            <strong>@quoteItem.FirstName @quoteItem.LastName</strong><br />
+                            <small class="text-muted">@quoteItem.Email</small>
+                        </div>
+                    </Template>
+                </RadzenDataGridColumn>
+
+            </Columns>
+
+            <!-- Empty state -->
+            <EmptyTemplate>
+                <div class="text-center text-muted p-4">
+                    No quotes to display.
+                </div>
+            </EmptyTemplate>
+
+        </RadzenDataGrid>
+    </RadzenCard>
+
+</div>
+
+@code {
+    private IEnumerable<CustomerDto> customers { get; set; } = new List<CustomerDto>();
+    private RadzenDataGrid<CustomerDto> customerGrid;
+    private SelectCustomerDto selectCustomerDto { get; set; } = new SelectCustomerDto();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await LoadCustomers();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while fetching Quotes.");
+                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+            }
+            finally
+            {
+                StateHasChanged();
+            }
+
+        }
+    }
+
+    private async Task LoadCustomers()
+    {
+        var query = new GetAllCustomersQuery();
+        var result = await Mediator.Send(query);
+        if (!result.IsSuccess)
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+            return;
+        }
+        customers = result.Customers;
+    }
+
+
+    [Parameter]
+    public EventCallback<SelectCustomerDto> OnSelecetedCustomerChanged { get; set; }
+    private void NotifyParent()
+    {
+        OnSelecetedCustomerChanged.InvokeAsync(selectCustomerDto);
+    }
+
+
+    private void OnCustomerSelected(CustomerDto customer)
+    {
+        if (selectCustomerDto is not null)
+        {
+            selectCustomerDto.Id = customer.Id;
+            selectCustomerDto.UserId = customer.UserId;
+            selectCustomerDto.FirstName = customer.FirstName;
+            selectCustomerDto.LastName = customer.LastName;
+        }
+        NotifyParent();
+    }
+}

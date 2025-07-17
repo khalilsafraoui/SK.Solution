@@ -20,7 +20,7 @@ else
 {
     <div class="container py-4">
         <div class="row justify-content-center mb-4">
-            <div class="col-12 pt-4">
+            <div class="col-12 pt-1">
                 <RadzenCard class="p-4 shadow radzen-card-responsive">
                     <div class="row align-items-center justify-content-between">
 
@@ -44,7 +44,7 @@ else
                 </RadzenCard>
             </div>
 
-            <div class="col-12 col-md-12 pt-4">
+            <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
                     <RadzenTabs @bind-SelectedIndex=@selectedIndex Change="OnTabChange">
                         <Tabs>
@@ -122,10 +122,6 @@ else
                                 Responsive="true">
 
                                     <Columns>
-                                        <RadzenDataGridColumn Title="Id">
-                                            <Template Context="quoteItem">@quoteItem.Id</Template>
-                                        </RadzenDataGridColumn>
-
                                         <RadzenDataGridColumn Title="Full Name">
                                             <Template Context="quoteItem">
                                                 <div>

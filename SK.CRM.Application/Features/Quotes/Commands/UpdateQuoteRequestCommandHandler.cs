@@ -31,6 +31,10 @@ namespace SK.CRM.Application.Features.Quotes.Commands
                 var quote = _mapper.Map<Quote>(request.QuoteDto);
                 await ValidateQuote(quote);
                 var IsUpdated = await _unitOfWork.QuoteRepository.UpdateAsync(quote);
+                foreach (var item in quote.Items)
+                {
+                    item.QuoteId = quote.Id; // Ensure each item is linked to the quote
+                }
                 await _unitOfWork.QuoteItemRepository.UpdateItemsAsync(quote.Id, quote.Items);
                 await _unitOfWork.SaveChangesAsync();
 

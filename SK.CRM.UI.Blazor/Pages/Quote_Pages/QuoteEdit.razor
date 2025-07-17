@@ -1,6 +1,8 @@
 ﻿@using SK.CRM.Application.DTOs.Quote
+@using SK.CRM.Application.Features.Items.Enum
 @using SK.CRM.Application.Features.Quotes.Queries
 @using SK.CRM.Application.Features.Quotes.Commands
+@using SK.CRM.UI.Blazor.Pages.Shared.Items
 @attribute [Route(Routes.Crm_Quote_Edit)]
 @attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
 @rendermode InteractiveServer
@@ -21,9 +23,9 @@ else
 {
     <div class="container py-4">
         <div class="row justify-content-center mb-4">
-            <div class="col-12 col-md-12 pt-4">
+            <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Quote</h4>
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Quote Editing</h4>
                     <div class="row mt-4">
                         <div class="col-md-6">
                             <p><strong>Quote ID: </strong>@quote.Id</p>
@@ -48,7 +50,7 @@ else
                     </div>
                 </RadzenCard>
             </div>
-            <div class="col-12 col-md-12 pt-4">
+            <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
                     <div class="row mt-4">
                         <div class="col-12">
@@ -58,88 +60,17 @@ else
                     </div>
                 </RadzenCard>
             </div>
-            <div class="col-12 col-md-12 pt-4">
-                <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📋 Items</h4>
-                    <div class="card-body overflow-auto p-0">
-                        <RadzenDataGrid @ref="quoteItemsGrid"
-                        Data="@quote.Items"
-                        TItem="QuoteItemDto"
-                        AllowFiltering="true"
-                        AllowPaging="true"
-                        PageSize="5"
-                        AllowSorting="true"
-                        Editable="true"
-                        EditMode="DataGridEditMode.Single"
-                        Responsive="true">
-                            <Columns>
-                                <RadzenDataGridColumn TItem="QuoteItemDto" Property="ProductName" Title="Product" />
-                                <RadzenDataGridColumn TItem="QuoteItemDto" Property="UnitPrice" Title="Unit Price" />
-                                <RadzenDataGridColumn TItem="QuoteItemDto" Property="Quantity" Title="Quantity" />
 
-                                <RadzenDataGridColumn TItem="QuoteItemDto" Property="DiscountRate" Title="Discount Rate (%)">
-                                    <EditTemplate Context="item">
-                                        <InputNumber @bind-Value="item.DiscountRate" step="0.01" min="0" max="1" class="form-control" />
-                                    </EditTemplate>
-                                    <Template Context="item">
-                                        @(item.DiscountRate * 100)%
-                                    </Template>
-                                </RadzenDataGridColumn>
+            <_ManageItems SelectedItems="Items" OnItemsUpdateStatusChanged="HandleQuoteCanBeSaved"></_ManageItems>
 
-                                <RadzenDataGridColumn TItem="QuoteItemDto" Title="Total">
-                                    <Template Context="item">@item.TotalAfterDiscount?.ToString("C", CultureInfo.CurrentCulture)</Template>
-                                </RadzenDataGridColumn>
-
-                                <RadzenDataGridColumn TItem="QuoteItemDto" Context="item" Width="160px">
-                                    <Template Context="item">
-                                        <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Small" Click="@(() => EditRow(item))" />
-
-                                    </Template>
-                                    <EditTemplate Context="item">
-                                        <RadzenButton Icon="save" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" Click="@(() => SaveRow(item))" Class="ms-2" />
-                                    </EditTemplate>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-
-                    </div>
-                </RadzenCard>
-            </div>
-
-            <div class="col-12 col-md-12 pt-4">
-                <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <div class="row mt-4">
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Subtotal:</label>
-                            <div>@quote.Subtotal?.ToString("C", CultureInfo.CurrentCulture)</div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Global Discount (%):</label>
-                            <InputNumber @bind-Value="quote.GlobalDiscountRate" class="form-control" step="0.01" min="0" max="1" @oninput=@ValidateGlobalDiscount />
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Tax:</label>
-                            <div>@quote.TaxAmount?.ToString("C", CultureInfo.CurrentCulture) (@(quote.TaxRate * 100)%)</div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label fw-bold">Total:</label>
-                            <div>@quote.Total?.ToString("C", CultureInfo.CurrentCulture)</div>
-                        </div>
-                    </div>
-                </RadzenCard>
-            </div>
-
-            <div class="col-12 col-md-12 pt-4">
+            <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
                     <div class="d-flex flex-wrap justify-content-between align-items-center">
                         <RadzenButton Text="Back to Quotes"
                         Icon="arrow_back"
                         Style="min-width: 160px;"
                         ButtonStyle="ButtonStyle.Light"
-                        Click="@OnBackToQuotes" />
+                        Click="@OnBackToQuotes" Disabled="@isButtonsDisabled" />
 
                         <div class="d-flex flex-wrap gap-2 justify-content-end">
                             @if (quote.Status == QuoteStatus.StatusSubmitted)
@@ -148,7 +79,7 @@ else
                                 Icon="fact_check"
                                 Style="min-width: 160px;"
                                 ButtonStyle="ButtonStyle.Primary"
-                                Click="@OnUnderReview" />
+                                Click="@OnUnderReview" Disabled="@isButtonsDisabled" />
                             }
                             @if (quote.Status == QuoteStatus.StatusDraft || quote.Status == QuoteStatus.StatusUnderReview)
                             {
@@ -156,20 +87,20 @@ else
                                 Icon="check"
                                 Style="min-width: 150px;"
                                 ButtonStyle="ButtonStyle.Info"
-                                Click="@OnMarkAsQuoted" />
+                                Click="@OnMarkAsQuoted" Disabled="@isButtonsDisabled" />
                             }
 
                             <RadzenButton Text="Save Changes"
                             Icon="save"
                             Style="min-width: 160px;"
                             ButtonStyle="ButtonStyle.Primary"
-                            Click="@OnSaveChanges" />
+                            Click="@OnSaveChanges" Disabled="@isButtonsDisabled" />
 
                             <RadzenButton Text="Cancel"
                             Icon="close"
                             Style="min-width: 120px;"
                             ButtonStyle="ButtonStyle.Light"
-                            Click="@OnCancel" />
+                            Click="@OnCancel" Disabled="@isButtonsDisabled" />
                         </div>
                     </div>
                 </RadzenCard>
@@ -182,9 +113,17 @@ else
     [Parameter] public string id { get; set; }
     private QuoteDto quote = new QuoteDto();
     private bool IsProcessing { get; set; } = true;
-    RadzenDataGrid<QuoteItemDto> quoteItemsGrid;
-    DateTime expirationDate = DateTime.UtcNow.AddDays(15);
 
+    DateTime expirationDate = DateTime.UtcNow.AddDays(15);
+    private List<ExtensionItemDto> Items = new();
+    bool IsItemsSaved = true;
+    private async Task HandleQuoteCanBeSaved(ItemGridUpdateStatus status)
+    {
+        if (status == ItemGridUpdateStatus.Saved)
+            IsItemsSaved = true;
+        else
+            IsItemsSaved = false;
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -206,6 +145,14 @@ else
             }
 
             quote = result.QuoteDto;
+            var convertQuery = new ConvertToExtensionItemsDtoQuery(quote.Items);
+            var convertResult = await Mediator.Send(convertQuery);
+            if (!convertResult.IsSuccess)
+            {
+                await _JSRuntime.ToastrError(result.ErrorMessage);
+                _NavigationManager.NavigateTo(Routes.Crm_Orders);
+            }
+            Items = convertResult.Items;
             if (quote.ExpirationDate is null)
             {
                 quote.ExpirationDate = expirationDate;
@@ -256,10 +203,20 @@ else
         }
     }
 
+    bool isButtonsDisabled = false;
     async Task OnSaveChanges()
     {
         try
         {
+            isButtonsDisabled = true;
+            if (!IsItemsSaved)
+            {
+                await _JSRuntime.ToastrError("Please finish creating or editing the item before saving the order.");
+                //Veuillez terminer la création ou la modification de l'article avant d'enregistrer la commande.
+                //يرجى إنهاء إنشاء أو تعديل العنصر قبل حفظ الطلب.
+                return;
+            }
+            await ConvertExtensionItemsDtoToQuoteItemsDto();
             var command = new UpdateQuoteRequestCommand(quote); // Ensure this command exists
             var result = await Mediator.Send(command);
 
@@ -279,7 +236,31 @@ else
         }
         finally
         {
+            isButtonsDisabled = false;
             await LoadQuote();
+        }
+    }
+
+    private async Task ConvertExtensionItemsDtoToQuoteItemsDto()
+    {
+        try
+        {
+            var query = new ConvertExtensionItemsDtoToQuoteItemsDtoQuery(Items);
+            var result = await Mediator.Send(query);
+
+            if (result.IsSuccess)
+            {
+                quote.Items = result.Items;
+            }
+            else
+            {
+                await _JSRuntime.ToastrError(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while updating quote items.");
+            await _JSRuntime.ToastrError("An error occurred while updating quote items.");
         }
     }
 
@@ -296,35 +277,5 @@ else
     void OnBackToQuotes()
     {
         _NavigationManager.NavigateTo(Routes.Crm_Quotes);
-    }
-
-    private void EditRow(QuoteItemDto item)
-    {
-        quoteItemsGrid.EditRow(item);
-    }
-
-    private void SaveRow(QuoteItemDto item)
-    {
-        if (item.DiscountRate > 1)
-        {
-            item.DiscountRate = 1;
-        }
-
-        if (item.DiscountRate < 0)
-        {
-            item.DiscountRate = 0;
-        }
-        quoteItemsGrid.UpdateRow(item);
-        // You can optionally recalculate totals here if needed
-    }
-
-    private void ValidateGlobalDiscount(ChangeEventArgs e)
-    {
-        if (double.TryParse(e.Value?.ToString(), out var val))
-        {
-            if (val > 1) quote.GlobalDiscountRate = 1;
-            else if (val < 0) quote.GlobalDiscountRate = 0;
-            else quote.GlobalDiscountRate = val;
-        }
     }
 }

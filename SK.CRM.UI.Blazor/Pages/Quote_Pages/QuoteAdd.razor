@@ -1,8 +1,11 @@
 ﻿@attribute [Route(Routes.Crm_Quote_Create)]
 @attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
 @using SK.CRM.Application.DTOs.Quote
+@using SK.CRM.Application.Features.Items.Enum
 @using SK.CRM.Application.Features.Quotes.Commands
 @using SK.CRM.Application.Features.Quotes.Queries
+@using SK.CRM.UI.Blazor.Pages.Shared.Customer
+@using SK.CRM.UI.Blazor.Pages.Shared.Items
 @inject IJSRuntime _IJSRuntime
 @inject NavigationManager _NavigationManager
 @inject ILogger<QuoteAdd> Logger
@@ -20,114 +23,40 @@ else
 {
     <div class="container py-4">
         <div class="row justify-content-center mb-4">
-            @if (selectedIndex != 3)
-            {
-                <div class="col-12 pt-4">
-                    <RadzenCard class="p-4 shadow radzen-card-responsive">
-                        <div class="row align-items-center justify-content-between">
-
-                            <!-- Left: Title -->
-                            <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
-                                <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                    Quote Creation : 
-                                </h2>
-                                @if (selectedIndex >= 0)
-                                {
-                                    @if (selectedCustomer?.Any() == true)
-                                    {
-                                        <p>
-                                            Step 1 : Selected customer : @selectedCustomer[0].FirstName @selectedCustomer[0].LastName
-                                        </p>
-
-                                    }
-                                    else
-                                    {
-                                        <p>Step 1 : Select a customer</p>
-                                    }
-                                }
-                                @if (selectedIndex >= 1)
-                                {
-                                    @if (selectedAddress?.Any() == true)
-                                    {
-                                        <p>
-                                            Step 2 : Selected Address : @selectedAddress[0].FullAddress
-                                        </p>
-
-                                    }
-                                    else
-                                    {
-                                        <p>Step 2 : Select an Address</p>
-                                    }
-                                }
-
-                                @if (selectedIndex == 2)
-                                {
-                                    @if (selectedItems?.Any() == true)
-                                    {
-                                        <p>
-                                            Step 3 : Selected Item(s) : @selectedItems.Count
-                                        </p>
-
-                                    }
-                                    else
-                                    {
-                                        <p>Step 3 : Select an Item(s)</p>
-                                    }
-                                }
-                            </div>
 
 
-
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Quote</h4>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <p><strong>Customer: </strong>@quote.FullName</p>
                         </div>
-                    </RadzenCard>
-                </div>
-            }
+                        <div class="col-md-6">
+                            <p><strong>Address: </strong>@quote.FullAddress</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Status: </strong>@quote.Status</p>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <p><strong>Expires:</strong><InputDate @bind-Value="quote.ExpirationDate" class="form-control" /></p>
+                        </div>
+                    </div>
+                </RadzenCard>
+            </div>
 
             @if(selectedIndex == 0)
             { 
                 // customer step
-                <div class="col-12 col-md-12 pt-4">
-                    <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                        <RadzenDataGrid @ref="customerGrid"
-                        Data="@customers"
-                        TItem="CustomerDto"
-                        AllowFiltering="true"
-                        AllowPaging="true"
-                        PageSizeOptions="new int[] {5, 10, 20, 50}"
-                        PageSize="10"
-                        AllowSorting="true"
-                        Responsive="true"
-                        SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedCustomer>
-
-                            <Columns>
-                                <RadzenDataGridColumn Title="Select Customer">
-                                    <Template Context="quoteItem">
-                                        <div>
-                                            <strong>@quoteItem.FirstName @quoteItem.LastName</strong><br />
-                                            <small class="text-muted">@quoteItem.Email</small>
-                                        </div>
-                                    </Template>
-                                </RadzenDataGridColumn>
-
-                            </Columns>
-
-                            <!-- Empty state -->
-                            <EmptyTemplate>
-                                <div class="text-center text-muted p-4">
-                                    No quotes to display.
-                                </div>
-                            </EmptyTemplate>
-
-                        </RadzenDataGrid>
-                    </RadzenCard>
-
-                </div>
+                <_SelectCustomer OnSelecetedCustomerChanged="HandleSelectedCustomer"></_SelectCustomer>
             }
 
             @if (selectedIndex == 1)
             {
                 // Address step
-                <div class="col-12 col-md-12 pt-4">
+                <div class="col-12 col-md-12 pt-1">
                     <RadzenCard Class="p-4 shadow radzen-card-responsive">
                         <RadzenDataGrid @ref="addressGrid"
                         Data="@addresses"
@@ -138,7 +67,7 @@ else
                         PageSize="10"
                         AllowSorting="true"
                         Responsive="true"
-                        SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedAddress>
+                        SelectionMode="DataGridSelectionMode.Single" RowSelect="@OnAddressSelected">
 
                             <Columns>
                                 <RadzenDataGridColumn Title="Select Address">
@@ -167,98 +96,10 @@ else
 
             @if (selectedIndex == 2)
             {
-                // Products step
-                <div class="row">
-                    <div class="col-12 col-md-6 pt-4">
-                        <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                            <RadzenDataGrid @ref="ItemsGrid"
-                            Data="@items"
-                            TItem="Quote_ProductsDto"
-                            AllowFiltering="true"
-                            AllowPaging="true"
-                            PageSizeOptions="new int[] {5, 10, 20, 50}"
-                            PageSize="10"
-                            AllowSorting="true"
-                            Responsive="true"
-                            AllowRowSelectOnRowClick="true"
-                            SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@selectedItems>
-
-                                <Columns>
-
-                                    <RadzenDataGridColumn Title="Select Product">
-                                        <Template Context="productItem">
-                                            <div>
-                                                <strong>@productItem.Name </strong><br />
-                                                <small class="text-muted">@productItem.Description</small>
-                                            </div>
-                                        </Template>
-                                    </RadzenDataGridColumn>
-
-                                </Columns>
-
-                                <!-- Empty state -->
-                                <EmptyTemplate>
-                                    <div class="text-center text-muted p-4">
-                                        No Product to display.
-                                    </div>
-                                </EmptyTemplate>
-
-                            </RadzenDataGrid>
-                        </RadzenCard>
-
-                    </div>
-                    <div class="col-12 col-md-6 pt-4">
-                        <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                            <RadzenDataGrid @ref="ItemsGrid"
-                            Data="@selectedItems"
-                            TItem="Quote_ProductsDto"
-                            AllowFiltering="true"
-                            AllowPaging="true"
-                            PageSizeOptions="new int[] {5, 10, 20, 50}"
-                            PageSize="10"
-                            AllowSorting="true"
-                            Responsive="true"
-                            AllowRowSelectOnRowClick="true"
-                            SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@selectedItems>
-
-                                <Columns>
-
-                                    <RadzenDataGridColumn Title="Selected Product">
-                                        <Template Context="productItem">
-                                            <div>
-                                                <strong>@productItem.Name </strong><br />
-                                                <small class="text-muted">@productItem.Description</small>
-                                            </div>
-                                        </Template>
-                                    </RadzenDataGridColumn>
-
-                                </Columns>
-
-                                <!-- Empty state -->
-                                <EmptyTemplate>
-                                    <div class="text-center text-muted p-4">
-                                        No Product to selected.
-                                    </div>
-                                </EmptyTemplate>
-
-                            </RadzenDataGrid>
-                        </RadzenCard>
-
-                    </div>
-                </div>
-
-
-
+                <_ManageItems SelectedItems="Items" OnItemsUpdateStatusChanged="HandleQuoteCanBeSaved"></_ManageItems>
             }
 
-
-
-            @if (selectedIndex == 3)
-            {
-                <_QuoteAdd_Overview quote="quote"></_QuoteAdd_Overview>
-            }
-
-            <div class="col-12 col-md-12 pt-4">
+            <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
                     <div class="d-flex flex-wrap justify-content-between align-items-center">
                         <div class="d-flex flex-wrap gap-2 justify-content-start">
@@ -269,25 +110,25 @@ else
                                 Icon="arrow_back"
                                 Style="min-width: 160px;"
                                 ButtonStyle="ButtonStyle.Light"
-                                Click="@OnPreviousStep" />
+                                Click="@OnPreviousStep" Disabled="@isButtonsDisabled" />
                             }
                             <RadzenButton Text="Cancel"
                             Icon="close"
                             Style="min-width: 120px;"
                             ButtonStyle="ButtonStyle.Light"
-                            Click="@OnCancel" />
+                            Click="@OnCancel" Disabled="@isButtonsDisabled" />
                         </div>
                         <!-- Right-aligned action buttons -->
 
                         <div class="d-flex flex-wrap gap-2 justify-content-end">
 
-                            @if (selectedIndex != 3)
+                            @if (selectedIndex != 2)
                             {
                                 <RadzenButton Text="Next"
                                 Icon="arrow_forward"
                                 Style="min-width: 120px;"
                                 ButtonStyle="ButtonStyle.Primary"
-                                Click="@OnNextStep" />
+                                Click="@OnNextStep" Disabled="@isButtonsDisabled" />
                             }
                             else
                             {
@@ -295,13 +136,13 @@ else
                                 Icon="check"
                                 Style="min-width: 150px;"
                                 ButtonStyle="ButtonStyle.Info"
-                                Click="@(()=>OnSaveChanges(false))" />
+                                Click="@(()=>OnSaveChanges(false))" Disabled="@isButtonsDisabled" />
 
                                 <RadzenButton Text="Place Quote"
                                 Icon="save"
                                 Style="min-width: 160px;"
                                 ButtonStyle="ButtonStyle.Primary"
-                                Click="@(()=>OnSaveChanges(true))" />
+                                Click="@(()=>OnSaveChanges(true))" Disabled="@isButtonsDisabled" />
 
                             }
                         </div>
@@ -315,57 +156,30 @@ else
 
 
 @code {
-    public bool IsProcessing { get; set; } = true;
+    public bool IsProcessing { get; set; } = false;
     int selectedIndex = 0;
-    private IEnumerable<CustomerDto> customers { get; set; } = new List<CustomerDto>();
+
     private IEnumerable<AddressDto> addresses { get; set; } = new List<AddressDto>();
-    private IEnumerable<Quote_ProductsDto> items { get; set; } = new List<Quote_ProductsDto>();
-    IList<CustomerDto> selectedCustomer;
-    IList<AddressDto> selectedAddress;
-    IList<Quote_ProductsDto> selectedItems;
-    RadzenDataGrid<CustomerDto> customerGrid;
+
+
     RadzenDataGrid<AddressDto> addressGrid;
-    RadzenDataGrid<Quote_ProductsDto> ItemsGrid;
-    public QuoteDto quote { get; set; } = new QuoteDto();
+    private List<ExtensionItemDto> Items = new();
+    public SelectCustomerDto selectCustomerDto { get; set; } = new SelectCustomerDto();
+    public QuoteDto quote { get; set; } = new QuoteDto()
+        {
+            Status = QuoteStatus.StatusDraft,
+            ExpirationDate = DateTime.UtcNow.AddDays(15),
+        };
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                IsProcessing = true;
-                await LoadCustomers();
-
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error while fetching Quotes.");
-                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
-            }
-            finally
-            {
-                IsProcessing = false;
-                StateHasChanged();
-            }
-
         }
-    }
-
-    private async Task LoadCustomers()
-    {
-        var query = new GetAllCustomersQuery();
-        var result = await Mediator.Send(query);
-        if (!result.IsSuccess)
-        {
-            await _IJSRuntime.ToastrError(result.ErrorMessage);
-            return;
-        }
-        customers = result.Customers;
     }
 
     private async Task LoadCustomerAddresses()
     {
-        var query = new GetCustomerAddressesQuery(selectedCustomer[0].Id);
+        var query = new GetCustomerAddressesQuery(quote.CustomerId);
         var result = await Mediator.Send(query);
         if (!result.IsSuccess)
         {
@@ -375,16 +189,52 @@ else
         addresses = result.Addresses;
     }
 
-    private async Task LoadProduct()
+    private void OnAddressSelected(AddressDto address)
     {
-        var query = new GetAllProductsToBeUsedInQuoteQuery();
-        var result = await Mediator.Send(query);
-        if (!result.IsSuccess)
+        if (quote is not null & address is not null)
         {
-            await _IJSRuntime.ToastrError(result.ErrorMessage);
-            return;
+            quote.AddressId = address.Id;
+            quote.FullAddress = address.FullAddress;
         }
-        items = result.Products;
+    }
+
+    private async Task ConvertExtensionItemsDtoToQuoteItemsDto()
+    {
+        try
+        {
+            var query = new ConvertExtensionItemsDtoToQuoteItemsDtoQuery(Items);
+            var result = await Mediator.Send(query);
+
+            if (result.IsSuccess)
+            {
+                quote.Items = result.Items;
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while updating quote items.");
+            await _IJSRuntime.ToastrError("An error occurred while updating quote items.");
+        }
+    }
+    bool IsItemsSaved = true;
+    private async Task HandleQuoteCanBeSaved(ItemGridUpdateStatus status)
+    {
+        if (status == ItemGridUpdateStatus.Saved)
+            IsItemsSaved = true;
+        else
+            IsItemsSaved = false;
+    }
+
+    private async Task HandleSelectedCustomer(SelectCustomerDto selectCustomerDto)
+    {
+        quote.CustomerId = selectCustomerDto.Id;
+        if (!string.IsNullOrEmpty(selectCustomerDto.UserId))
+        quote.UserId = selectCustomerDto.UserId;
+        quote.FullName = selectCustomerDto.FullName;
     }
 
     async Task OnPreviousStep() { 
@@ -396,55 +246,46 @@ else
     {
         if (selectedIndex == 0)
         {
-            if (selectedCustomer is not null && selectedCustomer.Any())
+            if (!string.IsNullOrEmpty(quote.FullName))
             {
                 await LoadCustomerAddresses();
+                quote.FullAddress = string.Empty;
                 selectedIndex++;
-                selectedAddress?.Clear();
+
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError("Please select a customer before proceeding."); // frensh&arabic msg to put in translation ressource later "Veuillez sélectionner un client avant de continuer." & "يرجى اختيار عميل قبل المتابعة."
             }
         }
         else if (selectedIndex == 1)
         {
-            if (selectedAddress is not null && selectedAddress.Any())
+            if (!string.IsNullOrEmpty(quote.FullAddress))
             {
-                await LoadProduct();
                 selectedIndex++;
-                selectedItems?.Clear();
             }
-        }
-        else if (selectedIndex == 2)
-        {
-            if (selectedItems is not null && selectedItems.Any())
+            else
             {
-                await GenerateQuoteAsync();
-                selectedIndex++;
+                await _IJSRuntime.ToastrError("Please select an address before proceeding."); // frensh&arabic msg to put in translation ressource later "Veuillez sélectionner une adresse avant de continuer." & "يرجى اختيار عنوان قبل المتابعة."
             }
         }
     }
-
-    private async Task GenerateQuoteAsync()
-    {
-        quote.CustomerId = selectedCustomer[0].Id;
-        quote.AddressId = selectedAddress[0].Id;
-        quote.FullName = selectedCustomer[0].FirstName + " " + selectedCustomer[0].LastName;
-        quote.FullAddress = selectedAddress[0].FullAddress;
-        quote.Status = QuoteStatus.StatusDraft;
-        quote.ExpirationDate = DateTime.UtcNow.AddDays(15);
-        quote.Items = selectedItems.Select(item => new QuoteItemDto
-            {
-                ProductId = item.Id,
-                ProductName = item.Name,
-                Quantity = 1, 
-                UnitPrice = (double)item.Price,
-
-            }).ToList();
-    }
-
+    bool isButtonsDisabled = false;
     async Task OnSaveChanges(bool IsSubmited)
     {
-       
+
         try
         {
+            isButtonsDisabled = true;
+            if (!IsItemsSaved)
+            {
+                await _IJSRuntime.ToastrError("Please finish creating or editing the item before saving the order.");
+                //Veuillez terminer la création ou la modification de l'article avant d'enregistrer la commande.
+                //يرجى إنهاء إنشاء أو تعديل العنصر قبل حفظ الطلب.
+                return;
+            }
+
+            await ConvertExtensionItemsDtoToQuoteItemsDto();
             if (IsSubmited)
             {
                 quote.Status = QuoteStatus.StatusQuoted;
@@ -461,6 +302,8 @@ else
                 return;
             }
             await _IJSRuntime.ToastrSuccess("Quote created successfully!");
+            await Task.Delay(3000);
+            _NavigationManager.NavigateTo(Routes.Crm_Quotes);
         }
         catch (Exception ex)
         {
@@ -469,12 +312,18 @@ else
         }
         finally
         {
-            
+            isButtonsDisabled = false; 
         }
     }
 
     async Task OnCancel()
     {
-        // await UpdateStatus(QuoteStatus.StatusCancelled);
+        quote = new QuoteDto()
+            {
+                Status = QuoteStatus.StatusDraft,
+                ExpirationDate = DateTime.UtcNow.AddDays(15),
+            };
+            Items.Clear();
+            selectedIndex = 0;
     }
 }

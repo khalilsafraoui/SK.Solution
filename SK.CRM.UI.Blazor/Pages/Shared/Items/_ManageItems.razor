@@ -1,0 +1,257 @@
+﻿@using SK.CRM.Application.DTOs.Quote
+@using SK.CRM.Application.Features.Items.Enum
+@inject IJSRuntime _IJSRuntime
+@inject IMediator Mediator
+<div class="col-12 col-md-12 pt-1">
+    <RadzenCard Class="p-4 shadow radzen-card-responsive">
+        <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📋 Items</h4>
+        <div class="card-body overflow-auto p-0">
+            <RadzenDataGrid @ref="ItemsGrid" AllowAlternatingRows="false" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="false" EditMode="DataGridEditMode.Single" Responsive="true"
+            Data="@SelectedItems" TItem="ExtensionItemDto" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" Sort="@Reset" Page="@Reset" Filter="@Reset" ColumnWidth="200px">
+                <HeaderTemplate>
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Item" Click="@InsertRow" Disabled="@(itemsToInsert.Count() > 0)" />
+                </HeaderTemplate>
+                <Columns>
+                    <RadzenDataGridColumn Property="items.Name" Title="Item" Width="280px">
+                        <Template Context="selecteditem">
+                            <div>
+                                <strong>@selecteditem.Name</strong><br />
+                                <small>ID: @selecteditem.Id</small>
+                            </div>
+                        </Template>
+
+                        <EditTemplate Context="selecteditem">
+                            <RadzenDropDown @bind-Value="selecteditem.Id"
+                            Data="@items"
+                            TextProperty="@nameof(ItemDto.Name)"
+                            ValueProperty="@nameof(ItemDto.Id)"
+                            Change="@((args) => OnItemChanged(selecteditem, args))"
+                            Style="width:100%; display: block;"
+                            InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select Item" }})">
+                            </RadzenDropDown>
+                        </EditTemplate>
+                        <FooterTemplate>
+                            Items count: <b>(@SelectedItems.Count)</b>
+                        </FooterTemplate>
+                    </RadzenDataGridColumn>
+
+
+                    <RadzenDataGridColumn Property="items.Price" Title="U Price" Width="120px">
+                        <Template Context="SelectedItem">
+                            @String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", SelectedItem.Price)
+                        </Template>
+                        <EditTemplate Context="SelectedItem">
+                            <RadzenNumeric @bind-Value="SelectedItem.Price" step="0.01" min="0" max="10000"  />
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="Quantity" Title="Quantity" Width="130px">
+                        <EditTemplate Context="item">
+                            <InputNumber @bind-Value="item.Quantity" step="1" min="0" max="10000" class="form-control" />
+                        </EditTemplate>
+                        <Template Context="item">
+                            @item.Quantity
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="DiscountRate" Title="Discount(%)" Width="100px">
+                        <EditTemplate Context="item">
+                            <InputNumber @bind-Value="item.DiscountRate" step="0.01" min="0" max="1" class="form-control" />
+                        </EditTemplate>
+                        <Template Context="item">
+                            @(item.DiscountRate * 100)%
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="TaxRate" Title="Tax(%)" Width="100px">
+                        <EditTemplate Context="item">
+                            <InputNumber @bind-Value="item.TaxRate" step="0.01" min="0" max="1" class="form-control" />
+                        </EditTemplate>
+                        <Template Context="item">
+                            @(item.TaxRate * 100)%
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Title="Total" Width="120px">
+                        <Template Context="item">@item.TotalAfterDiscountAndTax?.ToString("C", CultureInfo.CurrentCulture)</Template>
+
+                    </RadzenDataGridColumn>
+
+
+
+
+                    <RadzenDataGridColumn Context="item" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="true" FrozenPosition="FrozenColumnPosition.Right" Width="120px">
+                        <Template Context="item">
+                            <RadzenButton Icon="add_circle" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" Click="@(() => InsertAfterRow(item))" title="Add new row after this row" Disabled="@(editMode == DataGridEditMode.Single && itemsToInsert.Count() > 0)" />
+                            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@(args => EditRow(item))" @onclick:stopPropagation="true" />
+                            <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(item))" @onclick:stopPropagation="true" />
+                        </Template>
+                        <EditTemplate Context="item">
+                            <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow(item))" aria-label="Save" />
+                            <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" class="rz-my-1 rz-ms-1" Click="@((args) => CancelEdit(item))" aria-label="Cancel" />
+                            <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(item))" aria-label="Delete" />
+                        </EditTemplate>
+                        <FooterTemplate>
+                            Total: <b>@String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", SelectedItems.Sum(o => o.TotalAfterDiscountAndTax))</b>
+                        </FooterTemplate>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+        </div>
+    </RadzenCard>
+</div>
+@code {
+
+    [Parameter]
+    public List<ExtensionItemDto> SelectedItems { get; set; } = new List<ExtensionItemDto>();
+
+    [Parameter]
+    public EventCallback<ItemGridUpdateStatus> OnItemsUpdateStatusChanged { get; set; }
+    void NotifyParent(ItemGridUpdateStatus status)
+    {
+        OnItemsUpdateStatusChanged.InvokeAsync(status);
+    }
+   
+    private IEnumerable<ItemDto> items { get; set; } = new List<ItemDto>();
+    RadzenDataGrid<ExtensionItemDto> ItemsGrid;
+
+
+    private async Task LoadProduct()
+    {
+        var query = new GetItemsQuery();
+        var result = await Mediator.Send(query);
+        if (!result.IsSuccess)
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+            return;
+        }
+        items = result.Items;
+    }
+
+    DataGridEditMode editMode = DataGridEditMode.Single;
+
+    List<ExtensionItemDto> itemsToInsert = new List<ExtensionItemDto>();
+    List<ExtensionItemDto> itemsToUpdate = new List<ExtensionItemDto>();
+
+    void Reset()
+    {
+        itemsToInsert.Clear();
+        itemsToUpdate.Clear();
+        NotifyParent(ItemGridUpdateStatus.Saved);
+    }
+
+    void Reset(ExtensionItemDto item)
+    {
+        itemsToInsert.Remove(item);
+        itemsToUpdate.Remove(item);
+        NotifyParent(ItemGridUpdateStatus.Saved);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadProduct();
+        // customers = dbContext.Customers;
+        // employees = dbContext.Employees;
+
+        // SelectedItems = dbContext.Orders.Include("Customer").Include("Employee");
+    }
+
+    async Task EditRow(ExtensionItemDto item)
+    {
+        if (!ItemsGrid.IsValid) return;
+
+        Reset();
+
+
+        itemsToUpdate.Add(item);
+        NotifyParent(ItemGridUpdateStatus.Updating);
+        await ItemsGrid.EditRow(item);
+    }
+
+    void OnUpdateRow(ExtensionItemDto item)
+    {
+        Reset(item);
+        NotifyParent(ItemGridUpdateStatus.Saved);
+    }
+
+    async Task SaveRow(ExtensionItemDto item)
+    {
+        await ItemsGrid.UpdateRow(item);
+    }
+
+    void CancelEdit(ExtensionItemDto item)
+    {
+        Reset(item);
+
+        ItemsGrid.CancelEditRow(item);
+    }
+
+    async Task DeleteRow(ExtensionItemDto item)
+    {
+        Reset(item);
+
+        if (SelectedItems.Contains(item))
+        {
+            SelectedItems.Remove(item);
+            await ItemsGrid.Reload();
+        }
+        else
+        {
+            ItemsGrid.CancelEditRow(item);
+            await ItemsGrid.Reload();
+        }
+    }
+
+    async Task InsertRow()
+    {
+        if (!ItemsGrid.IsValid) return;
+
+
+        Reset();
+
+
+        var item = new ExtensionItemDto();
+        itemsToInsert.Add(item);
+        NotifyParent(ItemGridUpdateStatus.Updating);
+
+        await ItemsGrid.InsertRow(item);
+    }
+
+    async Task InsertAfterRow(ExtensionItemDto row)
+    {
+        if (!ItemsGrid.IsValid) return;
+
+        Reset();
+
+
+        var item = new ExtensionItemDto();
+        itemsToInsert.Add(item);
+        NotifyParent(ItemGridUpdateStatus.Updating);
+        await ItemsGrid.InsertAfterRow(item, row);
+    }
+
+    void OnCreateRow(ExtensionItemDto item)
+    {
+        SelectedItems.Add(item);
+        itemsToInsert.Remove(item);
+        NotifyParent(ItemGridUpdateStatus.Saved);
+    }
+
+    private void OnItemChanged(ExtensionItemDto selectedItem, object value)
+    {
+        var selectedId = (int)value;
+        var item = items.FirstOrDefault(i => i.Id == selectedId);
+        if (item != null)
+        {
+            selectedItem.Name = item.Name;
+            selectedItem.Price = item.Price;
+            selectedItem.Quantity = 1;
+            selectedItem.DiscountRate = item.DiscountRate;
+            selectedItem.TaxRate = item.TaxRate;
+        }
+    }
+
+
+}
