@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SK.CRM.Application.DTOs.Quote;
+using SK.CRM.Application.Enums;
 using SK.CRM.Domain.Entities;
 using SK.CRM.Domain.Entities.Quote;
 
@@ -24,7 +25,7 @@ namespace SK.CRM.Application.MappingProfiles.Converter
             destination.UserId = source.UserId;
             destination.CustomerId = source.CustomerId;
             destination.AddressId = source.AddressId;
-            destination.Status = source.Status;
+            destination.Status = OrderStatus.StatusPending;
             destination.FullAddress = source.FullAddress;
             destination.OrderDate = source.CreatedDate;
             

@@ -5,7 +5,7 @@ namespace SK.CRM.Domain.Entities
     public class Order : BaseEntity
     {
        
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         public Guid? CustomerId { get; set; }
 

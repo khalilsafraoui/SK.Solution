@@ -25,41 +25,46 @@ else
 
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">
-                        📝 Quote
-                    </h4>
-
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <p><strong>Quote ID: </strong>@quote.Id</p>
-                        </div>
-
-                        <div class="col-md-6">
-                            <p><strong>Address: </strong>@quote.FullAddress</p>
-                        </div>
-
-                        <div class="col-md-4">
-                            <p><strong>Status: </strong>@quote.Status</p>
-                        </div>
-
-
-
-
-                        <div class="col-md-4">
-                            <p><strong>Created: </strong>@quote.CreatedDate.ToString("dd/MM/yyyy")</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Expires: </strong>@quote.ExpirationDate?.ToString("dd/MM/yyyy")</p>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-bold">Notes:</label>
-                            <div>@quote.Notes</div>
-                        </div>
-                    </div>
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Quote</h4>
+                    <RadzenRow Gap="1rem">
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text="Id" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.Id.ToString()" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="Customer" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.FullName" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="Address" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.FullAddress" ReadOnly="true" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text="Status" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.Status" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="CreatedDate" Variant="Variant.Filled">
+                                    <RadzenDatePicker TValue="DateTime" Value="@quote.CreatedDate" DateFormat="yyyy-MM-dd" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="Select Expiration Date" Variant="Variant.Filled">
+                                    <RadzenDatePicker TValue="DateTime" Value="quote.ExpirationDate"
+                                    DateFormat="yyyy-MM-dd"
+                                    Style="width: 100%;" ReadOnly="true" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
                 </RadzenCard>
             </div>
 
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Customer Note</h4>
+                    <RadzenTextArea Value="@quote.Notes" Style="width: 100%" aria-label="TextArea" ReadOnly="true" />
+                </RadzenCard>
+            </div>
 
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
@@ -78,8 +83,11 @@ else
                         AllowSorting="true"
                         Responsive="true">
                             <Columns>
-                                <RadzenDataGridColumn Title="Product">
+                                <RadzenDataGridColumn Title="Items">
                                     <Template Context="quoteItem">@quoteItem.ProductName</Template>
+                                    <FooterTemplate>
+                                        Items count: <b>(@quote.Items.Count)</b>
+                                    </FooterTemplate>
                                 </RadzenDataGridColumn>
 
                                 <RadzenDataGridColumn Title="Unit Price">
@@ -100,6 +108,9 @@ else
 
                                 <RadzenDataGridColumn Title="Total">
                                     <Template Context="quoteItem">@quoteItem.TotalAfterDiscountAndTax</Template>
+                                    <FooterTemplate>
+                                        Total: <b>@String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", @quote.Items.Sum(o => o.TotalAfterDiscountAndTax))</b>
+                                    </FooterTemplate>
                                 </RadzenDataGridColumn>
 
                             </Columns>
@@ -108,29 +119,7 @@ else
                 </RadzenCard>
             </div>
 
-            @if (@quote.Status == QuoteStatus.StatusAccepted || @quote.Status == QuoteStatus.StatusQuoted || @quote.Status == QuoteStatus.StatusRejected || @quote.Status == QuoteStatus.StatusExpired)
-            {
-                <div class="col-12 col-md-12 pt-1">
-                    <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                        <div class="row mt-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Subtotal:</label>
-                                <div>@quote.Subtotal?.ToString("C", CultureInfo.CurrentCulture)</div>
-                            </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Global Discount (%):</label>
-                                <div>@(quote.GlobalDiscountRate * 100)%</div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold">Total:</label>
-                                <div>@quote.Total?.ToString("C", CultureInfo.CurrentCulture)</div>
-                            </div>
-                        </div>
-                    </RadzenCard>
-                </div>
-            }
 
             @if (quote.Status == QuoteStatus.StatusQuoted || quote.Status == QuoteStatus.StatusAccepted)
             {
@@ -140,36 +129,36 @@ else
                             <strong>Permission required:</strong> These actions are reserved for the customer. Please make sure you have received confirmation from the assigned customer before proceeding.
                         </div>
 
-                            <!-- Right-aligned action buttons -->
-                            @if (quote.Status != QuoteStatus.StatusCancelled)
-                            {
-                                <div class="d-flex flex-wrap gap-2 justify-content-end">
-                                    @if (quote.Status == QuoteStatus.StatusAccepted)
-                                    {
-                                        <RadzenButton Text="Proceed to Order"
-                                                      Icon="swap_horiz"
-                                                      Style="min-width: 160px;"
-                                                      ButtonStyle="ButtonStyle.Primary"
-                                                      Click="@OnProceedToOrder" />
-                                    }
-                                    @if (quote.Status == QuoteStatus.StatusQuoted)
-                                    {
-                                        <RadzenButton Text="Accept"
-                                                      Icon="check"
-                                                      Style="min-width: 120px;"
-                                                      ButtonStyle="ButtonStyle.Success"
-                                                      Click="@OnAccept" />
+                        <!-- Right-aligned action buttons -->
+                        @if (quote.Status != QuoteStatus.StatusCancelled)
+                        {
+                            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                @if (quote.Status == QuoteStatus.StatusAccepted)
+                                {
+                                    <RadzenButton Text="Proceed to Order"
+                                    Icon="swap_horiz"
+                                    Style="min-width: 160px;"
+                                    ButtonStyle="ButtonStyle.Primary"
+                                    Click="@OnProceedToOrder" />
+                                }
+                                @if (quote.Status == QuoteStatus.StatusQuoted)
+                                {
+                                    <RadzenButton Text="Accept"
+                                    Icon="check"
+                                    Style="min-width: 120px;"
+                                    ButtonStyle="ButtonStyle.Success"
+                                    Click="@OnAccept" />
 
-                                        <RadzenButton Text="Reject"
-                                                      Icon="cancel"
-                                                      Style="min-width: 120px;"
-                                                      ButtonStyle="ButtonStyle.Danger"
-                                                      Click="@OnReject" />
-                                    }
+                                    <RadzenButton Text="Reject"
+                                    Icon="cancel"
+                                    Style="min-width: 120px;"
+                                    ButtonStyle="ButtonStyle.Danger"
+                                    Click="@OnReject" />
+                                }
 
-                                </div>
-                            }
-                       
+                            </div>
+                        }
+
                     </RadzenCard>
                 </div>
             }
@@ -321,9 +310,30 @@ else
         await UpdateStatus(QuoteStatus.StatusRejected);
     }
 
-    void OnProceedToOrder()
+    async Task OnProceedToOrder()
     {
-        // Logic to create an order from a quote
+        try
+        {
+            IsProcessing = true;
+
+            var createOrderCommand = new CreateOrderFromQuoteCommand(Guid.Parse(id));
+            var orderResult = await Mediator.Send(createOrderCommand);
+
+            if (!orderResult.IsSuccess)
+            {
+                await _JSRuntime.ToastrError(orderResult.ErrorMessage);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occurred while processing the order for ID: {Id}", id);
+            await _JSRuntime.ToastrError("An error occurred while processing the order. Please try again later.");
+        }
+        finally
+        {
+            await LoadQuote();
+        }
     }
 }
 

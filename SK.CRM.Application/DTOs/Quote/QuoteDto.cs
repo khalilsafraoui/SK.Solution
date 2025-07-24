@@ -29,7 +29,7 @@ namespace SK.CRM.Application.DTOs.Quote
         // Global discount applied to the whole quote (in percentage, e.g., 0.10 for 10%)
         public double GlobalDiscountRate { get; set; } = 0;
 
-        public double? Subtotal => Items.Sum(i => i.TotalAfterDiscount);
+        public double? Subtotal => Items.Sum(i => i.TotalAfterDiscountAndTax);
 
         public double? DiscountAmount => Subtotal * GlobalDiscountRate;
 

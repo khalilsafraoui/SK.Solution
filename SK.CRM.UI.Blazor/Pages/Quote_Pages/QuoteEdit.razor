@@ -26,38 +26,44 @@ else
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
                     <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Quote Editing</h4>
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <p><strong>Quote ID: </strong>@quote.Id</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Address: </strong>@quote.FullAddress</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Status: </strong>@quote.Status</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Created: </strong>@quote.CreatedDate.ToString("dd/MM/yyyy")</p>
-                        </div>
-
-                        <div class="col-md-4">
-                            <p><strong>Expires:</strong><InputDate @bind-Value="quote.ExpirationDate" class="form-control" /></p>
-                        </div>
-
-
-
-
-                    </div>
+                    <RadzenRow Gap="1rem">
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text="Id" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.Id.ToString()" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="Customer" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.FullName" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="Address" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.FullAddress" ReadOnly="true" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text="Status" Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.Status" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="CreatedDate" Variant="Variant.Filled">
+                                    <RadzenDatePicker TValue="DateTime" Value="@quote.CreatedDate" DateFormat="yyyy-MM-dd" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text="Select Expiration Date" Variant="Variant.Flat">
+                                    <RadzenDatePicker @bind-Value="quote.ExpirationDate"
+                                    DateFormat="yyyy-MM-dd"
+                                    Style="width: 100%;" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
                 </RadzenCard>
             </div>
+
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <label class="form-label fw-bold">Notes:</label>
-                            <div>@quote.Notes</div>
-                        </div>
-                    </div>
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Customer Note</h4>
+                    <RadzenTextArea @bind-Value="@quote.Notes" Style="width: 100%" aria-label="TextArea" />
+
                 </RadzenCard>
             </div>
 
@@ -81,20 +87,23 @@ else
                                 ButtonStyle="ButtonStyle.Primary"
                                 Click="@OnUnderReview" Disabled="@isButtonsDisabled" />
                             }
-                            @if (quote.Status == QuoteStatus.StatusDraft || quote.Status == QuoteStatus.StatusUnderReview)
-                            {
-                                <RadzenButton Text="Mark as Quoted"
-                                Icon="check"
-                                Style="min-width: 150px;"
-                                ButtonStyle="ButtonStyle.Info"
-                                Click="@OnMarkAsQuoted" Disabled="@isButtonsDisabled" />
-                            }
 
                             <RadzenButton Text="Save Changes"
                             Icon="save"
                             Style="min-width: 160px;"
-                            ButtonStyle="ButtonStyle.Primary"
-                            Click="@OnSaveChanges" Disabled="@isButtonsDisabled" />
+                            ButtonStyle="ButtonStyle.Info"
+                            Click="@(()=>OnSaveChanges(false))" Disabled="@isButtonsDisabled" />
+
+                            @if (quote.Status == QuoteStatus.StatusDraft || quote.Status == QuoteStatus.StatusUnderReview)
+                            {
+                                <RadzenButton Text="Place Quote"
+                                Icon="check"
+                                Style="min-width: 150px;"
+                                ButtonStyle="ButtonStyle.Primary"
+                                Click="@(()=>OnSaveChanges(true))" Disabled="@isButtonsDisabled" />
+                            }
+
+
 
                             <RadzenButton Text="Cancel"
                             Icon="close"
@@ -171,11 +180,6 @@ else
     }
 
 
-    async Task OnMarkAsQuoted()
-    {
-        await UpdateStatus(QuoteStatus.StatusQuoted);
-    }
-
     private async Task UpdateStatus(string newStatus)
     {
         try
@@ -204,10 +208,14 @@ else
     }
 
     bool isButtonsDisabled = false;
-    async Task OnSaveChanges()
+    async Task OnSaveChanges(bool IsQuoted)
     {
         try
         {
+            if(IsQuoted)
+            {
+                quote.Status = QuoteStatus.StatusQuoted;
+            }
             isButtonsDisabled = true;
             if (!IsItemsSaved)
             {
@@ -223,11 +231,17 @@ else
             if (result.IsSuccess)
             {
                 await _JSRuntime.ToastrSuccess("Quote updated successfully.");
+                if (IsQuoted)
+                {
+                    await Task.Delay(3000);
+                    _NavigationManager.NavigateTo(Routes.Crm_Quotes);
+                }
             }
             else
             {
                 await _JSRuntime.ToastrError(result.ErrorMessage);
             }
+            
         }
         catch (Exception ex)
         {

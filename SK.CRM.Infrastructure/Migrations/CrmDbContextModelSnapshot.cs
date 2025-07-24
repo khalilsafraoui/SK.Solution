@@ -214,7 +214,6 @@ namespace SK.CRM.Infrastructure.Migrations
                         .HasAnnotation("ErrorMessage", "Status is missing..");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

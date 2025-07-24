@@ -63,9 +63,11 @@ namespace SK.CRM.Infrastructure.Repositories
             var totalCount = await query.CountAsync();
 
             var pagedQuotes = await query
-                .OrderBy(q => q.Id) // Always order before skip/take
+                .OrderByDescending(q => q.CreatedDate) // Always order before skip/take
+                .ThenBy(q => q.Id) // Secondary order by to ensure consistent ordering
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync();
 
             return (pagedQuotes, totalCount);
