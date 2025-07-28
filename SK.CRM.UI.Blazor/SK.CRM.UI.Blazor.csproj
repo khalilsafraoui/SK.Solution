@@ -28,4 +28,19 @@
     <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\CrmTextRessources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CrmTextRessources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\CrmTextRessources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CrmTextRessources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

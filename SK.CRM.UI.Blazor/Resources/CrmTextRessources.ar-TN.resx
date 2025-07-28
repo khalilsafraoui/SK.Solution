@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Quotes_Title" xml:space="preserve">
+    <value>عروض أسعار</value>
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="ExpirationDate" xml:space="preserve">
+    <value>تاريخ الانتهاء</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>إجراء</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>تفاصيل</value>
+  </data>
+  <data name="Quotes_NoQuotesToDisplay" xml:space="preserve">
+    <value>لا توجد عروض أسعار لعرضها.</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>مكتمل</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>نشط</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>إنشاء</value>
+  </data>
+  <data name="QuoteDetails_PageTitle" xml:space="preserve">
+    <value>تفاصيل عروض الأسعار</value>
+  </data>
+  <data name="Quotes_PageTitle" xml:space="preserve">
+    <value>عروض أسعار</value>
+  </data>
+  <data name="QuoteDetail_firstsection_title" xml:space="preserve">
+    <value>عرض سعر</value>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>معرّف</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>عميل</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>عنوان</value>
+  </data>
+  <data name="SelectExpirationDate" xml:space="preserve">
+    <value>اختر تاريخ الانتهاء</value>
+  </data>
+  <data name="CustomerNote" xml:space="preserve">
+    <value>ملاحظة العميل</value>
+  </data>
+  <data name="QuoteItems" xml:space="preserve">
+    <value>عناصر العرض</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>عناصر</value>
+  </data>
+  <data name="ItemsCount" xml:space="preserve">
+    <value>عدد العناصر</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>السعر للوحدة</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>كمية</value>
+  </data>
+  <data name="DiscountRate" xml:space="preserve">
+    <value>(%)الخصم</value>
+  </data>
+  <data name="TaxRate" xml:space="preserve">
+    <value>(%)الضريبة</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>المجموع</value>
+  </data>
+  <data name="QuoteDetailsPermissionRequired" xml:space="preserve">
+    <value>مطلوب إذن</value>
+  </data>
+  <data name="QuoteDetailsPermissionRequiredMessage" xml:space="preserve">
+    <value>هذه الإجراءات محجوزة للعميل. يرجى التأكد من حصولك على تأكيد من العميل المعين قبل المتابعة.</value>
+  </data>
+  <data name="ProceedToOrder" xml:space="preserve">
+    <value>المتابعة إلى الطلب</value>
+  </data>
+  <data name="Accept" xml:space="preserve">
+    <value>قبول</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="Reject" xml:space="preserve">
+    <value>رفض</value>
+  </data>
+  <data name="BackToQuotes" xml:space="preserve">
+    <value>العودة إلى عروض الأسعار</value>
+  </data>
+  <data name="UnderReview" xml:space="preserve">
+    <value>قيد المراجعة</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="QuoteAdd_PageTitle" xml:space="preserve">
+    <value>إنشاء عرض سعر</value>
+  </data>
+  <data name="QuoteAdd_Section1_Title" xml:space="preserve">
+    <value>إنشاء عرض سعر</value>
+  </data>
+  <data name="SelectAddress" xml:space="preserve">
+    <value>اختر عنوانًا</value>
+  </data>
+  <data name="AddressListIsEmpty" xml:space="preserve">
+    <value>لا يوجد عنوان لعرضه.</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>التالي</value>
+  </data>
+  <data name="SaveAsDraft" xml:space="preserve">
+    <value>حفظ كمسودة</value>
+  </data>
+  <data name="PlaceQuote" xml:space="preserve">
+    <value>تقديم عرض السعر</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>السابق</value>
+  </data>
+  <data name="AddItem" xml:space="preserve">
+    <value>إضافة عنصر</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>عنصر</value>
+  </data>
+  <data name="SelectItem" xml:space="preserve">
+    <value>اختر عنصرًا</value>
+  </data>
+  <data name="SelectCustomer" xml:space="preserve">
+    <value>اختر عميلًا</value>
+  </data>
+  <data name="CustomerListIsEmpty" xml:space="preserve">
+    <value>لا يوجد عميل لعرضه.</value>
+  </data>
+  <data name="Orders_PageTitle" xml:space="preserve">
+    <value>طلبات</value>
+  </data>
+  <data name="Customers_PageTitle" xml:space="preserve">
+    <value>عملاء</value>
+  </data>
+  <data name="Prospects_PageTitle" xml:space="preserve">
+    <value>العملاء المحتملون</value>
+  </data>
+  <data name="Crm_module" xml:space="preserve">
+    <value>CRM</value>
+  </data>
+  <data name="QuoteEdit_PageTitle" xml:space="preserve">
+    <value>تعديل عرض السعر</value>
+  </data>
+  <data name="QuoteEdit_Section1_Title" xml:space="preserve">
+    <value>تعديل عرض السعر</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>حفظ التعديلات</value>
+  </data>
+</root>

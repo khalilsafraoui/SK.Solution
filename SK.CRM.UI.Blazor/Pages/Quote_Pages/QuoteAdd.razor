@@ -1,18 +1,21 @@
 ﻿@attribute [Route(Routes.Crm_Quote_Create)]
 @attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+@using Microsoft.Extensions.Localization
 @using SK.CRM.Application.DTOs.Quote
 @using SK.CRM.Application.Features.Items.Enum
 @using SK.CRM.Application.Features.Quotes.Commands
 @using SK.CRM.Application.Features.Quotes.Queries
 @using SK.CRM.UI.Blazor.Pages.Shared.Customer
 @using SK.CRM.UI.Blazor.Pages.Shared.Items
+@using SK.CRM.UI.Blazor.Resources
 @inject IJSRuntime _IJSRuntime
 @inject NavigationManager _NavigationManager
 @inject ILogger<QuoteAdd> Logger
 @inject IMediator Mediator
 @inject IMapper _mapper
+@inject IStringLocalizer<CrmTextRessources> _localizer
 @rendermode InteractiveServer
-<PageTitle>Create Quote</PageTitle>
+<PageTitle>@_localizer["QuoteAdd_PageTitle"]</PageTitle>
 @if (IsProcessing)
 {
     <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -26,24 +29,24 @@ else
 
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Quote Creation</h4>
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["QuoteAdd_Section1_Title"]</h4>
                     <RadzenRow Gap="1rem">
                         <RadzenColumn Size="12" SizeSM="6">
                             <RadzenStack>
-                                <RadzenFormField Text="Customer" Variant="Variant.Filled">
+                                <RadzenFormField Text=@_localizer["Customer"] Variant="Variant.Filled">
                                     <RadzenTextBox Value="@quote.FullName" ReadOnly="true" />
                                 </RadzenFormField>
-                                <RadzenFormField Text="Address" Variant="Variant.Filled">
+                                <RadzenFormField Text=@_localizer["Address"] Variant="Variant.Filled">
                                     <RadzenTextBox Value="@quote.FullAddress" ReadOnly="true" />
                                 </RadzenFormField>
                             </RadzenStack>
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeSM="6">
                             <RadzenStack>
-                                <RadzenFormField Text="Status" Variant="Variant.Filled">
+                                <RadzenFormField Text=@_localizer["Status"] Variant="Variant.Filled">
                                     <RadzenTextBox Value="@quote.Status" ReadOnly="true" />
                                 </RadzenFormField>
-                                <RadzenFormField Text="Select Expiration Date" Variant="Variant.Flat">
+                                <RadzenFormField Text=@_localizer["SelectExpirationDate"] Variant="Variant.Flat">
                                     <RadzenDatePicker @bind-Value="quote.ExpirationDate"
                                                       DateFormat="yyyy-MM-dd"
                                                       Style="width: 100%;" />
@@ -77,7 +80,7 @@ else
                         SelectionMode="DataGridSelectionMode.Single" RowSelect="@OnAddressSelected">
 
                             <Columns>
-                                <RadzenDataGridColumn Title="Select Address">
+                                <RadzenDataGridColumn Title=@_localizer["SelectAddress"]>
                                     <Template Context="addressItem">
                                         <div>
                                             <strong>@addressItem.FullAddress </strong><br />
@@ -91,7 +94,7 @@ else
                             <!-- Empty state -->
                             <EmptyTemplate>
                                 <div class="text-center text-muted p-4">
-                                    No address to display.
+                                    @_localizer["AddressListIsEmpty"]
                                 </div>
                             </EmptyTemplate>
 
@@ -105,7 +108,7 @@ else
             {
                 <div class="col-12 col-md-12 pt-1">
                     <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                        <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 Customer Note</h4>
+                        <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["CustomerNote"]</h4>
                        
                         <RadzenTextArea @bind-Value="@quote.Notes" Style="width: 100%" aria-label="TextArea" />
 
@@ -121,13 +124,13 @@ else
                             <!-- Left-aligned Back button -->
                             @if(selectedIndex > 0)
                             {
-                                <RadzenButton Text="Previous"
+                                <RadzenButton Text=@_localizer["Previous"]
                                 Icon="arrow_back"
                                 Style="min-width: 160px;"
                                 ButtonStyle="ButtonStyle.Light"
                                 Click="@OnPreviousStep" Disabled="@isButtonsDisabled" />
                             }
-                            <RadzenButton Text="Cancel"
+                            <RadzenButton Text=@_localizer["Cancel"]
                             Icon="close"
                             Style="min-width: 120px;"
                             ButtonStyle="ButtonStyle.Light"
@@ -139,7 +142,7 @@ else
 
                             @if (selectedIndex != 2)
                             {
-                                <RadzenButton Text="Next"
+                                <RadzenButton Text=@_localizer["Next"]
                                 Icon="arrow_forward"
                                 Style="min-width: 120px;"
                                 ButtonStyle="ButtonStyle.Primary"
@@ -147,13 +150,13 @@ else
                             }
                             else
                             {
-                                <RadzenButton Text="Save as Draft"
+                                <RadzenButton Text=@_localizer["SaveAsDraft"]
                                 Icon="check"
                                 Style="min-width: 150px;"
                                 ButtonStyle="ButtonStyle.Info"
                                 Click="@(()=>OnSaveChanges(false))" Disabled="@isButtonsDisabled" />
 
-                                <RadzenButton Text="Place Quote"
+                                <RadzenButton Text=@_localizer["PlaceQuote"]
                                 Icon="save"
                                 Style="min-width: 160px;"
                                 ButtonStyle="ButtonStyle.Primary"

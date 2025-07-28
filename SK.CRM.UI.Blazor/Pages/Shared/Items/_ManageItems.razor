@@ -1,18 +1,21 @@
-﻿@using SK.CRM.Application.DTOs.Quote
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.Application.DTOs.Quote
 @using SK.CRM.Application.Features.Items.Enum
+@using SK.CRM.UI.Blazor.Resources
 @inject IJSRuntime _IJSRuntime
 @inject IMediator Mediator
+@inject IStringLocalizer<CrmTextRessources> _localizer
 <div class="col-12 col-md-12 pt-1">
     <RadzenCard Class="p-4 shadow radzen-card-responsive">
-        <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📋 Items</h4>
+        <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📋 @_localizer["Items"]</h4>
         <div class="card-body overflow-auto p-0">
             <RadzenDataGrid @ref="ItemsGrid" AllowAlternatingRows="false" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="false" EditMode="DataGridEditMode.Single" Responsive="true"
             Data="@SelectedItems" TItem="ExtensionItemDto" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" Sort="@Reset" Page="@Reset" Filter="@Reset" ColumnWidth="200px">
                 <HeaderTemplate>
-                    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text="Add New Item" Click="@InsertRow" Disabled="@(itemsToInsert.Count() > 0)" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Success" Icon="add_circle" Text=@_localizer["AddItem"] Click="@InsertRow" Disabled="@(itemsToInsert.Count() > 0)" />
                 </HeaderTemplate>
                 <Columns>
-                    <RadzenDataGridColumn Property="items.Name" Title="Item" Width="280px">
+                    <RadzenDataGridColumn Property="items.Name" Title=@_localizer["Item"] Width="280px">
                         <Template Context="selecteditem">
                             <div>
                                 <strong>@selecteditem.Name</strong><br />
@@ -27,16 +30,16 @@
                             ValueProperty="@nameof(ItemDto.Id)"
                             Change="@((args) => OnItemChanged(selecteditem, args))"
                             Style="width:100%; display: block;"
-                            InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select Item" }})">
+                                            InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", _localizer["SelectItem"] }})">
                             </RadzenDropDown>
                         </EditTemplate>
                         <FooterTemplate>
-                            Items count: <b>(@SelectedItems.Count)</b>
+                            @_localizer["ItemsCount"]: <b>(@SelectedItems.Count)</b>
                         </FooterTemplate>
                     </RadzenDataGridColumn>
 
 
-                    <RadzenDataGridColumn Property="items.Price" Title="U Price" Width="120px">
+                    <RadzenDataGridColumn Property="items.Price" Title=@_localizer["UnitPrice"] Width="120px">
                         <Template Context="SelectedItem">
                             @String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", SelectedItem.Price)
                         </Template>
@@ -45,7 +48,7 @@
                         </EditTemplate>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="Quantity" Title="Quantity" Width="130px">
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="Quantity" Title=@_localizer["Quantity"] Width="130px">
                         <EditTemplate Context="item">
                             <InputNumber @bind-Value="item.Quantity" step="1" min="0" max="10000" class="form-control" />
                         </EditTemplate>
@@ -54,7 +57,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="DiscountRate" Title="Discount(%)" Width="100px">
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="DiscountRate" Title=@_localizer["DiscountRate"] Width="100px">
                         <EditTemplate Context="item">
                             <InputNumber @bind-Value="item.DiscountRate" step="0.01" min="0" max="1" class="form-control" />
                         </EditTemplate>
@@ -63,7 +66,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="TaxRate" Title="Tax(%)" Width="100px">
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Property="TaxRate" Title=@_localizer["TaxRate"] Width="100px">
                         <EditTemplate Context="item">
                             <InputNumber @bind-Value="item.TaxRate" step="0.01" min="0" max="1" class="form-control" />
                         </EditTemplate>
@@ -72,7 +75,7 @@
                         </Template>
                     </RadzenDataGridColumn>
 
-                    <RadzenDataGridColumn TItem="ExtensionItemDto" Title="Total" Width="120px">
+                    <RadzenDataGridColumn TItem="ExtensionItemDto" Title=@_localizer["Total"] Width="120px">
                         <Template Context="item">@item.TotalAfterDiscountAndTax?.ToString("C", CultureInfo.CurrentCulture)</Template>
 
                     </RadzenDataGridColumn>
@@ -92,7 +95,7 @@
                             <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Flat" Size="ButtonSize.Medium" Shade="Shade.Lighter" class="rz-my-1 rz-ms-1" Click="@(args => DeleteRow(item))" aria-label="Delete" />
                         </EditTemplate>
                         <FooterTemplate>
-                            Total: <b>@String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", SelectedItems.Sum(o => o.TotalAfterDiscountAndTax))</b>
+                            @_localizer["Total"]: <b>@String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", SelectedItems.Sum(o => o.TotalAfterDiscountAndTax))</b>
                         </FooterTemplate>
                     </RadzenDataGridColumn>
                 </Columns>

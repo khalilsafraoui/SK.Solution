@@ -1,5 +1,7 @@
-﻿@using SK.CRM.Application.DTOs.Quote
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.Application.DTOs.Quote
 @using SK.CRM.Application.Features.Quotes.Queries
+@using SK.CRM.UI.Blazor.Resources
 @attribute [Route(Routes.Crm_Quotes)]
 @attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
 @rendermode InteractiveServer
@@ -8,8 +10,9 @@
 @inject ILogger<Quotes> Logger
 @inject IJSRuntime _IJSRuntime
 @inject ICurrentUserService _CurrentUserService
+@inject IStringLocalizer<CrmTextRessources> _localizer
 @attribute [Authorize]
-<PageTitle>Quotes</PageTitle>
+<PageTitle>@_localizer["Quotes_PageTitle"]</PageTitle>
 @if (IsProcessing)
 {
     <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -27,13 +30,13 @@ else
                         <!-- Left: Title -->
                         <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
                             <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                Quotes
+                                @_localizer["Quotes_Title"]
                             </h2>
                         </div>
 
                         <!-- Right: Create New Quote -->
                         <div class="col-12 col-md-auto d-flex justify-content-center justify-content-md-end">
-                            <RadzenButton Text="Create"
+                            <RadzenButton Text=@_localizer["Create"]
                             Icon="add_circle"
                             Style="min-width: 160px; background-color: purple; border-color: purple; color: white;"
                             ButtonStyle="ButtonStyle.Primary"
@@ -48,7 +51,7 @@ else
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
                     <RadzenTabs @bind-SelectedIndex=@selectedIndex Change="OnTabChange">
                         <Tabs>
-                            <RadzenTabsItem Text="Active">
+                            <RadzenTabsItem Text=@_localizer["Active"]>
                                 <RadzenDataGrid @ref="quotesGrid"
                                 Data="@QuotesDto"
                                 LoadData="@LoadActiveQuotes"
@@ -66,7 +69,7 @@ else
                                             <Template Context="quoteItem">@quoteItem.Id</Template>
                                         </RadzenDataGridColumn> *@
 
-                                        <RadzenDataGridColumn Title="Customer">
+                                        <RadzenDataGridColumn Title=@_localizer["Customer"]>
                                             <Template Context="quoteItem">
                                                 <div>
                                                     <strong>@quoteItem.FullName</strong><br />
@@ -75,22 +78,22 @@ else
                                             </Template>
                                         </RadzenDataGridColumn>
 
-                                        <RadzenDataGridColumn Title="Created Date">
+                                        <RadzenDataGridColumn Title=@_localizer["CreatedDate"]>
                                             <Template Context="quoteItem">@quoteItem.CreatedDate.ToString("d")</Template>
                                         </RadzenDataGridColumn>
 
-                                        <RadzenDataGridColumn Title="Status">
+                                        <RadzenDataGridColumn Title=@_localizer["Status"]>
                                             <Template Context="quoteItem">@quoteItem.Status</Template>
                                         </RadzenDataGridColumn>
 
-                                        <RadzenDataGridColumn Title="Expiration Date">
+                                        <RadzenDataGridColumn Title=@_localizer["ExpirationDate"]>
                                             <Template Context="quoteItem">@quoteItem.ExpirationDate?.ToString("d")</Template>
                                         </RadzenDataGridColumn>
 
-                                        <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                                        <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
                                             <Template Context="quote">
                                                 <RadzenButton Shade="Shade.Lighter"
-                                                Text="Details"
+                                                              Text=@_localizer["Details"]
                                                 Style="background-color: purple; border-color: purple; color: white;"
                                                 ButtonStyle="ButtonStyle.Primary"
                                                 Click="@(() => _NavigationManager.NavigateTo(Routes.GetQuoteDetailsUrl(quote.Id)))" />
@@ -101,13 +104,13 @@ else
                                     <!-- Empty state -->
                                     <EmptyTemplate>
                                         <div class="text-center text-muted p-4">
-                                            No quotes to display.
+                                            @_localizer["Quotes_NoQuotesToDisplay"]
                                         </div>
                                     </EmptyTemplate>
 
                                 </RadzenDataGrid>
                             </RadzenTabsItem>
-                            <RadzenTabsItem Text="Completed">
+                            <RadzenTabsItem Text=@_localizer["Completed"]>
 
                                 <RadzenDataGrid @ref="completedquotesGrid"
                                 Data="@CompletedQuotesDto"
@@ -122,7 +125,7 @@ else
                                 Responsive="true">
 
                                     <Columns>
-                                        <RadzenDataGridColumn Title="Full Name">
+                                        <RadzenDataGridColumn Title=@_localizer["Customer"]>
                                             <Template Context="quoteItem">
                                                 <div>
                                                     <strong>@quoteItem.FullName</strong><br />
@@ -131,18 +134,18 @@ else
                                             </Template>
                                         </RadzenDataGridColumn>
 
-                                        <RadzenDataGridColumn Title="Created Date">
+                                        <RadzenDataGridColumn Title=@_localizer["CreatedDate"]>
                                             <Template Context="quoteItem">@quoteItem.CreatedDate.ToString("d")</Template>
                                         </RadzenDataGridColumn>
 
-                                        <RadzenDataGridColumn Title="Status">
+                                        <RadzenDataGridColumn Title=@_localizer["Status"]>
                                             <Template Context="quoteItem">@quoteItem.Status</Template>
                                         </RadzenDataGridColumn>
 
-                                        <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                                        <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
                                             <Template Context="quote">
                                                 <RadzenButton Shade="Shade.Lighter"
-                                                Text="Details"
+                                                              Text=@_localizer["Details"]
                                                 ButtonStyle="ButtonStyle.Primary"
                                                 Click="@(() => _NavigationManager.NavigateTo(Routes.GetQuoteDetailsUrl(quote.Id)))" />
                                             </Template>
@@ -152,7 +155,7 @@ else
                                     <!-- Empty state -->
                                     <EmptyTemplate>
                                         <div class="text-center text-muted p-4">
-                                            No quotes to display.
+                                            @_localizer["Quotes_NoQuotesToDisplay"]
                                         </div>
                                     </EmptyTemplate>
 

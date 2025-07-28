@@ -1,7 +1,9 @@
-﻿@inject IJSRuntime _IJSRuntime
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@inject IJSRuntime _IJSRuntime
 @inject ILogger<_SelectCustomer> Logger
 @inject IMediator Mediator
-
+@inject IStringLocalizer<CrmTextRessources> _localizer
 <div class="col-12 col-md-12 pt-1">
     <RadzenCard Class="p-4 shadow radzen-card-responsive">
         <RadzenDataGrid @ref="customerGrid"
@@ -16,11 +18,11 @@
         SelectionMode="DataGridSelectionMode.Single" RowSelect="@OnCustomerSelected">
 
             <Columns>
-                <RadzenDataGridColumn Title="Select Customer">
-                    <Template Context="quoteItem">
+                <RadzenDataGridColumn Title=@_localizer["SelectCustomer"]>
+                    <Template Context="customerItem">
                         <div>
-                            <strong>@quoteItem.FirstName @quoteItem.LastName</strong><br />
-                            <small class="text-muted">@quoteItem.Email</small>
+                            <strong>@customerItem.FirstName @customerItem.LastName</strong><br />
+                            <small class="text-muted">@customerItem.Email</small>
                         </div>
                     </Template>
                 </RadzenDataGridColumn>
@@ -30,7 +32,7 @@
             <!-- Empty state -->
             <EmptyTemplate>
                 <div class="text-center text-muted p-4">
-                    No quotes to display.
+                    @_localizer["CustomerListIsEmpty"]
                 </div>
             </EmptyTemplate>
 
@@ -55,7 +57,7 @@
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error while fetching Quotes.");
+                Logger.LogError(ex, "Error while fetching customers.");
                 await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
             }
             finally

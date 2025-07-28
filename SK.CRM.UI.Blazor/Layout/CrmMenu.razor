@@ -1,25 +1,28 @@
-﻿<AuthorizeView Roles="@($"{RoleType.Crm_Manager},{RoleType.Crm_Viewer}")">
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@inject IStringLocalizer<CrmTextRessources> _localizer
+<AuthorizeView Roles="@($"{RoleType.Crm_Manager},{RoleType.Crm_Viewer}")">
     <Authorized>
         <div class="nav-item px-3">
             <a class="nav-link p-2 d-flex justify-content-between align-items-center"
                data-bs-toggle="collapse" href="#crmMenu">
                 <span class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-lines-fill-nav-menu"></i> <span>CRM</span>
+                    <i class="bi bi-person-lines-fill-nav-menu"></i> <span>@_localizer["Crm_module"]</span>
                 </span>
                 <i class="bi bi-chevron-down-nav-menu"></i>
             </a>
             <div class="collapse ps-3" id="crmMenu">
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href=@Routes.Crm_Prospects Match="NavLinkMatch.All">
-                    <i class="bi bi-people-nav-menu"></i> <span>Prospects</span>
+                    <i class="bi bi-people-nav-menu"></i> <span>@_localizer["Prospects_PageTitle"]</span>
                 </NavLink>
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href=@Routes.Crm_Customers Match="NavLinkMatch.All">
-                    <i class="bi bi-people-fill-nav-menu"></i> <span>Customers</span>
+                    <i class="bi bi-people-fill-nav-menu"></i> <span>@_localizer["Customers_PageTitle"]</span>
                 </NavLink>
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href=@Routes.Crm_Quotes Match="NavLinkMatch.All">
-                    <i class="bi bi-receipt-nav-menu"></i> <span>Quotes</span>
+                    <i class="bi bi-receipt-nav-menu"></i> <span>@_localizer["Quotes_PageTitle"]</span>
                 </NavLink>
                 <NavLink class="nav-link p-2 d-flex align-items-center gap-2" href=@Routes.Crm_Orders Match="NavLinkMatch.All">
-                    <i class="bi bi-receipt-nav-menu"></i> <span>Orders</span>
+                    <i class="bi bi-receipt-nav-menu"></i> <span>@_localizer["Orders_PageTitle"]</span>
                 </NavLink>
             </div>
         </div>
