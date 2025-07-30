@@ -16,6 +16,8 @@ namespace SK.CRM.Infrastructure.Persistence
 
         public IOrderRepository OrderRepository { get; private set; }
 
+        public IOrderDetailRepository OrderDetailRepository { get; private set; }
+
         public IShoppingCartRepository ShoppingCartRepository { get; private set; }
 
         public IQuoteRepository QuoteRepository { get; private set; }
@@ -25,7 +27,7 @@ namespace SK.CRM.Infrastructure.Persistence
         public ISharedProductServices SharedProductServices { get; private set; }
 
         public UnitOfWork(
-        CrmDbContext context, ISharedUserServices sharedUserServices, IAddressRepository addressRepository, ICustomerRepository customerRepository, IOrderRepository orderRepository, IShoppingCartRepository shoppingCartRepository, IQuoteRepository quoteRepository, IQuoteItemRepository quoteItemRepository, ISharedProductServices sharedProductServices)
+        CrmDbContext context, ISharedUserServices sharedUserServices, IAddressRepository addressRepository, ICustomerRepository customerRepository, IOrderRepository orderRepository, IShoppingCartRepository shoppingCartRepository, IQuoteRepository quoteRepository, IQuoteItemRepository quoteItemRepository, ISharedProductServices sharedProductServices, IOrderDetailRepository orderDetailRepository)
         {
             _context = context;
             SharedUserServices = sharedUserServices;
@@ -36,6 +38,7 @@ namespace SK.CRM.Infrastructure.Persistence
             QuoteRepository = quoteRepository;
             QuoteItemRepository = quoteItemRepository;
             SharedProductServices = sharedProductServices;
+            OrderDetailRepository = orderDetailRepository;
         }
 
         public async Task<int> SaveChangesAsync()

@@ -1,4 +1,5 @@
 ﻿using SK.CRM.Domain.Entities;
+using SK.CRM.Domain.Entities.Quote;
 
 namespace SK.CRM.Application.Interfaces
 {
@@ -12,5 +13,8 @@ namespace SK.CRM.Application.Interfaces
         public Task<Order> UpdateStatusAsync(Guid orderId, string status, string paymentIntentId);
 
         public Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status);
+
+        Task<(IEnumerable<Order> Orders, int TotalCount)> GetByStatusesAsync(IEnumerable<string> statuses, int pageIndex,
+            int pageSize, string? userId = null);
     }
 }

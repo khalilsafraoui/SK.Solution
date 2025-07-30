@@ -12,8 +12,8 @@ namespace SK.CRM.Application.Features.Quotes.Queries
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger<GetAllQuotesQueryHandler> _logger;
-        public GetQuoteByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetAllQuotesQueryHandler> logger)
+        private readonly ILogger<GetQuoteByIdQueryHandler> _logger;
+        public GetQuoteByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<GetQuoteByIdQueryHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

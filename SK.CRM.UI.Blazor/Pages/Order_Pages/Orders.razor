@@ -1,0 +1,261 @@
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.Application.DTOs
+@using SK.CRM.Application.Features.Orders.Queries
+@using SK.CRM.UI.Blazor.Resources
+@attribute [Route(Routes.Crm_Orders)]
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject NavigationManager _NavigationManager
+@inject ILogger<Orders> Logger
+@inject IJSRuntime _IJSRuntime
+@inject ICurrentUserService _CurrentUserService
+@inject IStringLocalizer<CrmTextRessources> _localizer
+@attribute [Authorize]
+<PageTitle>@_localizer["Orders_PageTitle"]</PageTitle>
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="container py-4">
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 pt-1">
+                <RadzenCard class="p-4 shadow radzen-card-responsive">
+                    <div class="row align-items-center justify-content-between">
+
+                        <!-- Left: Title -->
+                        <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                            <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                @_localizer["Orders_Title"]
+                            </h2>
+                        </div>
+
+                        <!-- Right: Create New Quote -->
+                        <div class="col-12 col-md-auto d-flex justify-content-center justify-content-md-end">
+                            <RadzenButton Text=@_localizer["Create"]
+                            Icon="add_circle"
+                            Style="min-width: 160px; background-color: purple; border-color: purple; color: white;"
+                            ButtonStyle="ButtonStyle.Primary"
+                            Click="@OnCreateNewOrder" />
+                        </div>
+
+                    </div>
+                </RadzenCard>
+            </div>
+
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <RadzenTabs @bind-SelectedIndex=@selectedIndex Change="OnTabChange">
+                        <Tabs>
+                            <RadzenTabsItem Text=@_localizer["Active"]>
+                                <RadzenDataGrid @ref="ordersGrid"
+                                                Data="@OrdersDto"
+                                LoadData="@LoadActiveOrders"
+                                TItem="OrderDto"
+                                AllowFiltering="true"
+                                AllowPaging="true"
+                                PageSizeOptions="new int[] {5, 10, 20, 50}"
+                                PageSize="10"
+                                Count="@totalOrdersCount"
+                                AllowSorting="true"
+                                Responsive="true">
+
+                                    <Columns>
+                                        @*  <RadzenDataGridColumn Title="Id">
+                                            <Template Context="quoteItem">@quoteItem.Id</Template>
+                                        </RadzenDataGridColumn> *@
+
+                                        <RadzenDataGridColumn Title=@_localizer["Customer"]>
+                                            <Template Context="orderItem">
+                                                <div>
+                                                    <strong>@orderItem.Name</strong><br />
+                                                    <strong>Address : </strong><small class="text-muted">@orderItem.FullAddress</small><br />
+                                                    <strong>Phone : </strong><small class="text-muted">@orderItem.PhoneNumber</small><br />
+                                                    <strong>Email : </strong><small class="text-muted">@orderItem.Email</small>
+                                                </div>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["OrderDate"]>
+                                            <Template Context="orderItem">@orderItem.OrderDate.ToString("d")</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Status"]>
+                                            <Template Context="orderItem">@orderItem.Status</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                                            <Template Context="order">
+                                                <RadzenButton Shade="Shade.Lighter"
+                                                Text=@_localizer["Details"]
+                                                Style="background-color: purple; border-color: purple; color: white;"
+                                                ButtonStyle="ButtonStyle.Primary"
+                                                              Click="@(() => _NavigationManager.NavigateTo(Routes.GetOrderDetailsUrl(order.Id)))" />
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+
+                                    <!-- Empty state -->
+                                    <EmptyTemplate>
+                                        <div class="text-center text-muted p-4">
+                                            @_localizer["Quotes_NoQuotesToDisplay"]
+                                        </div>
+                                    </EmptyTemplate>
+
+                                </RadzenDataGrid>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text=@_localizer["Completed"]>
+
+                                <RadzenDataGrid @ref="completedordersGrid"
+                                Data="@CompletedOrdersDto"
+                                LoadData="@LoadCompletedOrders"
+                                TItem="OrderDto"
+                                AllowFiltering="true"
+                                AllowPaging="true"
+                                PageSizeOptions="new int[] {5, 10, 20, 50}"
+                                PageSize="10"
+                                Count="@totalCompletedOrdersCount"
+                                AllowSorting="true"
+                                Responsive="true">
+
+                                    <Columns>
+                                        <RadzenDataGridColumn Title=@_localizer["Customer"]>
+                                            <Template Context="orderItem">
+                                                <div>
+                                                    <strong>@orderItem.Name</strong><br />
+                                                    <strong>Address : </strong><small class="text-muted">@orderItem.FullAddress</small><br />
+                                                    <strong>Phone : </strong><small class="text-muted">@orderItem.PhoneNumber</small><br />
+                                                    <strong>Email : </strong><small class="text-muted">@orderItem.Email</small>
+                                                </div>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["OrderDate"]>
+                                            <Template Context="orderItem">@orderItem.OrderDate.ToString("d")</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Status"]>
+                                            <Template Context="orderItem">@orderItem.Status</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                                            <Template Context="order">
+                                                <RadzenButton Shade="Shade.Lighter"
+                                                Text=@_localizer["Details"]
+                                                ButtonStyle="ButtonStyle.Primary"
+                                                              Click="@(() => _NavigationManager.NavigateTo(Routes.GetOrderDetailsUrl(order.Id)))" />
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+
+                                    <!-- Empty state -->
+                                    <EmptyTemplate>
+                                        <div class="text-center text-muted p-4">
+                                            @_localizer["Quotes_NoQuotesToDisplay"]
+                                        </div>
+                                    </EmptyTemplate>
+
+                                </RadzenDataGrid>
+
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+
+                </RadzenCard>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    public bool IsProcessing { get; set; } = false;
+    int selectedIndex = 0;
+    int totalOrdersCount = 0;
+    int totalCompletedOrdersCount = 0;
+    private bool shouldReloadSecondGrid = false;
+    private IEnumerable<OrderDto> OrdersDto { get; set; } = new List<OrderDto>();
+    private IEnumerable<OrderDto> CompletedOrdersDto { get; set; } = new List<OrderDto>();
+    RadzenDataGrid<OrderDto> ordersGrid;
+    RadzenDataGrid<OrderDto> completedordersGrid;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ordersGrid.Reload();
+
+            StateHasChanged();
+        }
+
+        if (shouldReloadSecondGrid)
+        {
+            await completedordersGrid.Reload();
+            shouldReloadSecondGrid = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadActiveOrders(LoadDataArgs arg)
+    {
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
+        
+        var query = new GetAllOrdersByActiveStatusQuery(pageIndex, pageSize);
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            OrdersDto = result.OrdersDto;
+            totalOrdersCount = result.TotalCount;
+            StateHasChanged();
+        }
+        else
+        {
+            Logger.LogError("Failed to load orders: {Error}", result.ErrorMessage);
+            await _IJSRuntime.ToastrError("Failed to load orders. Please try again later.");
+        }
+    }
+
+    private async Task LoadCompletedOrders(LoadDataArgs arg)
+    {
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
+        
+        var query = new GetAllOrdersByCompletedStatusQuery(pageIndex, pageSize);
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            CompletedOrdersDto = result.OrdersDto;
+            totalCompletedOrdersCount = result.TotalCount;
+            StateHasChanged();
+        }
+        else
+        {
+            Logger.LogError("Failed to load orders: {Error}", result.ErrorMessage);
+            await _IJSRuntime.ToastrError("Failed to load orders. Please try again later.");
+        }
+    }
+
+    async Task OnCreateNewOrder()
+    {
+        _NavigationManager.NavigateTo(Routes.Crm_Order_Create);
+    }
+
+
+    private async Task OnTabChange(int index)
+    {
+        if (index == 1)
+        {
+            shouldReloadSecondGrid = true;
+        }
+    }
+
+}
+
+

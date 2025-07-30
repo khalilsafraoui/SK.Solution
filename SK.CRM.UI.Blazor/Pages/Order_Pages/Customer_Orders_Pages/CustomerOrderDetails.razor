@@ -81,7 +81,17 @@ else
             try
             {
                 var query = new GetOrderByIdQuery(Guid.Parse(id));
-                order = await Mediator.Send(query);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    order = result.OrderDto;
+                }
+                else
+                {
+                    await _JSRuntime.ToastrError(result.ErrorMessage);
+                    _NavigationManager.NavigateTo(Routes.Crm_Customer_Orders);
+                }
+
             }
             catch (Exception ex)
             {

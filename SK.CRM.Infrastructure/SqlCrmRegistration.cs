@@ -21,6 +21,7 @@ namespace SK.CRM.Infrastructure
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             services.AddScoped<IQuoteRepository, QuoteRepository>();
             services.AddScoped<IQuoteItemRepository, QuoteItemRepository>();
             // Générique

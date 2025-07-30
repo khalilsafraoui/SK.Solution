@@ -152,7 +152,7 @@ else
             if (!result.IsSuccess)
             {
                 await _JSRuntime.ToastrError(result.ErrorMessage);
-                _NavigationManager.NavigateTo(Routes.Crm_Orders);
+                _NavigationManager.NavigateTo(Routes.Crm_Quotes);
             }
 
             quote = result.QuoteDto;
@@ -161,7 +161,7 @@ else
             if (!convertResult.IsSuccess)
             {
                 await _JSRuntime.ToastrError(result.ErrorMessage);
-                _NavigationManager.NavigateTo(Routes.Crm_Orders);
+                _NavigationManager.NavigateTo(Routes.Crm_Quotes);
             }
             Items = convertResult.Items;
             if (quote.ExpirationDate is null)

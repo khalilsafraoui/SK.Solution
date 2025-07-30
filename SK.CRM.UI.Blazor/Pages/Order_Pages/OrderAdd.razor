@@ -1,0 +1,335 @@
+﻿@attribute [Route(Routes.Crm_Order_Create)]
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+@using Microsoft.Extensions.Localization
+
+@using SK.CRM.Application.Features.Items.Enum
+
+@using SK.CRM.UI.Blazor.Pages.Shared.Customer
+@using SK.CRM.UI.Blazor.Pages.Shared.Items
+@using SK.CRM.UI.Blazor.Resources
+@inject IJSRuntime _IJSRuntime
+@inject NavigationManager _NavigationManager
+@inject ILogger<OrderAdd> Logger
+@inject IMediator Mediator
+@inject IMapper _mapper
+@inject IStringLocalizer<CrmTextRessources> _localizer
+@rendermode InteractiveServer
+<PageTitle>@_localizer["OrderAdd_PageTitle"]</PageTitle>
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="container py-4">
+        <div class="row justify-content-center mb-4">
+
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["OrderAdd_Section1_Title"]</h4>
+                    <RadzenRow Gap="1rem">
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["Customer"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@order.Name" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text=@_localizer["Address"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@order.FullAddress" ReadOnly="true" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["Status"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@order.Status" ReadOnly="true" />
+                                </RadzenFormField>
+                                
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenCard>
+            </div>
+
+            @if (selectedIndex == 0)
+            {
+                // customer step
+                <_SelectCustomer OnSelecetedCustomerChanged="HandleSelectedCustomer"></_SelectCustomer>
+            }
+
+            @if (selectedIndex == 1)
+            {
+                // Address step
+                <div class="col-12 col-md-12 pt-1">
+                    <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                        <RadzenDataGrid @ref="addressGrid"
+                                        Data="@addresses"
+                                        TItem="AddressDto"
+                                        AllowFiltering="true"
+                                        AllowPaging="true"
+                                        PageSizeOptions="new int[] {5, 10, 20, 50}"
+                                        PageSize="10"
+                                        AllowSorting="true"
+                                        Responsive="true"
+                                        SelectionMode="DataGridSelectionMode.Single" RowSelect="@OnAddressSelected">
+
+                            <Columns>
+                                <RadzenDataGridColumn Title=@_localizer["SelectAddress"]>
+                                    <Template Context="addressItem">
+                                        <div>
+                                            <strong>@addressItem.FullAddress </strong><br />
+                                            <small class="text-muted">Is Default : @addressItem.IsDefault ,Is billing @addressItem.IsBillingAddress</small>
+                                        </div>
+                                    </Template>
+                                </RadzenDataGridColumn>
+
+                            </Columns>
+
+                            <!-- Empty state -->
+                            <EmptyTemplate>
+                                <div class="text-center text-muted p-4">
+                                    @_localizer["AddressListIsEmpty"]
+                                </div>
+                            </EmptyTemplate>
+
+                        </RadzenDataGrid>
+                    </RadzenCard>
+
+                </div>
+            }
+
+            @if (selectedIndex == 2)
+            {
+                <_ManageItems SelectedItems="Items" OnItemsUpdateStatusChanged="HandleOrderCanBeSaved"></_ManageItems>
+            }
+
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <div class="d-flex flex-wrap gap-2 justify-content-start">
+                            <!-- Left-aligned Back button -->
+                            @if (selectedIndex > 0)
+                            {
+                                <RadzenButton Text=@_localizer["Previous"]
+                                              Icon="arrow_back"
+                                              Style="min-width: 160px;"
+                                              ButtonStyle="ButtonStyle.Light"
+                                              Click="@OnPreviousStep" Disabled="@isButtonsDisabled" />
+                            }
+                            <RadzenButton Text=@_localizer["Cancel"]
+                                          Icon="close"
+                                          Style="min-width: 120px;"
+                                          ButtonStyle="ButtonStyle.Light"
+                                          Click="@OnCancel" Disabled="@isButtonsDisabled" />
+                        </div>
+                        <!-- Right-aligned action buttons -->
+
+                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+
+                            @if (selectedIndex != 2)
+                            {
+                                <RadzenButton Text=@_localizer["Next"]
+                                              Icon="arrow_forward"
+                                              Style="min-width: 120px;"
+                                              ButtonStyle="ButtonStyle.Primary"
+                                              Click="@OnNextStep" Disabled="@isButtonsDisabled" />
+                            }
+                            else
+                            {
+                                <RadzenButton Text=@_localizer["Save"]
+                                              Icon="check"
+                                              Style="min-width: 150px;"
+                                              ButtonStyle="ButtonStyle.Info"
+                                              Click="@(()=>OnSaveChanges(false))" Disabled="@isButtonsDisabled" />
+
+                                <RadzenButton Text=@_localizer["PlaceOrder"]
+                                              Icon="save"
+                                              Style="min-width: 160px;"
+                                              ButtonStyle="ButtonStyle.Primary"
+                                              Click="@(()=>OnSaveChanges(true))" Disabled="@isButtonsDisabled" />
+
+                            }
+                        </div>
+                    </div>
+                </RadzenCard>
+            </div>
+
+        </div>
+    </div>
+}
+
+
+@code {
+    public bool IsProcessing { get; set; } = false;
+    int selectedIndex = 0;
+
+    private IEnumerable<AddressDto> addresses { get; set; } = new List<AddressDto>();
+
+
+    RadzenDataGrid<AddressDto> addressGrid;
+    private List<ExtensionItemDto> Items = new();
+    public SelectCustomerDto selectCustomerDto { get; set; } = new SelectCustomerDto();
+    public OrderDto order { get; set; } = new OrderDto()
+        {
+            Status = OrderStatus.StatusPending,
+        };
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+        }
+    }
+
+    private async Task LoadCustomerAddresses()
+    {
+        var query = new GetCustomerAddressesQuery(order.CustomerId);
+        var result = await Mediator.Send(query);
+        if (!result.IsSuccess)
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+            return;
+        }
+        addresses = result.Addresses;
+    }
+
+    private void OnAddressSelected(AddressDto address)
+    {
+        if (order is not null & address is not null)
+        {
+            order.AddressId = address.Id;
+            order.FullAddress = address.FullAddress;
+        }
+    }
+
+    private async Task ConvertExtensionItemsDtoToOrderDetailsDto()
+    {
+        try
+        {
+            var query = new ConvertExtensionItemsDtoToOrderDetailsDtoQuery(Items);
+            var result = await Mediator.Send(query);
+
+            if (result.IsSuccess)
+            {
+                order.OrderDetails = result.Items;
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while updating order details.");
+            await _IJSRuntime.ToastrError("An error occurred while updating order details.");
+        }
+    }
+    bool IsItemsSaved = true;
+    private async Task HandleOrderCanBeSaved(ItemGridUpdateStatus status)
+    {
+        if (status == ItemGridUpdateStatus.Saved)
+            IsItemsSaved = true;
+        else
+            IsItemsSaved = false;
+    }
+
+    private async Task HandleSelectedCustomer(SelectCustomerDto selectCustomerDto)
+    {
+        order.CustomerId = selectCustomerDto.Id;
+        if (!string.IsNullOrEmpty(selectCustomerDto.UserId))
+            order.UserId = selectCustomerDto.UserId;
+        order.Name = selectCustomerDto.FullName;
+        order.Email = selectCustomerDto.Email;
+        order.PhoneNumber = selectCustomerDto.PhoneNumber;
+    }
+
+    async Task OnPreviousStep()
+    {
+        if (selectedIndex > 0)
+            selectedIndex--;
+    }
+
+    async Task OnNextStep()
+    {
+        if (selectedIndex == 0)
+        {
+            if (!string.IsNullOrEmpty(order.Name))
+            {
+                await LoadCustomerAddresses();
+                order.FullAddress = string.Empty;
+                selectedIndex++;
+
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError("Please select a customer before proceeding."); // frensh&arabic msg to put in translation ressource later "Veuillez sélectionner un client avant de continuer." & "يرجى اختيار عميل قبل المتابعة."
+            }
+        }
+        else if (selectedIndex == 1)
+        {
+            if (!string.IsNullOrEmpty(order.FullAddress))
+            {
+                selectedIndex++;
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError("Please select an address before proceeding."); // frensh&arabic msg to put in translation ressource later "Veuillez sélectionner une adresse avant de continuer." & "يرجى اختيار عنوان قبل المتابعة."
+            }
+        }
+    }
+    bool isButtonsDisabled = false;
+    async Task OnSaveChanges(bool IsSubmited)
+    {
+
+        try
+        {
+            isButtonsDisabled = true;
+            if (!IsItemsSaved)
+            {
+                await _IJSRuntime.ToastrError("Please finish creating or editing the item before saving the order.");
+                //Veuillez terminer la création ou la modification de l'article avant d'enregistrer la commande.
+                //يرجى إنهاء إنشاء أو تعديل العنصر قبل حفظ الطلب.
+                return;
+            }
+
+            await ConvertExtensionItemsDtoToOrderDetailsDto();
+            if (IsSubmited)
+            {
+                order.Status = OrderStatus.StatusApproved;
+            }
+            else
+            {
+                order.Status = OrderStatus.StatusPending;
+            }
+            var command = new CreateOrderCommand(order);
+            var result = await Mediator.Send(command);
+            if (!result.IsSuccess)
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+                return;
+            }
+            await _IJSRuntime.ToastrSuccess("Order created successfully!");
+            await Task.Delay(3000);
+            _NavigationManager.NavigateTo(Routes.Crm_Orders);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating Order");
+            await _IJSRuntime.ToastrError("An error occurred while creating the Order. Please try again.");
+        }
+        finally
+        {
+            isButtonsDisabled = false;
+        }
+    }
+
+    async Task OnCancel()
+    {
+        order = new OrderDto()
+            {
+                Status = OrderStatus.StatusPending,
+            };
+        Items.Clear();
+        selectedIndex = 0;
+    }
+}

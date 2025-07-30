@@ -11,6 +11,8 @@ namespace SK.CRM.Application.Interfaces
 
         IOrderRepository OrderRepository { get; }
 
+        IOrderDetailRepository OrderDetailRepository { get; }
+
         IShoppingCartRepository ShoppingCartRepository { get; }
 
         IQuoteRepository QuoteRepository { get; }

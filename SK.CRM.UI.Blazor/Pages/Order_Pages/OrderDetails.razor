@@ -1,12 +1,17 @@
-﻿@attribute [Route(Routes.Crm_Order_Details)]
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.Application.DTOs.Quote
+@using SK.CRM.Application.Features.Quotes.Commands
+@using SK.CRM.Application.Features.Quotes.Queries
+@using SK.CRM.UI.Blazor.Resources
+@attribute [Route(Routes.Crm_Order_Details)]
 @attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
 @rendermode InteractiveServer
 @inject NavigationManager _NavigationManager
 @inject IMediator Mediator
 @inject IJSRuntime _JSRuntime
-@inject ILogger<OrderList> Logger
-
-<PageTitle>Order Details</PageTitle>
+@inject ILogger<OrderDetails> Logger
+@inject IStringLocalizer<CrmTextRessources> _localizer
+<PageTitle>@_localizer["OrderDetails_PageTitle"]</PageTitle>
 @if (IsProcessing)
 {
     <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -15,103 +20,229 @@
 }
 else
 {
-    <div class="container my-5 mx-auto p-5 w-100" style="max-width: 950px;">
-        <div class="card" style="max-width: 750px;">
-            <div class="pt-3 text-success text-center">
-                <span class="h4"> ORDER DETAILS</span>
+
+
+    <div class="container py-4">
+        <div class="row justify-content-center mb-4">
+
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["OrderDetail_firstsection_title"]</h4>
+                    <RadzenRow Gap="1rem">
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["Id"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@order.Id.ToString()" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text=@_localizer["Customer"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@order.Name" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text=@_localizer["Address"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@order.FullAddress" ReadOnly="true" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["Status"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@order.Status" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text=@_localizer["OrderDate"] Variant="Variant.Filled">
+                                    <RadzenDatePicker TValue="DateTime" Value="@order.OrderDate" DateFormat="yyyy-MM-dd" ReadOnly="true" />
+                                </RadzenFormField>
+                                
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenCard>
             </div>
 
-            <hr />
-            <div class="px-3">
-                <p>Order Id: @order.Id</p>
-                <p>Name: @order.Name</p>
-                <p>Email: @order.Email</p>
-                <p>Phone: @order.PhoneNumber</p>
-                <p>Order Status: @order.Status </p>
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">
+                        📋 @_localizer["OrderItems"]
+                    </h4>
+
+
+                    <div class="card-body overflow-auto p-0">
+                        <RadzenDataGrid @ref="orderItemsGrid"
+                                        Data="@order.OrderDetails"
+                                        TItem="OrderDetailDto"
+                                        AllowFiltering="true"
+                                        AllowPaging="true"
+                                        PageSize="5"
+                                        AllowSorting="true"
+                                        Responsive="true">
+                            <Columns>
+                                <RadzenDataGridColumn Title=@_localizer["Items"]>
+                                    <Template Context="orderItem">@orderItem.ProductName</Template>
+                                    <FooterTemplate>
+                                        @_localizer["ItemsCount"]: <b>(@order.OrderDetails.Count)</b>
+                                    </FooterTemplate>
+                                </RadzenDataGridColumn>
+
+                                <RadzenDataGridColumn Title=@_localizer["UnitPrice"]>
+                                    <Template Context="orderItem">@orderItem.Price</Template>
+                                </RadzenDataGridColumn>
+
+                                <RadzenDataGridColumn Title=@_localizer["Quantity"]>
+                                    <Template Context="orderItem">@orderItem.Quantity</Template>
+                                </RadzenDataGridColumn>
+
+                                <RadzenDataGridColumn Title=@_localizer["DiscountRate"]>
+                                    <Template Context="orderItem">@orderItem.DiscountRate</Template>
+                                </RadzenDataGridColumn>
+
+                                <RadzenDataGridColumn Title=@_localizer["TaxRate"]>
+                                    <Template Context="orderItem">@orderItem.TaxRate</Template>
+                                </RadzenDataGridColumn>
+
+                                <RadzenDataGridColumn Title=@_localizer["Total"]>
+                                    <Template Context="orderItem">@orderItem.TotalAfterDiscountAndTax</Template>
+                                    <FooterTemplate>
+                                        @_localizer["Total"]: <b>@String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", order.OrderDetails.Sum(o => o.TotalAfterDiscountAndTax))</b>
+                                    </FooterTemplate>
+                                </RadzenDataGridColumn>
+
+                            </Columns>
+                        </RadzenDataGrid>
+                    </div>
+                </RadzenCard>
             </div>
-            <hr />
-            <div class="card-body">
-                <h4 class="text-success">Menu Items</h4>
+           
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
 
-                @foreach(var orderDetails in order.OrderDetails)
-                {
-                    <div class="d-flex">
-                        <div class="d-flex w-100 justify-content-between">
-                            <p>
-                                &nbsp;@orderDetails.ProductName
-                            </p>
-                            <p>
-                                @orderDetails.Price.ToString("C",CultureInfo.GetCultureInfo("en-us")) x @orderDetails.Quantity = 
-                            </p>
-                        </div>
-                        <div class="ps-4">
-                            @((orderDetails.Price * orderDetails.Quantity).ToString("C",CultureInfo.GetCultureInfo("en-us")))
-                        </div>
+                        <!-- Left-aligned Back button -->
+                        <RadzenButton Text=@_localizer["BackToOrders"]
+                                      Icon="arrow_back"
+                                      Style="min-width: 160px;"
+                                      ButtonStyle="ButtonStyle.Light"
+                                      Click="@OnBackToOrders" />
 
-                    </div>
-                }
-
-
-
-                <hr />
-                <h4 class="text-success text-end">
-                    @order.OrderTotal.ToString("C", CultureInfo.GetCultureInfo("en-us"))
-                </h4>
-                <hr />
-
-                <div class="row">
-                    <div class="col-5">
-                        <a href=@Routes.Crm_Orders class="btn btn-secondary  m-2 p-2" style="width:150px;">Back to Orders</a>
-                    </div>
-                    <div class="col-7 text-end">
                         @if (order.Status != OrderStatus.StatusCancelled && order.Status != OrderStatus.StatusCompleted)
                         {
-                            <button class="btn btn-danger m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusCancelled)">Cancel Order</button>
+                            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                <RadzenButton Text=@_localizer["Cancel"]
+                                              Icon="close"
+                                              Style="min-width: 120px;"
+                                              ButtonStyle="ButtonStyle.Light"
+                                              Click="@(() => UpdateOrderStatus(OrderStatus.StatusCancelled))" />
+                            
                             @if (order.Status == OrderStatus.StatusPending)
                             {
-                                <button class="btn btn-primary m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusApproved)">Approve</button>
+                                    <RadzenButton Text=@_localizer["Approve"]
+                                                  Icon="fact_check"
+                                                  Style="min-width: 160px;"
+                                                  ButtonStyle="ButtonStyle.Primary"
+                                                  Click="@(() => UpdateOrderStatus(OrderStatus.StatusApproved))" />
+                                    <RadzenButton Text=@_localizer["Edit"]
+                                                  Icon="edit"
+                                                  Style="min-width: 120px;"
+                                                  ButtonStyle="ButtonStyle.Success"
+                                                  Click="@OnEdit" />
                             }
                             @if (order.Status == OrderStatus.StatusApproved)
                             {
-                                <button class="btn btn-primary m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusReadyForPickUp)">Ready for Pickup</button>
+                                    <RadzenButton Text=@_localizer["Ready"]
+                                                  Icon="fact_check"
+                                                  Style="min-width: 160px;"
+                                                  ButtonStyle="ButtonStyle.Primary"
+                                                  Click="@(() => UpdateOrderStatus(OrderStatus.StatusReadyForPickUp))" />
                             }
                             @if (order.Status == OrderStatus.StatusReadyForPickUp)
                             {
-                                <button class="btn btn-success m-2 p-2" style="width:150px;" @onclick="()=>UpdateOrderStatus(OrderStatus.StatusCompleted)">Completed</button>
+                                    <RadzenButton Text=@_localizer["Completed"]
+                                                  Icon="fact_check"
+                                                  Style="min-width: 160px;"
+                                                  ButtonStyle="ButtonStyle.Success"
+                                                  Click="@(() => UpdateOrderStatus(OrderStatus.StatusCompleted))" />
+                                
                             }
+                            </div>
                         }
 
                     </div>
-                </div>
+                </RadzenCard>
             </div>
+
+
+
         </div>
+
+
     </div>
 }
-@code{
+@code {
     [Parameter]
     public string id { get; set; }
     private OrderDto order = new OrderDto();
-    private bool IsProcessing{ get; set; } = true;
-
+    private bool IsProcessing { get; set; } = true;
+    RadzenDataGrid<OrderDetailDto> orderItemsGrid;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
+            await LoadOrder();
+        }
+    }
+
+    private async Task LoadOrder()
+    {
+        try
+        {
+            var query = new GetOrderByIdQuery(Guid.Parse(id));
+            var result = await Mediator.Send(query);
+            if (!result.IsSuccess)
             {
-                var query = new GetOrderByIdQuery(Guid.Parse(id));
-                order = await Mediator.Send(query);
+                await _JSRuntime.ToastrError(result.ErrorMessage);
+                _NavigationManager.NavigateTo(Routes.Crm_Orders);
             }
-            catch (Exception ex)
+
+            order = result.OrderDto;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error fetching Order details for ID: {Id}", id);
+            await _JSRuntime.ToastrError("An error occurred while fetching order details. Please try again later.");
+        }
+        finally
+        {
+            IsProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    void OnEdit()
+    {
+        _NavigationManager.NavigateTo(Routes.GetOrderEditUrl(Guid.Parse(id)));
+    }
+
+    private async Task UpdateStatus(string newStatus)
+    {
+        try
+        {
+            var command = new UpdateQuoteStatusCommand(order.Id, newStatus);
+            var result = await Mediator.Send(command);
+
+            if (result.IsSuccess)
             {
-                Logger.LogError(ex, "Error fetching order details for ID: {OrderId}", id);
-                await _JSRuntime.ToastrError("Failed to load order details. Please try again later.");
+                await _JSRuntime.ToastrSuccess("Order Status updated successfully.");
             }
-            finally
+            else
             {
-                IsProcessing = false;
-                StateHasChanged();
+                await _JSRuntime.ToastrError(result.ErrorMessage);
             }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while updating order status.");
+            await _JSRuntime.ToastrError("An error occurred while updating order status.");
+        }
+        finally
+        {
+            await LoadOrder();
         }
     }
 
@@ -133,5 +264,32 @@ else
             StateHasChanged();
         }
     }
+
+    async Task OnCancel()
+    {
+        await UpdateStatus(QuoteStatus.StatusCancelled);
+    }
+
+    async Task OnUnderReview()
+    {
+        await UpdateStatus(QuoteStatus.StatusUnderReview);
+    }
+
+    void OnBackToOrders()
+    {
+        _NavigationManager.NavigateTo(Routes.Crm_Orders);
+    }
+
+    async Task OnAccept()
+    {
+        await UpdateStatus(QuoteStatus.StatusAccepted);
+    }
+
+    async Task OnReject()
+    {
+        await UpdateStatus(QuoteStatus.StatusRejected);
+    }
+
+    
 }
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using SK.CRM.Application.DTOs;
 using SK.CRM.Application.DTOs.Quote;
 using SK.CRM.Application.Features.Items.Dtos;
 
@@ -28,6 +29,11 @@ namespace SK.CRM.Application.Features.Items.Queries
                 if(request.entities is List<QuoteItemDto> quoteItems)
                 {
                     var itemsDto = _mapper.Map<List<ExtensionItemDto>>(quoteItems);
+                    return (true, itemsDto, string.Empty);
+                }
+                else if (request.entities is List<OrderDetailDto> orderItems)
+                {
+                    var itemsDto = _mapper.Map<List<ExtensionItemDto>>(orderItems);
                     return (true, itemsDto, string.Empty);
                 }
                 return (false, null, "Unsupported entity type provided to ConvertToItemsQuery.");

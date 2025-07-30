@@ -45,6 +45,19 @@ namespace SK.CRM.Application.MappingProfiles
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExtensionItemId))
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
+
+            CreateMap<OrderDetailDto, ExtensionItemDto>()
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProductName))
+                .ForMember(dest => dest.ExtensionItemId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ProductId));
+
+            // From QuoteItemDto → ExtensionItemDto
+            CreateMap<ExtensionItemDto, OrderDetailDto>()
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ExtensionItemId))
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

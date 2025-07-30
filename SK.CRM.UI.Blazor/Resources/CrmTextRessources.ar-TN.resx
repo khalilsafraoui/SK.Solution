@@ -282,4 +282,37 @@
   <data name="SaveChanges" xml:space="preserve">
     <value>حفظ التعديلات</value>
   </data>
+  <data name="Orders_Title" xml:space="preserve">
+    <value>طلبات</value>
+  </data>
+  <data name="OrderEdit_Section1_Title" xml:space="preserve">
+    <value>تعديل الطلب</value>
+  </data>
+  <data name="OrderDate" xml:space="preserve">
+    <value>تاريخ الطلب</value>
+  </data>
+  <data name="BackToOrders" xml:space="preserve">
+    <value>العودة إلى الطلبات</value>
+  </data>
+  <data name="OrderDetail_firstsection_title" xml:space="preserve">
+    <value>الطلب</value>
+  </data>
+  <data name="OrderItems" xml:space="preserve">
+    <value>عناصر الطلب</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>جاهز</value>
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>الموافقة</value>
+  </data>
+  <data name="PlaceOrder" xml:space="preserve">
+    <value>إجراء الطلب</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="OrderAdd_Section1_Title" xml:space="preserve">
+    <value>إنشاء طلب</value>
+  </data>
 </root>

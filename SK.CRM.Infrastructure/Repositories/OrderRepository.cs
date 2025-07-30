@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SK.CRM.Application.Interfaces;
 using SK.CRM.Domain.Entities;
+using SK.CRM.Domain.Entities.Quote;
 using SK.CRM.Infrastructure.Persistence;
 
 
@@ -62,5 +63,33 @@ namespace SK.CRM.Infrastructure.Repositories
             }
             return order;
         }
+
+        public async Task<(IEnumerable<Order> Orders, int TotalCount)> GetByStatusesAsync(
+            IEnumerable<string> statuses,
+            int pageIndex,
+            int pageSize,
+            string? userId = null)
+        {
+            var query = _context.Orders
+                .Where(q => statuses.Contains(q.Status));
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                query = query.Where(q => q.UserId == userId);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var pagedOrders = await query
+                .OrderByDescending(q => q.CreatedDate) // Always order before skip/take
+                .ThenBy(q => q.Id) // Secondary order by to ensure consistent ordering
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return (pagedOrders, totalCount);
+        }
+
     }
 }

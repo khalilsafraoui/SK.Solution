@@ -282,4 +282,37 @@
   <data name="SaveChanges" xml:space="preserve">
     <value>Enregistrer les modifications</value>
   </data>
+  <data name="Orders_Title" xml:space="preserve">
+    <value>Commandes</value>
+  </data>
+  <data name="OrderEdit_Section1_Title" xml:space="preserve">
+    <value>Modification de commande</value>
+  </data>
+  <data name="OrderDate" xml:space="preserve">
+    <value>Date de commande</value>
+  </data>
+  <data name="BackToOrders" xml:space="preserve">
+    <value>Retour aux commandes</value>
+  </data>
+  <data name="OrderDetail_firstsection_title" xml:space="preserve">
+    <value>Commande</value>
+  </data>
+  <data name="OrderItems" xml:space="preserve">
+    <value>Articles de la commande</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Prêt</value>
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>Approuver</value>
+  </data>
+  <data name="PlaceOrder" xml:space="preserve">
+    <value>Passer la commande</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="OrderAdd_Section1_Title" xml:space="preserve">
+    <value>Créer une commande</value>
+  </data>
 </root>

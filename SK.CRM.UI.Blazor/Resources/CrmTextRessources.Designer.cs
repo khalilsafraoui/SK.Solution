@@ -115,6 +115,24 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Approve.
+        /// </summary>
+        internal static string Approve {
+            get {
+                return ResourceManager.GetString("Approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Back To Orders.
+        /// </summary>
+        internal static string BackToOrders {
+            get {
+                return ResourceManager.GetString("BackToOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Back to Quotes.
         /// </summary>
         internal static string BackToQuotes {
@@ -286,11 +304,74 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Create Order.
+        /// </summary>
+        internal static string OrderAdd_Section1_Title {
+            get {
+                return ResourceManager.GetString("OrderAdd_Section1_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Order Date.
+        /// </summary>
+        internal static string OrderDate {
+            get {
+                return ResourceManager.GetString("OrderDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Order.
+        /// </summary>
+        internal static string OrderDetail_firstsection_title {
+            get {
+                return ResourceManager.GetString("OrderDetail_firstsection_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Order Editing.
+        /// </summary>
+        internal static string OrderEdit_Section1_Title {
+            get {
+                return ResourceManager.GetString("OrderEdit_Section1_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Order Items.
+        /// </summary>
+        internal static string OrderItems {
+            get {
+                return ResourceManager.GetString("OrderItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Orders.
         /// </summary>
         internal static string Orders_PageTitle {
             get {
                 return ResourceManager.GetString("Orders_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Orders.
+        /// </summary>
+        internal static string Orders_Title {
+            get {
+                return ResourceManager.GetString("Orders_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Place Order.
+        /// </summary>
+        internal static string PlaceOrder {
+            get {
+                return ResourceManager.GetString("PlaceOrder", resourceCulture);
             }
         }
         
@@ -448,11 +529,29 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Ready.
+        /// </summary>
+        internal static string Ready {
+            get {
+                return ResourceManager.GetString("Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Reject.
         /// </summary>
         internal static string Reject {
             get {
                 return ResourceManager.GetString("Reject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Save.
+        /// </summary>
+        internal static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
             }
         }
         
