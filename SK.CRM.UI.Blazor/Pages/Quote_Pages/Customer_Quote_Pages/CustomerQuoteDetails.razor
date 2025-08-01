@@ -1,6 +1,8 @@
-﻿@using SK.CRM.Application.DTOs.Quote
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.Application.DTOs.Quote
 @using SK.CRM.Application.Features.Quotes.Commands
 @using SK.CRM.Application.Features.Quotes.Queries
+@using SK.CRM.UI.Blazor.Resources
 @attribute [Route(Routes.Crm_Customer_Quote_Details)]
 @attribute [Authorize(Roles = RoleType.Customer)]
 @rendermode InteractiveServer
@@ -8,8 +10,8 @@
 @inject IMediator Mediator
 @inject IJSRuntime _JSRuntime
 @inject ILogger<CustomerQuoteDetails> Logger
-
-<PageTitle>Quote Details</PageTitle>
+@inject IStringLocalizer<CrmTextRessources> _localizer
+<PageTitle>@_localizer["QuoteDetails_PageTitle"]</PageTitle>
 @if (IsProcessing)
 {
     <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -23,118 +25,102 @@ else
     <div class="container py-4">
         <div class="row justify-content-center mb-4">
 
+            
+
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">
-                        📝 Quote
-                    </h4>
-
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <p><strong>Quote ID: </strong>@quote.Id</p>
-                        </div>
-
-                        <div class="col-md-6">
-                            <p><strong>Address: </strong>@quote.FullAddress</p>
-                        </div>
-
-                        <div class="col-md-4">
-                            <p><strong>Status: </strong>@quote.Status</p>
-                        </div>
-
-
-
-
-                        <div class="col-md-4">
-                            <p><strong>Created: </strong>@quote.CreatedDate.ToString("dd/MM/yyyy")</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Expires: </strong>@quote.ExpirationDate?.ToString("dd/MM/yyyy")</p>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-bold">Notes:</label>
-                            <div>@quote.Notes</div>
-                        </div>
-                    </div>
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["QuoteDetail_firstsection_title"]</h4>
+                    <RadzenRow Gap="1rem">
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["Id"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.Id.ToString()" ReadOnly="true" />
+                                </RadzenFormField>
+                                
+                                <RadzenFormField Text=@_localizer["Address"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.FullAddress" ReadOnly="true" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeSM="6">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["Status"] Variant="Variant.Filled">
+                                    <RadzenTextBox Value="@quote.Status" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text=@_localizer["CreatedDate"] Variant="Variant.Filled">
+                                    <RadzenDatePicker TValue="DateTime" Value="@quote.CreatedDate" DateFormat="yyyy-MM-dd" ReadOnly="true" />
+                                </RadzenFormField>
+                                <RadzenFormField Text=@_localizer["SelectExpirationDate"] Variant="Variant.Filled">
+                                    <RadzenDatePicker TValue="DateTime" Value="quote.ExpirationDate"
+                                                      DateFormat="yyyy-MM-dd"
+                                                      Style="width: 100%;" ReadOnly="true" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
                 </RadzenCard>
             </div>
 
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["Note"]</h4>
+                    <RadzenTextArea Value="@quote.Notes" Style="width: 100%" aria-label="TextArea" ReadOnly="true" />
+                </RadzenCard>
+            </div>
 
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
                     <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">
-                        📋 Items
+                        📋 @_localizer["QuoteItems"]
                     </h4>
 
 
                     <div class="card-body overflow-auto p-0">
                         <RadzenDataGrid @ref="quoteItemsGrid"
-                        Data="@quote.Items"
-                        TItem="QuoteItemDto"
-                        AllowFiltering="true"
-                        AllowPaging="true"
-                        PageSize="5"
-                        AllowSorting="true"
-                        Responsive="true">
+                                        Data="@quote.Items"
+                                        TItem="QuoteItemDto"
+                                        AllowFiltering="true"
+                                        AllowPaging="true"
+                                        PageSize="5"
+                                        AllowSorting="true"
+                                        Responsive="true">
                             <Columns>
-                                <RadzenDataGridColumn Title="Product">
+                                <RadzenDataGridColumn Title=@_localizer["Items"]>
                                     <Template Context="quoteItem">@quoteItem.ProductName</Template>
+                                    <FooterTemplate>
+                                        @_localizer["ItemsCount"]: <b>(@quote.Items.Count)</b>
+                                    </FooterTemplate>
                                 </RadzenDataGridColumn>
 
-                                <RadzenDataGridColumn Title="Unit Price">
+                                <RadzenDataGridColumn Title=@_localizer["UnitPrice"]>
                                     <Template Context="quoteItem">@quoteItem.UnitPrice</Template>
                                 </RadzenDataGridColumn>
 
-                                <RadzenDataGridColumn Title="Quantity">
+                                <RadzenDataGridColumn Title=@_localizer["Quantity"]>
                                     <Template Context="quoteItem">@quoteItem.Quantity</Template>
                                 </RadzenDataGridColumn>
                                 @if (quote.Status == QuoteStatus.StatusQuoted || quote.Status == QuoteStatus.StatusAccepted || quote.Status == QuoteStatus.StatusRejected || quote.Status == QuoteStatus.StatusExpired)
                                 {
-                                    <RadzenDataGridColumn Title="Discount Rate">
-                                        <Template Context="quoteItem">@quoteItem.DiscountRate</Template>
-                                    </RadzenDataGridColumn>
+                                <RadzenDataGridColumn Title=@_localizer["DiscountRate"]>
+                                    <Template Context="quoteItem">@quoteItem.DiscountRate</Template>
+                                </RadzenDataGridColumn>
 
-                                    <RadzenDataGridColumn Title="Tax Rate">
-                                        <Template Context="quoteItem">@quoteItem.TaxRate</Template>
-                                    </RadzenDataGridColumn>
+                                <RadzenDataGridColumn Title=@_localizer["TaxRate"]>
+                                    <Template Context="quoteItem">@quoteItem.TaxRate</Template>
+                                </RadzenDataGridColumn>
 
-                                    <RadzenDataGridColumn Title="Total">
-                                        <Template Context="quoteItem">@quoteItem.TotalAfterDiscountAndTax</Template>
-                                    </RadzenDataGridColumn>
+                                <RadzenDataGridColumn Title=@_localizer["Total"]>
+                                    <Template Context="quoteItem">@quoteItem.TotalAfterDiscountAndTax</Template>
+                                    <FooterTemplate>
+                                        @_localizer["Total"]: <b>@String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", @quote.Items.Sum(o => o.TotalAfterDiscountAndTax))</b>
+                                    </FooterTemplate>
+                                </RadzenDataGridColumn>
                                 }
-
-
                             </Columns>
                         </RadzenDataGrid>
                     </div>
                 </RadzenCard>
             </div>
-
-            @if (@quote.Status == QuoteStatus.StatusAccepted || @quote.Status == QuoteStatus.StatusQuoted || @quote.Status == QuoteStatus.StatusRejected || @quote.Status == QuoteStatus.StatusExpired)
-            {
-                <div class="col-12 col-md-12 pt-1">
-                    <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    <div class="row mt-4">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Subtotal:</label>
-                            <div>@quote.Subtotal?.ToString("C", CultureInfo.CurrentCulture)</div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Global Discount (%):</label>
-                            <div>@(quote.GlobalDiscountRate * 100)%</div>
-                        </div>
-
-                        
-
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Total:</label>
-                            <div>@quote.Total?.ToString("C", CultureInfo.CurrentCulture)</div>
-                        </div>
-                    </div>
-                </RadzenCard>
-            </div>
-            }
 
 
             <div class="col-12 col-md-12 pt-1">
@@ -142,7 +128,7 @@ else
                     <div class="d-flex flex-wrap justify-content-between align-items-center">
 
                         <!-- Left-aligned Back button -->
-                        <RadzenButton Text="Back to Quotes"
+                        <RadzenButton Text=@_localizer["BackToQuotes"]
                         Icon="arrow_back"
                         Style="min-width: 160px;"
                         ButtonStyle="ButtonStyle.Light"
@@ -152,7 +138,7 @@ else
                         <div class="d-flex flex-wrap gap-2 justify-content-end">
                             @if (quote.Status == QuoteStatus.StatusAccepted)
                             {
-                                <RadzenButton Text="Proceed to Order"
+                                <RadzenButton Text=@_localizer["ProceedToOrder"]
                                 Icon="swap_horiz"
                                 Style="min-width: 160px;"
                                 ButtonStyle="ButtonStyle.Primary"
@@ -160,13 +146,13 @@ else
                             }
                             @if (quote.Status == QuoteStatus.StatusQuoted)
                             {
-                                <RadzenButton Text="Accept"
+                                <RadzenButton Text=@_localizer["Accept"]
                                 Icon="check"
                                 Style="min-width: 120px;"
                                 ButtonStyle="ButtonStyle.Success"
                                 Click="@OnAccept" />
 
-                                <RadzenButton Text="Reject"
+                                <RadzenButton Text=@_localizer["Reject"]
                                 Icon="cancel"
                                 Style="min-width: 120px;"
                                 ButtonStyle="ButtonStyle.Danger"
@@ -174,7 +160,7 @@ else
                             }
                             @if (quote.Status != QuoteStatus.StatusRejected && quote.Status != QuoteStatus.StatusCancelled && quote.Status != QuoteStatus.StatusCompleted)
                             {
-                                <RadzenButton Text="Cancel"
+                                <RadzenButton Text=@_localizer["Cancel"]
                                 Icon="close"
                                 Style="min-width: 120px;"
                                 ButtonStyle="ButtonStyle.Light"

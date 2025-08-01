@@ -1,5 +1,7 @@
-﻿@using SK.CRM.Application.DTOs.Quote
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.Application.DTOs.Quote
 @using SK.CRM.Application.Features.Quotes.Queries
+@using SK.CRM.UI.Blazor.Resources
 @attribute [Route(Routes.Crm_Customer_Quotes)]
 @attribute [Authorize(Roles = RoleType.Customer)]
 @rendermode InteractiveServer
@@ -8,8 +10,9 @@
 @inject ILogger<CustomerQuotes> Logger
 @inject IJSRuntime _IJSRuntime
 @inject ICurrentUserService _CurrentUserService
+@inject IStringLocalizer<CrmTextRessources> _localizer
 @attribute [Authorize]
-<PageTitle>Quotes</PageTitle>
+<PageTitle>@_localizer["Quotes_PageTitle"]</PageTitle>
 @if (IsProcessing)
 {
     <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
@@ -28,45 +31,120 @@ else
                         <!-- Left: Title -->
                         <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
                             <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                Quotes
+                                @_localizer["Quotes_Title"]
                             </h2>
                         </div>
-
-                        <!-- Right: Create New Quote -->
-                        @* <div class="col-12 col-md-auto d-flex justify-content-center justify-content-md-end">
-                            <RadzenButton Text="Create"
-                                          Icon="add_circle"
-                                          Style="min-width: 160px; background-color: purple; border-color: purple; color: white;"
-                                          ButtonStyle="ButtonStyle.Primary"
-                                          Click="@OnCreateNewQuote" />
-                        </div> *@
 
                     </div>
                 </RadzenCard>
             </div>
 
-
             <div class="col-12 col-md-12 pt-1">
                 <RadzenCard Class="p-4 shadow radzen-card-responsive">
-                    
+                    <RadzenTabs @bind-SelectedIndex=@selectedIndex Change="OnTabChange">
+                        <Tabs>
+                            <RadzenTabsItem Text=@_localizer["Active"]>
+                                <RadzenDataGrid @ref="quotesGrid"
+                                                Data="@QuotesDto"
+                                                LoadData="@LoadActiveQuotes"
+                                                TItem="QuoteDto"
+                                                AllowFiltering="true"
+                                                AllowPaging="true"
+                                                PageSizeOptions="new int[] {5, 10, 20, 50}"
+                                                PageSize="10"
+                                                Count="@totalQuotesCount"
+                                                AllowSorting="true"
+                                                Responsive="true">
 
+                                    <Columns>
+                                        <RadzenDataGridColumn Title=@_localizer["Id"]>
+                                            <Template Context="quoteItem">@quoteItem.Id</Template>
+                                        </RadzenDataGridColumn>
 
-                    <div class="card-body overflow-auto p-0">
-                        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="20" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                                        Data="@Quotes" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" Responsive="true">
-                            <Columns>
-                                <RadzenDataGridColumn Property="Id" Filterable="false" Title="ID"  Width="80px" />
-                                <RadzenDataGridColumn Property="CreatedDate" Title="Creation Date" FormatString="{0:d}" Width="160px" />
-                                <RadzenDataGridColumn Property="Status" Title="Status" Width="160px" />
-                                <RadzenDataGridColumn Title="Action" Sortable="false" Filterable="false" Width="80px" TextAlign="TextAlign.Center">
-                                    <Template Context="quote">
-                                        <RadzenButton Shade="Shade.Lighter" Text="Details" ButtonStyle="ButtonStyle.Primary" Click="@(()=>_NavigationManager.NavigateTo(Routes.GetCustomerQuoteDetailsUrl(quote.Id)))" />
-                                    </Template>
-                                </RadzenDataGridColumn>
-                            </Columns>
-                        </RadzenDataGrid>
-                    </div>
+                                        <RadzenDataGridColumn Title=@_localizer["CreatedDate"]>
+                                            <Template Context="quoteItem">@quoteItem.CreatedDate.ToString("d")</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Status"]>
+                                            <Template Context="quoteItem">@quoteItem.Status</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["ExpirationDate"]>
+                                            <Template Context="quoteItem">@quoteItem.ExpirationDate?.ToString("d")</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                                            <Template Context="quote">
+                                                <RadzenButton Shade="Shade.Lighter"
+                                                              Text=@_localizer["Details"]
+                                                              Style="background-color: purple; border-color: purple; color: white;"
+                                                              ButtonStyle="ButtonStyle.Primary"
+                                                              Click="@(() => _NavigationManager.NavigateTo(Routes.GetCustomerQuoteDetailsUrl(quote.Id)))" />
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+
+                                    <!-- Empty state -->
+                                    <EmptyTemplate>
+                                        <div class="text-center text-muted p-4">
+                                            @_localizer["Quotes_NoQuotesToDisplay"]
+                                        </div>
+                                    </EmptyTemplate>
+
+                                </RadzenDataGrid>
+                            </RadzenTabsItem>
+                            <RadzenTabsItem Text=@_localizer["Completed"]>
+
+                                <RadzenDataGrid @ref="completedquotesGrid"
+                                                Data="@CompletedQuotesDto"
+                                                LoadData="@LoadCompletedQuotes"
+                                                TItem="QuoteDto"
+                                                AllowFiltering="true"
+                                                AllowPaging="true"
+                                                PageSizeOptions="new int[] {5, 10, 20, 50}"
+                                                PageSize="10"
+                                                Count="@totalCompletedQuotesCount"
+                                                AllowSorting="true"
+                                                Responsive="true">
+
+                                    <Columns>
+                                        <RadzenDataGridColumn Title=@_localizer["Id"]>
+                                            <Template Context="quoteItem">@quoteItem.Id</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["CreatedDate"]>
+                                            <Template Context="quoteItem">@quoteItem.CreatedDate.ToString("d")</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Status"]>
+                                            <Template Context="quoteItem">@quoteItem.Status</Template>
+                                        </RadzenDataGridColumn>
+
+                                        <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="100px" TextAlign="TextAlign.Center">
+                                            <Template Context="quote">
+                                                <RadzenButton Shade="Shade.Lighter"
+                                                              Text=@_localizer["Details"]
+                                                              ButtonStyle="ButtonStyle.Primary"
+                                                              Click="@(() => _NavigationManager.NavigateTo(Routes.GetCustomerQuoteDetailsUrl(quote.Id)))" />
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+
+                                    <!-- Empty state -->
+                                    <EmptyTemplate>
+                                        <div class="text-center text-muted p-4">
+                                            @_localizer["Quotes_NoQuotesToDisplay"]
+                                        </div>
+                                    </EmptyTemplate>
+
+                                </RadzenDataGrid>
+
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+
                 </RadzenCard>
+
             </div>
 
         </div>
@@ -76,46 +154,86 @@ else
 }
 
 @code {
-    public bool IsProcessing { get; set; } = true;
+    public bool IsProcessing { get; set; } = false;
     private IEnumerable<QuoteDto> Quotes { get; set; } = new List<QuoteDto>();
-
+    int selectedIndex = 0;
+    int totalQuotesCount = 0;
+    int totalCompletedQuotesCount = 0;
+    private bool shouldReloadSecondGrid = false;
+    private IEnumerable<QuoteDto> QuotesDto { get; set; } = new List<QuoteDto>();
+    private IEnumerable<QuoteDto> CompletedQuotesDto { get; set; } = new List<QuoteDto>();
+    RadzenDataGrid<QuoteDto> quotesGrid;
+    RadzenDataGrid<QuoteDto> completedquotesGrid;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
+            if (quotesGrid != null)
             {
-                IsProcessing = true;
-                await LoadQuotes();
-                
+                await quotesGrid.Reload();
             }
-            catch (Exception ex)
+
+            StateHasChanged();
+        }
+
+        if (shouldReloadSecondGrid)
+        {
+            if (completedquotesGrid != null)
             {
-                Logger.LogError(ex, "Error while fetching customer Quotes.");
-                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
-            }
-            finally
-            {
-                IsProcessing = false;
+                await completedquotesGrid.Reload();
+                shouldReloadSecondGrid = false;
                 StateHasChanged();
             }
-       
         }
     }
 
-    private async Task LoadQuotes()
+    private async Task LoadActiveQuotes(LoadDataArgs arg)
     {
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
         var UserId = await _CurrentUserService.GetUserIdAsync();
-        var query = new GetAllQuotesQuery(UserId.ToString());
+        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusAccepted, QuoteStatus.StatusQuoted, QuoteStatus.StatusSubmitted, QuoteStatus.StatusUnderReview, QuoteStatus.StatusDraft }, pageIndex, pageSize, UserId.ToString());
         var result = await Mediator.Send(query);
         if (result.IsSuccess)
         {
-            Quotes = result.QuotesDto;
+            QuotesDto = result.QuotesDto;
+            totalQuotesCount = result.TotalCount;
+            StateHasChanged();
         }
         else
         {
             Logger.LogError("Failed to load quotes: {Error}", result.ErrorMessage);
             await _IJSRuntime.ToastrError("Failed to load quotes. Please try again later.");
+        }
+    }
+
+    private async Task LoadCompletedQuotes(LoadDataArgs arg)
+    {
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
+        var UserId = await _CurrentUserService.GetUserIdAsync();
+        var query = new GetAllQuotesByStatusQuery(new[] { QuoteStatus.StatusExpired, QuoteStatus.StatusCancelled, QuoteStatus.StatusCompleted }, pageIndex, pageSize, UserId.ToString());
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            CompletedQuotesDto = result.QuotesDto;
+            totalCompletedQuotesCount = result.TotalCount;
+            StateHasChanged();
+        }
+        else
+        {
+            Logger.LogError("Failed to load quotes: {Error}", result.ErrorMessage);
+            await _IJSRuntime.ToastrError("Failed to load quotes. Please try again later.");
+        }
+    }
+
+    private async Task OnTabChange(int index)
+    {
+        if (index == 1)
+        {
+            shouldReloadSecondGrid = true;
         }
     }
 }

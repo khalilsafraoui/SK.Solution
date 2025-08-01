@@ -315,4 +315,13 @@
   <data name="OrderAdd_Section1_Title" xml:space="preserve">
     <value>Créer une commande</value>
   </data>
+  <data name="OrderDetails_PageTitle" xml:space="preserve">
+    <value>Détails de la commande</value>
+  </data>
+  <data name="OrderEdit_PageTitle" xml:space="preserve">
+    <value>Modification de commande</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
 </root>

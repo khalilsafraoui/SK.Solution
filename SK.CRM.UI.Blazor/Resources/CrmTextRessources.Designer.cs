@@ -304,6 +304,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Note.
+        /// </summary>
+        internal static string Note {
+            get {
+                return ResourceManager.GetString("Note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Create Order.
         /// </summary>
         internal static string OrderAdd_Section1_Title {
@@ -327,6 +336,24 @@ namespace SK.CRM.UI.Blazor.Resources {
         internal static string OrderDetail_firstsection_title {
             get {
                 return ResourceManager.GetString("OrderDetail_firstsection_title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Order Details.
+        /// </summary>
+        internal static string OrderDetails_PageTitle {
+            get {
+                return ResourceManager.GetString("OrderDetails_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Order Editing.
+        /// </summary>
+        internal static string OrderEdit_PageTitle {
+            get {
+                return ResourceManager.GetString("OrderEdit_PageTitle", resourceCulture);
             }
         }
         

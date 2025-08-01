@@ -240,16 +240,10 @@ else
         }
     }
 
-    async Task OnBackToQuotes()
-    {
-        _NavigationManager.NavigateTo(Routes.Crm_Quotes);
-    }
-
     async Task OnCreateNewQuote()
     {
         _NavigationManager.NavigateTo(Routes.Crm_Quote_Create);
     }
-
 
     private async Task OnTabChange(int index)
     {
