@@ -1,11 +1,13 @@
-﻿@inject ICountryService countryService
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@inject ICountryService countryService
 @inject IStateService stateService
 @inject ICityService cityService
 @inject IMediator Mediator
 @inject IJSRuntime _IJSRuntime
 @inject ILogger<_CartAddress> Logger
+@inject IStringLocalizer<CrmTextRessources> _localizer
 
-<div class="card-body">
 
     @if (addresses != null && addresses.Any())
     {
@@ -15,9 +17,9 @@
             ValueProperty="Id"
             @bind-Value="AddressId"
             Class="form-control"
-            Placeholder="Select Address"
+                            Placeholder=@_localizer["Placeholder_selectaddress"]
             Change="OnAddressChanged" />
-            <label>Select Address</label>
+            <label>@_localizer["Placeholder_selectaddress"]</label>
         </div>
 
 
@@ -34,7 +36,7 @@
         @CreateAddressForm()
     }
 
-</div>
+
 
 
 
@@ -126,7 +128,7 @@
                 addresses = result.Addresses;
             }
 
-            addresses.Add(new AddressDto() { Id = guidForCreate, FullAddress = "Create new Address" });
+            addresses.Add(new AddressDto() { Id = guidForCreate, FullAddress = _localizer["Create"] });
         }
     }
     protected override async Task OnInitializedAsync()

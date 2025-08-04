@@ -1,4 +1,6 @@
-﻿@attribute [Route(Routes.Crm_Cart)]
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@attribute [Route(Routes.Crm_Cart)]
 
 @rendermode InteractiveServer
 @inject IMediator Mediator
@@ -11,7 +13,8 @@
 @inject IPublisher _publisher
 @inject ISharedUserServices _ShareUserServices
 @attribute [Authorize]
-<PageTitle>Cart</PageTitle>
+@inject IStringLocalizer<CrmTextRessources> _localizer
+<PageTitle>@_localizer["Cart"]</PageTitle>
 @if (IsOrderProcessing)
 {
     <_CartToOrder customerGeneralInformationsDto=@customerGeneralInformationsDto Email=@Email UserId=@UserId shoppingCarts=@shoppingCarts Reload="ReloadShoppingCart"></_CartToOrder>
@@ -26,7 +29,7 @@ else
 
 
 
-    private bool IsOrderProcessing { get; set; } = false;
+    private bool IsOrderProcessing { get; set; } = true;
     private bool IsProcessing { get; set; } = true;
     public CustomerGeneralInformationsDto customerGeneralInformationsDto { get; set; } = new();
     public string UserId { get; set; } = string.Empty;

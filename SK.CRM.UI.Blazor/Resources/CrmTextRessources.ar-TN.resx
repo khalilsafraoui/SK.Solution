@@ -324,4 +324,43 @@
   <data name="Note" xml:space="preserve">
     <value>ملاحظة</value>
   </data>
+  <data name="EmptyCart" xml:space="preserve">
+    <value>سلة التسوق فارغة! أضف عناصر إلى السلة.</value>
+  </data>
+  <data name="Note_Placeholder" xml:space="preserve">
+    <value>اكتب ملاحظتك هنا...</value>
+  </data>
+  <data name="DeliveryAddress" xml:space="preserve">
+    <value>عنوان التسليم</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>المعلومات الشخصية</value>
+  </data>
+  <data name="cart_overview_title" xml:space="preserve">
+    <value>نظرة عامة على السلة</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>الاسم الكامل</value>
+  </data>
+  <data name="Placeholder_selectaddress" xml:space="preserve">
+    <value>اختر عنوانًا</value>
+  </data>
+  <data name="Cart" xml:space="preserve">
+    <value>سلة التسوق</value>
+  </data>
+  <data name="OrderSummary" xml:space="preserve">
+    <value>ملخص الطلب</value>
+  </data>
+  <data name="TotalDiscount" xml:space="preserve">
+    <value>إجمالي الخصم</value>
+  </data>
+  <data name="TotalTax" xml:space="preserve">
+    <value>إجمالي الضريبة</value>
+  </data>
 </root>

@@ -324,4 +324,43 @@
   <data name="Note" xml:space="preserve">
     <value>Note</value>
   </data>
+  <data name="EmptyCart" xml:space="preserve">
+    <value>Votre panier est vide ! Ajoutez des articles au panier.</value>
+  </data>
+  <data name="Note_Placeholder" xml:space="preserve">
+    <value>Écrivez votre note ici...</value>
+  </data>
+  <data name="DeliveryAddress" xml:space="preserve">
+    <value>Adresse de livraison</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>Informations personnelles</value>
+  </data>
+  <data name="cart_overview_title" xml:space="preserve">
+    <value>Aperçu du panier</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>Numéro de téléphone</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Nom complet</value>
+  </data>
+  <data name="Placeholder_selectaddress" xml:space="preserve">
+    <value>Sélectionner une adresse</value>
+  </data>
+  <data name="Cart" xml:space="preserve">
+    <value>Panier</value>
+  </data>
+  <data name="OrderSummary" xml:space="preserve">
+    <value>Résumé de la commande</value>
+  </data>
+  <data name="TotalDiscount" xml:space="preserve">
+    <value>Remise totale</value>
+  </data>
+  <data name="TotalTax" xml:space="preserve">
+    <value>Taxe totale</value>
+  </data>
 </root>
