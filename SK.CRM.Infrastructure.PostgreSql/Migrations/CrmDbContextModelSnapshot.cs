@@ -28,10 +28,6 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CityId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("CountryId")
                         .IsRequired()
                         .HasColumnType("text");

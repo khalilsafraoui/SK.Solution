@@ -88,6 +88,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add.
+        /// </summary>
+        internal static string Add {
+            get {
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Add Item.
         /// </summary>
         internal static string AddItem {
@@ -102,6 +111,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         internal static string Address {
             get {
                 return ResourceManager.GetString("Address", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Addresses.
+        /// </summary>
+        internal static string Addresses {
+            get {
+                return ResourceManager.GetString("Addresses", resourceCulture);
             }
         }
         
@@ -129,6 +147,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         internal static string BackToOrders {
             get {
                 return ResourceManager.GetString("BackToOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Back To Prospects.
+        /// </summary>
+        internal static string BackToProspects {
+            get {
+                return ResourceManager.GetString("BackToProspects", resourceCulture);
             }
         }
         
@@ -174,6 +201,24 @@ namespace SK.CRM.UI.Blazor.Resources {
         internal static string Completed {
             get {
                 return ResourceManager.GetString("Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Convert To Customer.
+        /// </summary>
+        internal static string ConvertToCustomer {
+            get {
+                return ResourceManager.GetString("ConvertToCustomer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Country.
+        /// </summary>
+        internal static string Country {
+            get {
+                return ResourceManager.GetString("Country", resourceCulture);
             }
         }
         
@@ -241,6 +286,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Delete.
+        /// </summary>
+        internal static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Delivery Address.
         /// </summary>
         internal static string DeliveryAddress {
@@ -304,6 +358,24 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à First Name.
+        /// </summary>
+        internal static string FirstName {
+            get {
+                return ResourceManager.GetString("FirstName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Full Address.
+        /// </summary>
+        internal static string FullAddress {
+            get {
+                return ResourceManager.GetString("FullAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Full Name.
         /// </summary>
         internal static string FullName {
@@ -313,11 +385,47 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à General Information.
+        /// </summary>
+        internal static string GeneralInformations {
+            get {
+                return ResourceManager.GetString("GeneralInformations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Id.
         /// </summary>
         internal static string Id {
             get {
                 return ResourceManager.GetString("Id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Is Billing Address.
+        /// </summary>
+        internal static string IsBillingAddress {
+            get {
+                return ResourceManager.GetString("IsBillingAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Is Default Address.
+        /// </summary>
+        internal static string IsDefaultAddress {
+            get {
+                return ResourceManager.GetString("IsDefaultAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Is Delivery Address.
+        /// </summary>
+        internal static string IsDeliveryAddress {
+            get {
+                return ResourceManager.GetString("IsDeliveryAddress", resourceCulture);
             }
         }
         
@@ -345,6 +453,42 @@ namespace SK.CRM.UI.Blazor.Resources {
         internal static string ItemsCount {
             get {
                 return ResourceManager.GetString("ItemsCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Last Name.
+        /// </summary>
+        internal static string LastName {
+            get {
+                return ResourceManager.GetString("LastName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Latitude.
+        /// </summary>
+        internal static string Latitude {
+            get {
+                return ResourceManager.GetString("Latitude", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Longitude.
+        /// </summary>
+        internal static string Longitude {
+            get {
+                return ResourceManager.GetString("Longitude", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Name.
+        /// </summary>
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
             }
         }
         
@@ -529,11 +673,65 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Prospect.
+        /// </summary>
+        internal static string Prospect {
+            get {
+                return ResourceManager.GetString("Prospect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Prospect.
+        /// </summary>
+        internal static string Prospect_Add_Title {
+            get {
+                return ResourceManager.GetString("Prospect_Add_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Prospect.
+        /// </summary>
+        internal static string Prospect_Edit_Title {
+            get {
+                return ResourceManager.GetString("Prospect_Edit_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Prospect.
+        /// </summary>
+        internal static string ProspectAdd_PageTitle {
+            get {
+                return ResourceManager.GetString("ProspectAdd_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Prospect.
+        /// </summary>
+        internal static string ProspectEdit_PageTitle {
+            get {
+                return ResourceManager.GetString("ProspectEdit_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Prospects.
         /// </summary>
         internal static string Prospects_PageTitle {
             get {
                 return ResourceManager.GetString("Prospects_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Prospects.
+        /// </summary>
+        internal static string Prospects_Title {
+            get {
+                return ResourceManager.GetString("Prospects_Title", resourceCulture);
             }
         }
         
@@ -736,11 +934,29 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à State.
+        /// </summary>
+        internal static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Status.
         /// </summary>
         internal static string Status {
             get {
                 return ResourceManager.GetString("Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Street.
+        /// </summary>
+        internal static string Street {
+            get {
+                return ResourceManager.GetString("Street", resourceCulture);
             }
         }
         
@@ -795,6 +1011,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         internal static string UnitPrice {
             get {
                 return ResourceManager.GetString("UnitPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Zip Code.
+        /// </summary>
+        internal static string ZipCode {
+            get {
+                return ResourceManager.GetString("ZipCode", resourceCulture);
             }
         }
     }

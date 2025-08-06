@@ -1,31 +1,42 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SK.CRM.Application.DTOs;
+using SK.CRM.Application.Features.Prospects.Commands;
 using SK.CRM.Application.Interfaces;
 using SK.CRM.Domain.Entities;
 
 namespace SK.CRM.Application.Features.Customers.Commands
 {
-    public sealed record CreateProspectCommand(CustomerDto Customer) : IRequest<CustomerDto>;
-    public class CreateProspectCommandHandler : IRequestHandler<CreateProspectCommand, CustomerDto>
+    public sealed record CreateProspectCommand(CustomerDto Customer) : IRequest<(bool IsSuccess, CustomerDto? CustomerDto, string ErrorMessage)>;
+    public class CreateProspectCommandHandler : IRequestHandler<CreateProspectCommand, (bool IsSuccess, CustomerDto? CustomerDto, string ErrorMessage)>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public CreateProspectCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILogger<CreateProspectCommandHandler> _logger;
+        public CreateProspectCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreateProspectCommandHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<CustomerDto> Handle(CreateProspectCommand request, CancellationToken cancellationToken)
+        public async Task<(bool IsSuccess, CustomerDto? CustomerDto, string ErrorMessage)> Handle(CreateProspectCommand request, CancellationToken cancellationToken)
         {
-            var customer = _mapper.Map<Customer>(request.Customer);
-            customer.IsProspect = true;
-            customer = await _unitOfWork.CustomerRepository.CreateAsync(customer);
-            await _unitOfWork.SaveChangesAsync();
+            try {
+                var customer = _mapper.Map<Customer>(request.Customer);
+                customer.IsProspect = true;
+                customer = await _unitOfWork.CustomerRepository.CreateAsync(customer);
+                await _unitOfWork.SaveChangesAsync();
 
-            // Map back to DTO after creation to include any updates (e.g., ID)
-            return _mapper.Map<CustomerDto>(customer);
+                // Map back to DTO after creation to include any updates (e.g., ID)
+                return (true,_mapper.Map<CustomerDto>(customer),string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while handling CreateProspectCommand: {Message}", ex.Message);
+                return (false, null, "An unexpected error occurred while creating the prospect. Please try again later.");
+            }   
         }
     }
 }

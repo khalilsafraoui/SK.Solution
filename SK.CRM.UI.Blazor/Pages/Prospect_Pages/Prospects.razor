@@ -1,0 +1,204 @@
+﻿@attribute [Route(Routes.Crm_Prospects)]
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@inject ILogger<Prospects> Logger
+@inject NavigationManager _NavigationManager
+@inject IStringLocalizer<CrmTextRessources> _localizer
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+<PageTitle>@_localizer["Prospects_PageTitle"]</PageTitle>
+
+<BsModal OnModalConfirmation="ConfirmDelete_Click"
+         ButtonBootsrapStyle="btn-danger"
+         ButtonText="Delete"
+         Title="Are you sure you want to Delete this Prospect?">
+</BsModal>
+
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="container py-4">
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 pt-1">
+                <RadzenCard class="p-4 shadow radzen-card-responsive">
+                    <div class="row align-items-center justify-content-between">
+
+                        <!-- Left: Title -->
+                        <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                            <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                @_localizer["Prospects_Title"]
+                            </h2>
+                        </div>
+
+                        <!-- Right: Create New Quote -->
+                        <div class="col-12 col-md-auto d-flex justify-content-center justify-content-md-end">
+                            <RadzenButton Text=@_localizer["Create"]
+                            Icon="add_circle"
+                            Style="min-width: 160px; background-color: purple; border-color: purple; color: white;"
+                            ButtonStyle="ButtonStyle.Primary"
+                            Click="@OnCreateNewProspect" />
+                        </div>
+
+                    </div>
+                </RadzenCard>
+            </div>
+
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <RadzenDataGrid @ref="customersGrid"
+                                   
+                    Data="@customersDto"
+                                    LoadData="@LoadProspects"
+                    TItem="CustomerDto"
+                    AllowFiltering="true"
+                    AllowPaging="true"
+                    PageSizeOptions="new int[] {5, 10, 20, 50}"
+                    PageSize="10"
+                    Count="@totalObjectCount"
+                    AllowSorting="true"
+                    Responsive="true">
+
+                        <Columns>
+                            @*  <RadzenDataGridColumn Title="Id">
+                                            <Template Context="quoteItem">@quoteItem.Id</Template>
+                                        </RadzenDataGridColumn> *@
+
+                            <RadzenDataGridColumn Title=@_localizer["Prospect"]>
+                                <Template Context="prospect">
+                                    <div>
+                                        <strong>@(prospect.FirstName+ " "+prospect.LastName)</strong><br />
+                                        <strong>@_localizer["PhoneNumber"] : </strong><small class="text-muted">@prospect.PhoneNumber</small><br />
+                                        <strong>@_localizer["Email"] : </strong><small class="text-muted">@prospect.Email</small>
+                                    </div>
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="200px" TextAlign="TextAlign.Center">
+                                <Template Context="customerDto">
+                                    <RadzenButton Shade="Shade.Lighter"
+                                    Text=@_localizer["Edit"]
+                                    ButtonStyle="ButtonStyle.Primary"
+                                    Click="@(()=>_NavigationManager.NavigateTo(Routes.GetProspectEditUrl(customerDto.Id)))" />
+                                    <RadzenButton Shade="Shade.Lighter"
+                                    Text=@_localizer["Delete"]
+                                    ButtonStyle="ButtonStyle.Danger"
+                                    Click="()=>HandleDelete(customerDto.Id)" />
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+
+                        <!-- Empty state -->
+                        <EmptyTemplate>
+                            <div class="text-center text-muted p-4">
+                                @_localizer["Prospects_NoProspectsToDisplay"]
+                            </div>
+                        </EmptyTemplate>
+
+                    </RadzenDataGrid>
+                </RadzenCard>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+
+@code {
+    public bool IsProcessing { get; set; } = false;
+
+    private IEnumerable<CustomerDto> customersDto { get; set; } = new List<CustomerDto>();
+    RadzenDataGrid<CustomerDto> customersGrid;
+    int totalObjectCount = 0;
+    private Guid DeleteProspectID { get; set; } = Guid.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await customersGrid.Reload();
+
+            StateHasChanged();
+        }
+    }
+
+
+    private LoadDataArgs _lastLoadArgs;
+    private async Task LoadProspects(LoadDataArgs arg)
+    {
+        _lastLoadArgs = arg; // store for reuse
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
+        var query = new GetAllProspectsQuery(pageIndex, pageSize);
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            customersDto = result.ProspectsDto;
+            totalObjectCount = result.TotalCount;
+        }
+        else
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+        }
+    }
+    private async Task HandleDelete(Guid id)
+    {
+        DeleteProspectID = id;
+        await _IJSRuntime.InvokeVoidAsync("ShowConfirmationModal");
+    }
+
+    private async Task ConfirmDelete_Click(bool isConfirmed)
+    {
+        try
+        {
+            IsProcessing = true;
+            await _IJSRuntime.InvokeVoidAsync("HideConfirmationModal");
+            if (isConfirmed && DeleteProspectID != Guid.Empty)
+            {
+                var query = new DeleteProspectCommand(DeleteProspectID);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    await _IJSRuntime.ToastrSuccess("Prospect Delete Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+                if (_lastLoadArgs != null)
+                {
+                    await LoadProspects(_lastLoadArgs);
+                }
+                StateHasChanged();
+            }
+            DeleteProspectID = Guid.Empty;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while performing prospect delete.");
+
+            await _IJSRuntime.ToastrError("An unexpected error occurred while performing prospect delete. Please try again.");
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+
+    }
+
+
+    async Task OnCreateNewProspect()
+    {
+        _NavigationManager.NavigateTo(Routes.Crm_Prospect_Create);
+    }
+}

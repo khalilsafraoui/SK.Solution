@@ -71,8 +71,11 @@ else
             if (customer.Id != Guid.Empty)
             {
                 var query = new UpdateCustomerGeneralInformationsCommand(customer);
-                await Mediator.Send(query);
+                var result = await Mediator.Send(query);
+                if(result.IsSuccess)
                 await _IJSRuntime.ToastrSuccess("Customer Updated Successfully");
+                else
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
             }
             else
             {

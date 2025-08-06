@@ -1,39 +1,49 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SK.CRM.Application.DTOs;
-using SK.CRM.Application.Exceptions;
 using SK.CRM.Application.Interfaces;
-using SK.CRM.Domain.Entities;
 
-namespace SK.CRM.Application.Features.Prospects.Commands
+namespace SK.CRM.Application.Features.Customers.Commands
 {
-    public sealed record UpdateProspectGeneralInformationsCommand(ProspectGeneralInformationsDto Customer) : IRequest<ProspectGeneralInformationsDto>;
+    public sealed record UpdateCustomerGeneralInformationsCommand(CustomerGeneralInformationsDto Customer) : IRequest<(bool IsSuccess, CustomerGeneralInformationsDto? CustomerGeneralInformationsDto, string ErrorMessage)>;
 
-    public class UpdateProspectGeneralInformationsCommandHandler : IRequestHandler<UpdateProspectGeneralInformationsCommand, ProspectGeneralInformationsDto>
+    public class UpdateCustomerGeneralInformationsCommandHandler : IRequestHandler<UpdateCustomerGeneralInformationsCommand, (bool IsSuccess, CustomerGeneralInformationsDto? CustomerGeneralInformationsDto, string ErrorMessage)>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public UpdateProspectGeneralInformationsCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILogger<UpdateCustomerGeneralInformationsCommandHandler> _logger;
+        public UpdateCustomerGeneralInformationsCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<UpdateCustomerGeneralInformationsCommandHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<ProspectGeneralInformationsDto> Handle(UpdateProspectGeneralInformationsCommand request, CancellationToken cancellationToken)
+        public async Task<(bool IsSuccess, CustomerGeneralInformationsDto? CustomerGeneralInformationsDto, string ErrorMessage)> Handle(UpdateCustomerGeneralInformationsCommand request, CancellationToken cancellationToken)
         {
-            var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(request.Customer.Id)
-                            ?? throw new NotFoundException(nameof(Customer), request.Customer.Id);
-
-            _mapper.Map(request.Customer, customer);
-
-            var updated = await _unitOfWork.CustomerRepository.UpdateAsync(customer);
-            await _unitOfWork.SaveChangesAsync();
-            if (!updated)
+            try
             {
-                throw new ApplicationException("Failed to update Prospect.");
-            }
+                var customer = await _unitOfWork.CustomerRepository.GetByIdAsync(request.Customer.Id);
+                if (customer == null)
+                    return (false, null, "Customer not found.");
 
-            return _mapper.Map<ProspectGeneralInformationsDto>(customer);
+                _mapper.Map(request.Customer, customer);
+
+                var updated = await _unitOfWork.CustomerRepository.UpdateAsync(customer);
+                await _unitOfWork.SaveChangesAsync();
+                if (!updated)
+                {
+                    return (false, null, "Failed to update customer.");
+                }
+                return (true, _mapper.Map<CustomerGeneralInformationsDto>(customer), string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating the customer: {Message}", ex.Message);
+                return (false, null, "An unexpected error occurred while updating the customer. Please try again later.");
+
+            }
         }
     }
 

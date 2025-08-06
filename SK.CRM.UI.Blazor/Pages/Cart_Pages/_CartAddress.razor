@@ -73,17 +73,7 @@
                         <ValidationMessage For="@(() => newAddress.StateId)" />
                     </div>
 
-                    <div class="form-floating py-3 col-md-4">
-                        <InputSelect @bind-Value="newAddress.CityId" class="form-select" id="City">
-
-                            @foreach (var city in cities.Where(filter => filter.StateCode == newAddress.StateId).ToList())
-                            {
-                                <option value="@city.Code">@city.Name</option>
-                            }
-                        </InputSelect>
-                        <label for="City">City</label>
-                        <ValidationMessage For="@(() => newAddress.CityId)" />
-                    </div>
+                    
 
                     <div class="col-md-6">
                         <RadzenTextBox @bind-Value="newAddress.Street" Placeholder="Street" />
@@ -165,8 +155,8 @@
         if (!string.IsNullOrWhiteSpace(newAddress.Street))
             addressParts.Add(newAddress.Street);
 
-        if (!string.IsNullOrEmpty(newAddress.CityId))
-            addressParts.Add(cities.Where(x => x.Code == newAddress.CityId).Select(y => y.Name).First());
+        // if (!string.IsNullOrEmpty(newAddress.CityId))
+        //     addressParts.Add(cities.Where(x => x.Code == newAddress.CityId).Select(y => y.Name).First());
 
         if (!string.IsNullOrEmpty(newAddress.StateId))
             addressParts.Add(states.Where(x => x.Code == newAddress.StateId).Select(y => y.Name).First());

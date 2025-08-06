@@ -34,7 +34,6 @@ namespace SK.CRM.Application.Features.Orders.Services
                     Name = customer.FirstName + " " + customer.LastName,
                         Address = address.FullAddress,
                         Phone = customer.PhoneNumber,
-                        CityId = address?.CityId,
                         CountryId = address?.CountryId,
                         StateId = address?.StateId,
                         Mark = address != null && address?.Latitude != decimal.Parse("0,000000") ? new SharedMarkDto(double.Parse(address.Latitude.ToString()), double.Parse(address.Longitude.ToString()), customer.FirstName + " " + customer.LastName, customer.Id.ToString()) : null,

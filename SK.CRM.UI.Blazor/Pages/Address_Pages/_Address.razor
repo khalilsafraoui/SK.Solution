@@ -1,15 +1,23 @@
-﻿@rendermode InteractiveServer
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@rendermode InteractiveServer
 @inject ICountryService countryService
 @inject IStateService stateService
 @inject ICityService cityService
-<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H3" class="rz-my-6">Addresses</RadzenText>
-<div class="border p-3 mt-4">
-    <!-- Button to Add Another Address -->
-    <div class="form-floating py-3 col-12">
-        <button type="button" class="btn btn-light" title="Add new Address" data-toggle="tooltip" data-placement="right" @onclick="AddNewAddress">
-            <i class="bi bi-plus"></i>
-        </button>
+@inject IStringLocalizer<CrmTextRessources> _localizer
+<RadzenCard Class="p-4 shadow radzen-card-responsive">
+    <div class="d-flex justify-content-between align-items-center py-2">
+        <h4 class="fw-bold m-0" style="color: purple; letter-spacing: 1px;">
+            📝 @_localizer["Addresses"]
+        </h4>
+
+        <RadzenButton Icon="add_circle"
+                      Text=@_localizer["Add"]
+                      Style="min-width: 160px; background-color: purple; border-color: purple; color: white;"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Click="@AddNewAddress" />
     </div>
+
     @foreach (var address in Addresses.Reverse())
     {
         <div class="border p-3 mt-3 rounded shadow-sm position-relative">
@@ -20,135 +28,143 @@
 
             @if (IsExpanded(address))
             {
-                <EditForm Model="address" OnValidSubmit="()=>UpsertAddress(address)">
+                <RadzenTemplateForm Data="address" TItem="AddressDto" Submit="@(() => UpsertAddress(address))">
                     <DataAnnotationsValidator />
+                    <RadzenStack Gap="1rem" class="mt-5">
+                    <RadzenRow Gap="1rem" >
+                         <RadzenColumn Size="12" SizeSM="12">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["Name"] Variant="Variant.Filled">
+                                    <RadzenTextBox @bind-Value="address.Name" />
+                                    <ValidationMessage For="@(() => address.Name)" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
 
-                    <div class="p-4">
-                        <div class="row">
-                            <div class="form-floating py-3 col-md-6">
-                                <InputText @bind-Value="address.Name" class="form-control" id="Name" />
-                                <label for="Name">Name</label>
-                                <ValidationMessage For="@(() => address.Name)" />
-                            </div>
-                            <div class="form-floating py-3 col-md-6">
-                                <InputText @bind-Value="address.FullAddress" class="form-control" id="FullAddress" disabled  />
-                                <label for="FullAddress">Full Address</label>
-                                <ValidationMessage For="@(() => address.FullAddress)" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-floating py-3 col-md-4">
-                                <InputSelect @bind-Value="address.CountryId" class="form-select" id="Country">
-                                    <option value="">Select a country</option>
-                                    @foreach (var country in Countries)
-                                    {
-                                        <option value="@country.Code">@country.Name</option>
-                                    }
-                                </InputSelect>
-                                <label for="Country">Country</label>
-                                <ValidationMessage For="@(() => address.CountryId)" />
-                            </div>
+                        <RadzenRow Gap="1rem">
+                            <RadzenColumn Size="12" SizeSM="6">
+                                <RadzenStack>
+                                    <RadzenFormField Text=@_localizer["Country"] Variant="Variant.Filled">
+                                        <RadzenDropDown @bind-Value="address.CountryId" Data="Countries" TextProperty="@nameof(CountryDto.Name)" ValueProperty="@nameof(CountryDto.Code)" />
+                                        <ValidationMessage For="@(() => address.CountryId)" />
+                                    </RadzenFormField>
+                                </RadzenStack>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeSM="6">
+                                <RadzenStack>
+                                    <RadzenFormField Text=@_localizer["State"] Variant="Variant.Filled">
+                                        <RadzenDropDown @bind-Value="address.StateId" Data="States" TextProperty="@nameof(StateDto.Name)" ValueProperty="@nameof(StateDto.Code)" />
+                                        <ValidationMessage For="@(() => address.StateId)" />
+                                    </RadzenFormField>
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
 
-                            <div class="form-floating py-3 col-md-4">
-                                <InputSelect @bind-Value="address.StateId" class="form-select" id="State">
-                                    <option value="">Select a state</option>
-                                    @foreach (var state in States.Where(filter => filter.CountryCode == address.CountryId).ToList())
-                                    {
-                                        <option value="@state.Code">@state.Name</option>
-                                    }
-                                </InputSelect>
-                                <label for="State">State</label>
-                                <ValidationMessage For="@(() => address.StateId)" />
-                            </div>
+                        <RadzenRow Gap="1rem">
+                            <RadzenColumn Size="12" SizeSM="6">
+                                <RadzenStack>
+                                    <RadzenFormField Text=@_localizer["Street"] Variant="Variant.Filled">
+                                        <RadzenTextBox @bind-Value="address.Street" />
+                                        <ValidationMessage For="@(() => address.Street)" />
+                                    </RadzenFormField>
+                                </RadzenStack>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeSM="6">
+                                <RadzenStack>
+                                    <RadzenFormField Text=@_localizer["ZipCode"] Variant="Variant.Filled">
+                                        <RadzenTextBox @bind-Value="address.ZipCode" />
+                                        <ValidationMessage For="@(() => address.ZipCode)" />
+                                    </RadzenFormField>
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
 
-                            <div class="form-floating py-3 col-md-4">
-                                <InputSelect @bind-Value="address.CityId" class="form-select" id="City">
-                                    <option value="">Select a city</option>
-                                    @foreach (var city in Cities.Where(filter => filter.StateCode == address.StateId).ToList())
-                                    {
-                                        <option value="@city.Code">@city.Name</option>
-                                    }
-                                </InputSelect>
-                                <label for="City">City</label>
-                                <ValidationMessage For="@(() => address.CityId)" />
-                            </div>
-                        </div>
+                        <RadzenRow Gap="1rem">
+                            <RadzenColumn Size="12" SizeSM="6">
+                                <RadzenStack>
+                                    <RadzenFormField Text=@_localizer["Latitude"] Variant="Variant.Filled">
+                                        <RadzenNumeric TValue="decimal" @bind-Value="address.Latitude" />
+                                        <ValidationMessage For="@(() => address.Latitude)" />
+                                    </RadzenFormField>
+                                </RadzenStack>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeSM="6">
+                                <RadzenStack>
+                                    <RadzenFormField Text=@_localizer["Longitude"] Variant="Variant.Filled">
+                                        <RadzenNumeric TValue="decimal" @bind-Value="address.Longitude" />
+                                        <ValidationMessage For="@(() => address.Longitude)" />
+                                    </RadzenFormField>
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
 
 
-                        <div class="row">
-                            <div class="form-floating py-3 col-md-6">
-                                <InputText @bind-Value="address.Street" class="form-control" id="Street" />
-                                <label for="Street">Street</label>
-                                <ValidationMessage For="@(() => address.Street)" />
-                            </div>
+                    <RadzenRow Gap="1rem" >
+                        <RadzenColumn Size="12" SizeSM="12">
+                            <RadzenStack>
+                                <RadzenFormField Text=@_localizer["FullAddress"] Variant="Variant.Filled" >
+                                        <RadzenTextBox @bind-Value="address.FullAddress" Disabled="true" />
+                                    <ValidationMessage For="@(() => address.FullAddress)" />
+                                </RadzenFormField>
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
+                        <RadzenRow Gap="1rem">
+                            <RadzenColumn Size="12" SizeSM="5">
+                                <RadzenStack>
 
-                            <div class="form-floating py-3 col-md-6">
-                                <InputText @bind-Value="address.ZipCode" class="form-control" id="ZipCode" />
-                                <label for="ZipCode">Zip Code</label>
-                                <ValidationMessage For="@(() => address.ZipCode)" />
-                            </div>
-                            <div class="form-floating py-3 col-md-6">
-                                <InputNumber  @bind-Value="address.Latitude" class="form-control" id="Latitude" />
-                                <label for="Latitude">Latitude</label>
-                                <ValidationMessage For="@(() => address.Latitude)" />
-                            </div>
+                                    <div>
+                                        <RadzenCheckBox @bind-Value=@address.IsDeliveryAddress Name="CheckBox1" id="IsDeliveryAddress" />
+                                        <RadzenLabel Text=@_localizer["IsDeliveryAddress"] Component="CheckBox1" class="rz-ms-2" />
+                                    </div>
+                                    <div>
+                                        <RadzenCheckBox @bind-Value=@address.IsBillingAddress Name="CheckBox1" id="IsBillingAddress" @oninput="(e) => SetOnlyOneBillingAddress(e,address)" />
+                                        <RadzenLabel Text=@_localizer["IsBillingAddress"] Component="CheckBox1" class="rz-ms-2" />
+                                    </div>
 
-                            <div class="form-floating py-3 col-md-6">
-                                <InputNumber  @bind-Value="address.Longitude" class="form-control" id="Longitude" />
-                                <label for="Longitude">Longitude</label>
-                                <ValidationMessage For="@(() => address.Longitude)" />
-                            </div>
-                        </div>
+                                    <div>
+                                        <RadzenCheckBox @bind-Value=@address.IsDefault Name="CheckBox1" id="IsDefaultAddress" @oninput="(e) => SetOnlyOneDefaultAddress(e,address)" disabled="@(address.IsDefault)" />
+                                        <RadzenLabel Text=@_localizer["IsDefaultAddress"] Component="CheckBox1" class="rz-ms-2" />
+                                    </div>
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                   
+                    <div class="d-flex flex-wrap gap-2 justify-content-end  pt-3">
 
-                        <div class="row">
-                            <!-- Address Flags -->
-                            <div class="form-check py-3 col-md-4" >
-                                <InputCheckbox @bind-Value="address.IsDeliveryAddress" id="IsDeliveryAddress" />
-                                <label class="form-check-label" for="IsDeliveryAddress">Is Delivery Address</label>
-                            </div>
+                        <RadzenButton Text=@_localizer["Save"]
+                                      Icon="check"
+                                      Style="min-width: 150px;"
+                                      ButtonType="ButtonType.Submit"
+                                      ButtonStyle="ButtonStyle.Primary" />
 
-                            <div class="form-check py-3 col-md-4">
-                                <InputCheckbox @bind-Value="address.IsBillingAddress" id="IsBillingAddress" @oninput="(e) => SetOnlyOneBillingAddress(e,address)" />
-                                <label class="form-check-label" for="IsBillingAddress">Is Billing Address</label>
-                            </div>
-
-                            <div class="form-check py-3 col-md-4">
-                                <InputCheckbox @bind-Value="address.IsDefault" id="IsDefault" @oninput="(e) => SetOnlyOneDefaultAddress(e,address)" disabled="@(address.IsDefault)" />
-                                <label class="form-check-label" for="IsDefault">Set as Default Address</label>
-                            </div>
-                        </div>
-
+                        <RadzenButton Text=@_localizer["Delete"]
+                                      Icon="close"
+                                      Style="min-width: 150px;"
+                                      Click="@(() => RemoveAddress(address))"
+                                      ButtonStyle="ButtonStyle.Danger" />
                     </div>
-                    <!-- Submit and Back Buttons -->
-                    <div class="row mt-3">
-                        <div class="col-6 col-md-1  ms-auto">
-                            <button type="submit" class="btn btn-primary form-control">
-                                <i class="bi bi-save"></i> Save
-                            </button>
-                        </div>
-                        <div class="col-6 col-md-1 ">
-                            <a class="btn btn-danger form-control" @onclick="() => RemoveAddress(address)">
-                                <i class="bi bi-trash"></i> Delete
-                            </a>
-                        </div>
-                    </div>
-                </EditForm>
+                </RadzenTemplateForm>
             }
             else
             {
-                <div>
-                    <strong>@address.Street</strong><br />
-                    @(address.CityId is not null ? Cities?.Where(x => x.Code == address.CityId).Select(y => y.Name)?.FirstOrDefault() : ""),
-                    @(address.StateId is not null ? States?.Where(x => x.Code == address.StateId).Select(y => y.Name)?.FirstOrDefault() : ""),
-                    @(address.CountryId is not null ? Countries?.Where(x => x.Code == address.CountryId).Select(y => y.Name)?.FirstOrDefault() : ""),
-                    @address.ZipCode
-                </div>
+                <RadzenStack Gap="0.25rem">
+                    <RadzenText Style="font-weight: bold;">@address.Street</RadzenText>
+                    <RadzenText>
+                        @(address.StateId is not null ? States?.FirstOrDefault(x => x.Code == address.StateId)?.Name : "")@(", ")
+                        @(address.CountryId is not null ? Countries?.FirstOrDefault(x => x.Code == address.CountryId)?.Name : "")@(", ")
+                        @address.ZipCode
+                    </RadzenText>
+                </RadzenStack>
+
             }
 
         </div>
     }
-</div>
 
+</RadzenCard>
 
 @code {
 
@@ -163,7 +179,6 @@
 
     private List<CountryDto> Countries = new();
     private List<StateDto> States = new();
-    private List<CityDto> Cities = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -171,7 +186,6 @@
         {
             Countries = await countryService.GetAllCountriesAsync();
             States = await stateService.GetAllStatesAsync();
-            Cities = await cityService.GetAllCitiesAsync();
             StateHasChanged();
         }
     }
@@ -262,9 +276,6 @@
         
         if(!string.IsNullOrWhiteSpace(addressDto.Street))
             addressParts.Add(addressDto.Street);
-
-        if (!string.IsNullOrEmpty(addressDto.CityId))
-            addressParts.Add(Cities.Where(x => x.Code == addressDto.CityId).Select(y => y.Name).First());
 
         if (!string.IsNullOrEmpty(addressDto.StateId))
             addressParts.Add(States.Where(x => x.Code == addressDto.StateId).Select(y => y.Name).First());

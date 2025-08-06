@@ -16,7 +16,15 @@
         if (!string.IsNullOrWhiteSpace(ProspectId))
         {
             var query = new GetProspectAddressesQuery(Guid.Parse(ProspectId));
-            addresses = await Mediator.Send(query);
+            var result = await Mediator.Send(query);
+            if (result.IsSuccess)
+                addresses = result.AddressDtos;
+            else
+            {
+                addresses = new List<AddressDto>();
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+            }
+            
         }
     }
 
@@ -57,14 +65,14 @@
         try
         {
             var query = new DeleteProspectAddressCommand(AddressId);
-            bool IsDeleted = await Mediator.Send(query);
-            if (IsDeleted)
+            var result = await Mediator.Send(query);
+            if (result.IsSuccess)
             {
                 await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
             }
             else
             {
-                await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
             }
 
             await LoadAddresses();

@@ -28,7 +28,7 @@ namespace SK.CRM.Application.Features.Quotes.Queries
                 var result = await _unitOfWork.QuoteRepository.GetByStatusesAsync(request.statuses, request.pageIndex, request.pageSize, request.userId);
                 if (!result.Quotes.Any())
                 {
-                    return (false, new List<QuoteDto>(),0, "No quotes found");
+                    return (false, new List<QuoteDto>(),0, "0 quotes found");
                 }
                 return (true, _mapper.Map<List<QuoteDto>>(result.Quotes), result.TotalCount, string.Empty);
             }

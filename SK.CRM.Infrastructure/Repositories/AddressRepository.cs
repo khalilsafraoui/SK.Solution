@@ -63,7 +63,6 @@ namespace SK.CRM.Infrastructure.Repositories
             if (address != null)
             {
                 address.Street = updatedAddress.Street;
-                address.CityId = updatedAddress.CityId;
                 address.StateId = updatedAddress.StateId;
                 address.ZipCode = updatedAddress.ZipCode;
                 address.CountryId = updatedAddress.CountryId;

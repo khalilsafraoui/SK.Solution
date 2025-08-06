@@ -5,8 +5,6 @@
         
         public string Street { get; set; }
 
-        public string CityId { get; set; }
-
         public string StateId { get; set; }
 
         public string ZipCode { get; set; }

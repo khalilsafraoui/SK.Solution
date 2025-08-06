@@ -1,0 +1,123 @@
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject NavigationManager _NavigationManager
+@inject ILogger<_Prospect_GeneralInformations> Logger
+@inject IStringLocalizer<CrmTextRessources> _localizer
+
+<RadzenCard Class="p-4 shadow radzen-card-responsive">
+    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["GeneralInformations"]</h4>
+    <RadzenTemplateForm Data="@prospect" TItem="ProspectGeneralInformationsDto" Submit="@UpsertProspect">
+        <DataAnnotationsValidator />
+        <RadzenStack>
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+                        <RadzenFormField Text=@_localizer["FirstName"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@prospect.FirstName" />
+                            <ValidationMessage For="@(() => prospect.FirstName)" />
+                        </RadzenFormField>
+
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+                        <RadzenFormField Text=@_localizer["LastName"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@prospect.LastName" />
+                            <ValidationMessage For="@(() => prospect.LastName)" />
+                        </RadzenFormField>
+
+
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+
+                        <RadzenFormField Text=@_localizer["PhoneNumber"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@prospect.PhoneNumber" />
+                            <ValidationMessage For="@(() => prospect.PhoneNumber)" />
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+
+
+                        <RadzenFormField Text=@_localizer["Email"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@prospect.Email" />
+                            <ValidationMessage For="@(() => prospect.Email)" />
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+        <div class="d-flex flex-wrap gap-2 justify-content-end  pt-3">
+
+            <RadzenButton Text=@_localizer["Save"]
+            Icon="check"
+            Style="min-width: 150px;"
+            ButtonType="ButtonType.Submit"
+            ButtonStyle="ButtonStyle.Primary" />
+        </div>
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public ProspectGeneralInformationsDto prospect { get; set; } = new ProspectGeneralInformationsDto();
+    private async Task UpsertProspect()
+    {
+        try
+        {
+
+            if (prospect.Id != Guid.Empty)
+            {
+                var query = new UpdateProspectGeneralInformationsCommand(prospect);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    prospect = result.ProspectGeneralInformationsDto;
+                    await _IJSRuntime.ToastrSuccess("Prospect Updated Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+            }
+            else
+            {
+                var query = new CreateProspectGeneralInformationsCommand(prospect);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    prospect = result.ProspectGeneralInformationsDto;
+                    await _IJSRuntime.ToastrSuccess("Prospect Created Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+                
+                
+                _NavigationManager.NavigateTo(Routes.GetProspectEditUrl(prospect.Id));
+            }
+        }
+        catch (ValidationException ex)
+        {
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while upserting prospect");
+            await _IJSRuntime.ToastrError("An error occurred while saving the prospect. Please try again.");
+        }
+        finally
+        {
+            
+        }
+    }
+}

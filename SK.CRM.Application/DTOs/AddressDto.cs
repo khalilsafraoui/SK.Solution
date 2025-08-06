@@ -10,16 +10,16 @@ namespace SK.CRM.Application.DTOs
         [Required(ErrorMessage ="Street is Empty")]
         public string Street { get; set; }
 
-        [Required(ErrorMessage = "City is Empty")]
-        public string CityId { get; set; }
         [Required(ErrorMessage = "State is Empty")]
         public string StateId { get; set; }
+        
         [Required(ErrorMessage = "Zip code is Empty")]
         public string ZipCode { get; set; }
 
         public string Name { get; set; }
 
         public string FullAddress { get; set; }
+        
         [Required(ErrorMessage = "Country is Empty")]
         public string CountryId { get; set; }
 
