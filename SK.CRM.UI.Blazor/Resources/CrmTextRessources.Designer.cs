@@ -142,6 +142,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Back To Customers.
+        /// </summary>
+        internal static string BackToCustomers {
+            get {
+                return ResourceManager.GetString("BackToCustomers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Back To Orders.
         /// </summary>
         internal static string BackToOrders {
@@ -259,6 +268,42 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Customer.
+        /// </summary>
+        internal static string Customer_Add_Title {
+            get {
+                return ResourceManager.GetString("Customer_Add_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Customer.
+        /// </summary>
+        internal static string Customer_Edit_Title {
+            get {
+                return ResourceManager.GetString("Customer_Edit_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Customer.
+        /// </summary>
+        internal static string CustomerAdd_PageTitle {
+            get {
+                return ResourceManager.GetString("CustomerAdd_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Customer.
+        /// </summary>
+        internal static string CustomerEdit_PageTitle {
+            get {
+                return ResourceManager.GetString("CustomerEdit_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à No customer to display..
         /// </summary>
         internal static string CustomerListIsEmpty {
@@ -277,11 +322,29 @@ namespace SK.CRM.UI.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à No Customers To Display.
+        /// </summary>
+        internal static string Customers_NoCustomersToDisplay {
+            get {
+                return ResourceManager.GetString("Customers_NoCustomersToDisplay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Customers.
         /// </summary>
         internal static string Customers_PageTitle {
             get {
                 return ResourceManager.GetString("Customers_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Customers.
+        /// </summary>
+        internal static string Customers_Title {
+            get {
+                return ResourceManager.GetString("Customers_Title", resourceCulture);
             }
         }
         
@@ -309,6 +372,15 @@ namespace SK.CRM.UI.Blazor.Resources {
         internal static string Details {
             get {
                 return ResourceManager.GetString("Details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Disable.
+        /// </summary>
+        internal static string Disable {
+            get {
+                return ResourceManager.GetString("Disable", resourceCulture);
             }
         }
         

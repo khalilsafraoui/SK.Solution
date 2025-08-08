@@ -438,4 +438,28 @@
   <data name="Prospect" xml:space="preserve">
     <value>Prospect</value>
   </data>
+  <data name="Customers_Title" xml:space="preserve">
+    <value>Clients</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Désactiver</value>
+  </data>
+  <data name="Customers_NoCustomersToDisplay" xml:space="preserve">
+    <value>Aucun client à afficher</value>
+  </data>
+  <data name="Customer_Add_Title" xml:space="preserve">
+    <value>Ajouter un client</value>
+  </data>
+  <data name="BackToCustomers" xml:space="preserve">
+    <value>Retour aux clients</value>
+  </data>
+  <data name="CustomerEdit_PageTitle" xml:space="preserve">
+    <value>Modifier le client</value>
+  </data>
+  <data name="CustomerAdd_PageTitle" xml:space="preserve">
+    <value>Ajouter un client</value>
+  </data>
+  <data name="Customer_Edit_Title" xml:space="preserve">
+    <value>Modifier le client</value>
+  </data>
 </root>

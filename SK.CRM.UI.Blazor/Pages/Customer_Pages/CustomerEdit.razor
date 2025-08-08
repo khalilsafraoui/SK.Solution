@@ -1,0 +1,132 @@
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@attribute [Route(Routes.Crm_Customer_Edit)]
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+@inject IStringLocalizer<CrmTextRessources> _localizer
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject NavigationManager _NavigationManager
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<CustomerEdit> Logger
+<PageTitle>@_localizer["CustomerEdit_PageTitle"]</PageTitle>
+
+
+<div class="container py-4">
+    <div class="row justify-content-center mb-4">
+
+        <div class="col-12 pt-1">
+            <RadzenCard class="p-4 shadow radzen-card-responsive">
+                <div class="row align-items-center justify-content-between">
+
+                    <!-- Left: Title -->
+                    <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                        <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                            @_localizer["Customer_Edit_Title"]
+                        </h2>
+                    </div>
+
+                </div>
+            </RadzenCard>
+        </div>
+
+        <div class="col-12 col-md-12 pt-1">
+            <_Customer_GeneralInformations customer="customer"></_Customer_GeneralInformations>
+        </div>
+
+        <div class="col-12 col-md-12 pt-1">
+            <_CustomerAddresses CustomerId="@Id" addresses="addresses"></_CustomerAddresses>
+        </div>
+
+        <div class="col-12 col-md-12 pt-1">
+            <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                <div class="d-flex flex-wrap justify-content-between align-items-center">
+
+                    <!-- Left-aligned Back button -->
+                    <RadzenButton Text=@_localizer["BackToCustomers"]
+                                  Icon="arrow_back"
+                                  Style="min-width: 160px;"
+                                  ButtonStyle="ButtonStyle.Light"
+                                  Click="@OnBackToCustomers" />
+
+                    <!-- Right-aligned action buttons -->
+
+                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+
+
+
+                    </div>
+
+                </div>
+            </RadzenCard>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+    public CustomerGeneralInformationsDto customer { get; set; } = new CustomerGeneralInformationsDto();
+    private List<AddressDto> addresses { get; set; } = new List<AddressDto>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                //IsProcessing = true;
+                await LoadCustomer();
+                await LoadAddresses();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while Loading customer with ID: " + Id);
+                await _IJSRuntime.ToastrError("An unexpected error occurred. Please try again later. If the problem persists, contact support.");
+            }
+
+
+        }
+
+    }
+
+    private async Task LoadAddresses()
+    {
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var query = new GetCustomerAddressesQuery(Guid.Parse(Id));
+            var result = await Mediator.Send(query);
+            if (result.IsSuccess)
+                addresses = result.Addresses;
+            else
+                addresses = new List<AddressDto>();
+
+        }
+    }
+
+    private async Task LoadCustomer()
+    {
+        if (!string.IsNullOrWhiteSpace(Id))
+        {
+            var query = new GetCustomerGeneralInformationsByIdQuery(Guid.Parse(Id));
+            var result = await Mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                customer = result.CustomerGeneralInformationsDto;
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+                OnBackToCustomers();
+            }
+        }
+    }
+
+    void OnBackToCustomers()
+    {
+        _NavigationManager.NavigateTo(Routes.Crm_Customers);
+    }
+
+}

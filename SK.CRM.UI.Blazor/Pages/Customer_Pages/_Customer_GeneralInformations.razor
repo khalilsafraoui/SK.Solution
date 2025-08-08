@@ -1,0 +1,123 @@
+﻿@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject NavigationManager _NavigationManager
+@inject ILogger<_Customer_GeneralInformations> Logger
+@inject IStringLocalizer<CrmTextRessources> _localizer
+
+<RadzenCard Class="p-4 shadow radzen-card-responsive">
+    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["GeneralInformations"]</h4>
+    <RadzenTemplateForm Data="@customer" TItem="CustomerGeneralInformationsDto" Submit="@UpsertCustomer">
+        <DataAnnotationsValidator />
+        <RadzenStack>
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+                        <RadzenFormField Text=@_localizer["FirstName"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@customer.FirstName" />
+                            <ValidationMessage For="@(() => customer.FirstName)" />
+                        </RadzenFormField>
+
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+                        <RadzenFormField Text=@_localizer["LastName"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@customer.LastName" />
+                            <ValidationMessage For="@(() => customer.LastName)" />
+                        </RadzenFormField>
+
+
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+
+                        <RadzenFormField Text=@_localizer["PhoneNumber"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@customer.PhoneNumber" />
+                            <ValidationMessage For="@(() => customer.PhoneNumber)" />
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+
+
+                        <RadzenFormField Text=@_localizer["Email"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@customer.Email" />
+                            <ValidationMessage For="@(() => customer.Email)" />
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+        <div class="d-flex flex-wrap gap-2 justify-content-end  pt-3">
+
+            <RadzenButton Text=@_localizer["Save"]
+            Icon="check"
+            Style="min-width: 150px;"
+            ButtonType="ButtonType.Submit"
+            ButtonStyle="ButtonStyle.Primary" />
+        </div>
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public CustomerGeneralInformationsDto customer { get; set; } = new CustomerGeneralInformationsDto();
+    private async Task UpsertCustomer()
+    {
+        try
+        {
+
+            if (customer.Id != Guid.Empty)
+            {
+                var query = new UpdateCustomerGeneralInformationsCommand(customer);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    customer = result.CustomerGeneralInformationsDto;
+                    await _IJSRuntime.ToastrSuccess("Customer Updated Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+            }
+            else
+            {
+                var query = new CreateCustomerGeneralInformationsCommand(customer);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    customer = result.CustomerGeneralInformationsDto;
+                    await _IJSRuntime.ToastrSuccess("Customer Created Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+                
+                
+                _NavigationManager.NavigateTo(Routes.GetCustomerEditUrl(customer.Id));
+            }
+        }
+        catch (ValidationException ex)
+        {
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while upserting customer");
+            await _IJSRuntime.ToastrError("An error occurred while saving the customer. Please try again.");
+        }
+        finally
+        {
+            
+        }
+    }
+}

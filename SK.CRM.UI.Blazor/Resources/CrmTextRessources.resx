@@ -438,4 +438,28 @@
   <data name="Prospect" xml:space="preserve">
     <value>Prospect</value>
   </data>
+  <data name="Customers_Title" xml:space="preserve">
+    <value>Customers</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="Customers_NoCustomersToDisplay" xml:space="preserve">
+    <value>No Customers To Display</value>
+  </data>
+  <data name="Customer_Add_Title" xml:space="preserve">
+    <value>Add Customer</value>
+  </data>
+  <data name="BackToCustomers" xml:space="preserve">
+    <value>Back To Customers</value>
+  </data>
+  <data name="CustomerEdit_PageTitle" xml:space="preserve">
+    <value>Edit Customer</value>
+  </data>
+  <data name="CustomerAdd_PageTitle" xml:space="preserve">
+    <value>Add Customer</value>
+  </data>
+  <data name="Customer_Edit_Title" xml:space="preserve">
+    <value>Edit Customer</value>
+  </data>
 </root>

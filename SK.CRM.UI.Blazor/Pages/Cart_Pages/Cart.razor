@@ -62,11 +62,22 @@ else
     private async Task GetCustomer()
     {
         var query = new GetCustomerByUserIdQuery(UserId);
-        customerGeneralInformationsDto = await Mediator.Send(query);
-        if (customerGeneralInformationsDto is null)
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            customerGeneralInformationsDto = result.CustomerGeneralInformationsDto;
+        }else
         {
             await CreateCustomer();
-            customerGeneralInformationsDto = await Mediator.Send(query);
+            var Secondresult = await Mediator.Send(query);
+            if (Secondresult.IsSuccess)
+            {
+                customerGeneralInformationsDto = Secondresult.CustomerGeneralInformationsDto;
+            }
+            else
+            {
+                await _JSRuntime.ToastrError(Secondresult.ErrorMessage);
+            }
         }
     }
 

@@ -68,14 +68,14 @@
         try
         {
             var query = new DeleteCustomerAddressCommand(AddressId);
-            bool IsDeleted = await Mediator.Send(query);
-            if (IsDeleted)
+            var result = await Mediator.Send(query);
+            if (result.IsSuccess)
             {
                 await _IJSRuntime.ToastrSuccess("Address Deleted Successfully");
             }
             else
             {
-                await _IJSRuntime.ToastrError("Default Address can't be deleted !!! ");
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
             }
 
             await LoadAddresses();

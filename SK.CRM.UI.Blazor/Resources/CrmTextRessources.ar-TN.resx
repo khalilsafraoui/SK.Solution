@@ -438,4 +438,28 @@
   <data name="Prospect" xml:space="preserve">
     <value>عميل محتمل</value>
   </data>
+  <data name="Customers_Title" xml:space="preserve">
+    <value>العملاء</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>تعطيل</value>
+  </data>
+  <data name="Customers_NoCustomersToDisplay" xml:space="preserve">
+    <value>لا يوجد عملاء للعرض</value>
+  </data>
+  <data name="Customer_Add_Title" xml:space="preserve">
+    <value>إضافة عميل</value>
+  </data>
+  <data name="BackToCustomers" xml:space="preserve">
+    <value>العودة إلى العملاء</value>
+  </data>
+  <data name="CustomerEdit_PageTitle" xml:space="preserve">
+    <value>تعديل العميل</value>
+  </data>
+  <data name="CustomerAdd_PageTitle" xml:space="preserve">
+    <value>إضافة عميل</value>
+  </data>
+  <data name="Customer_Edit_Title" xml:space="preserve">
+    <value>تعديل العميل</value>
+  </data>
 </root>

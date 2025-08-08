@@ -1,0 +1,204 @@
+﻿@attribute [Route(Routes.Crm_Customers)]
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Microsoft.Extensions.Localization
+@using SK.CRM.UI.Blazor.Resources
+@inject ILogger<Customers> Logger
+@inject NavigationManager _NavigationManager
+@inject IStringLocalizer<CrmTextRessources> _localizer
+@attribute [Authorize(Roles = RoleType.Crm_Manager + "," + RoleType.Crm_Viewer)]
+<PageTitle>@_localizer["Customers_PageTitle"]</PageTitle>
+
+<BsModal OnModalConfirmation="ConfirmDelete_Click"
+         ButtonBootsrapStyle="btn-danger"
+         ButtonText="Disable"
+         Title="Are you sure you want to Disable this Customer?">
+</BsModal>
+
+@if (IsProcessing)
+{
+    <div class="position-absolute w-100 vh-100 d-flex flex-column align-items-center bg-white justify-content-center">
+        <img src="/images/loading.gif" alt="loading">
+    </div>
+}
+else
+{
+    <div class="container py-4">
+        <div class="row justify-content-center mb-4">
+            <div class="col-12 pt-1">
+                <RadzenCard class="p-4 shadow radzen-card-responsive">
+                    <div class="row align-items-center justify-content-between">
+
+                        <!-- Left: Title -->
+                        <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                            <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                                @_localizer["Customers_Title"]
+                            </h2>
+                        </div>
+
+                        <!-- Right: Create New Quote -->
+                        <div class="col-12 col-md-auto d-flex justify-content-center justify-content-md-end">
+                            <RadzenButton Text=@_localizer["Create"]
+                                          Icon="add_circle"
+                                          Style="min-width: 160px; background-color: purple; border-color: purple; color: white;"
+                                          ButtonStyle="ButtonStyle.Primary"
+                                          Click="@OnCreateNewCustomer" />
+                        </div>
+
+                    </div>
+                </RadzenCard>
+            </div>
+
+            <div class="col-12 col-md-12 pt-1">
+                <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                    <RadzenDataGrid @ref="customersGrid"
+                                    Data="@customersDto"
+                                    LoadData="@LoadCustomers"
+                                    TItem="CustomerDto"
+                                    AllowFiltering="true"
+                                    AllowPaging="true"
+                                    PageSizeOptions="new int[] {5, 10, 20, 50}"
+                                    PageSize="10"
+                                    Count="@totalObjectCount"
+                                    AllowSorting="true"
+                                    Responsive="true">
+
+                        <Columns>
+                            @*  <RadzenDataGridColumn Title="Id">
+                                            <Template Context="quoteItem">@quoteItem.Id</Template>
+                                        </RadzenDataGridColumn> *@
+
+                            <RadzenDataGridColumn Title=@_localizer["Customer"]>
+                                <Template Context="customer">
+                                    <div>
+                                        <strong>@(customer.FirstName + " " + customer.LastName)</strong><br />
+                                        <strong>@_localizer["PhoneNumber"] : </strong><small class="text-muted">@customer.PhoneNumber</small><br />
+                                        <strong>@_localizer["Email"] : </strong><small class="text-muted">@customer.Email</small>
+                                    </div>
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn Title=@_localizer["Active"] Width="100px">
+                                <Template Context="customer">
+                                    <div style="display: flex; justify-content: center; align-items: center;">
+                                    @if (!customer.IsDisabled)
+                                    {
+                                        <span style="display:inline-block; width:12px; height:12px; background-color:green; border-radius:50%;"></span>
+                                    }
+                                    else
+                                    {
+                                        <span style="display:inline-block; width:12px; height:12px; background-color:red; border-radius:50%;"></span>
+                                    }
+                                    </div>
+                                </Template>
+                            </RadzenDataGridColumn>
+
+                            <RadzenDataGridColumn Title=@_localizer["Action"] Sortable="false" Filterable="false" Width="200px" TextAlign="TextAlign.Center">
+                                <Template Context="customerDto">
+                                    <RadzenButton Shade="Shade.Lighter"
+                                                  Text=@_localizer["Edit"]
+                                                  ButtonStyle="ButtonStyle.Primary"
+                                                  Click="@(()=>_NavigationManager.NavigateTo(Routes.GetCustomerEditUrl(customerDto.Id)))" />
+                                    <RadzenButton Shade="Shade.Lighter"
+                                                  Text=@_localizer["Disable"]
+                                                  ButtonStyle="ButtonStyle.Danger"
+                                                  Click="()=>HandleDelete(customerDto.Id)" />
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+
+                        <!-- Empty state -->
+                        <EmptyTemplate>
+                            <div class="text-center text-muted p-4">
+                                @_localizer["Customers_NoCustomersToDisplay"]
+                            </div>
+                        </EmptyTemplate>
+
+                    </RadzenDataGrid>
+                </RadzenCard>
+
+            </div>
+
+        </div>
+    </div>
+}
+
+
+@code {
+    public bool IsProcessing { get; set; } = false;
+
+    private IEnumerable<CustomerDto> customersDto { get; set; } = new List<CustomerDto>();
+    RadzenDataGrid<CustomerDto> customersGrid;
+    int totalObjectCount = 0;
+    private Guid DisableCustomerID { get; set; } = Guid.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await customersGrid.Reload();
+
+            StateHasChanged();
+        }
+    }
+
+
+    private LoadDataArgs _lastLoadArgs;
+    private async Task LoadCustomers(LoadDataArgs arg)
+    {
+        _lastLoadArgs = arg; // store for reuse
+        int pageSize = arg.Top ?? 10; // default to 10 if null
+        int skip = arg.Skip ?? 0;
+        int pageIndex = skip / pageSize;
+        var query = new GetAllCustomersQuery(pageIndex, pageSize);
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            customersDto = result.Customers;
+            totalObjectCount = result.TotalCount;
+        }
+        else
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+        }
+    }
+    private async Task HandleDelete(Guid id)
+    {
+        DisableCustomerID = id;
+        await _IJSRuntime.InvokeVoidAsync("ShowConfirmationModal");
+    }
+
+    private async Task ConfirmDelete_Click(bool isConfirmed)
+    {
+        IsProcessing = true;
+        await _IJSRuntime.InvokeVoidAsync("HideConfirmationModal");
+        if (isConfirmed && DisableCustomerID != Guid.Empty)
+        {
+            var query = new DisableCustomerCommand(DisableCustomerID);
+            var result = await Mediator.Send(query);
+            if (result.IsSuccess)
+            {
+                await _IJSRuntime.ToastrSuccess("Customer Disabled Successfully");
+            }
+            else
+            {
+                await _IJSRuntime.ToastrError(result.ErrorMessage);
+            }
+            await LoadCustomers(_lastLoadArgs);
+            StateHasChanged();
+
+        }
+        DisableCustomerID = Guid.Empty;
+        IsProcessing = false;
+
+    }
+
+
+    async Task OnCreateNewCustomer()
+    {
+        _NavigationManager.NavigateTo(Routes.Crm_Customer_Create);
+    }
+}
