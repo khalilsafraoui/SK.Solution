@@ -24,5 +24,23 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Repositories
             }
             return category;
         }
+
+        public async Task<(List<Category> categories, int TotalCount)> GetAllAsync(int pageIndex = 0, int pageSize = 0)
+        {
+            var query = _context.Categories.AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+            if (pageSize != 0)
+            {
+                var pagedCategories = await query
+               .OrderBy(q => q.Id) // Always order before skip/take
+               .Skip(pageIndex * pageSize)
+               .Take(pageSize)
+               .ToListAsync();
+                return (pagedCategories, totalCount);
+            }
+
+            return (await query.OrderBy(q => q.Id).ToListAsync(), totalCount);
+        }
     }
 }

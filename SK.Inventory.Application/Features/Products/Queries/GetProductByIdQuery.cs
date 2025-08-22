@@ -23,8 +23,6 @@ namespace SK.Inventory.Application.Features.Products.Queries
 
         public async Task<(bool IsSuccess, ProductDto? ProductDto, string ErrorMessage)> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-
-            // return product is null ? null : _mapper.Map<ProductDto>(product);
             try
             {
                 var product = await _unitOfWork.Products.GetByIdAsync(request.Id);

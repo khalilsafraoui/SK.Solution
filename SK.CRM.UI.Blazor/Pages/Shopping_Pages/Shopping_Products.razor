@@ -158,7 +158,12 @@ else
     {
         var query = new GetAllCategoriesQuery();
         var result = await Mediator.Send(query);
-        categories = _mapper.Map<List<CategoryDto>>(result);
+        if (!result.IsSuccess)
+        {
+            await _JSRuntime.ToastrError(result.ErrorMessage);
+            return;
+        }
+        categories = _mapper.Map<List<CategoryDto>>(result.CategoriesDto);
     }
 
     private void FilterProducts(int categoryId)

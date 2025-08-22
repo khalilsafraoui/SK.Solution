@@ -1,0 +1,132 @@
+﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Logging
+@using SK.Inventory.UI.Blazor.Resources
+@using System.ComponentModel.DataAnnotations
+@attribute [Route(Routes.Inventory_Category_Create)]
+@attribute [Authorize(Roles = RoleType.Inventory_Manager + "," + RoleType.Inventory_Viewer)]
+@inject IStringLocalizer<InventoryTextRessources> _localizer
+@inject NavigationManager _NavigationManager
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject ILogger<CategoryAdd> Logger
+@rendermode InteractiveServer
+<PageTitle>@_localizer["CategoryAdd_PageTitle"]</PageTitle>
+
+
+<div class="container py-4">
+    <div class="row justify-content-center mb-4">
+
+        <div class="col-12 pt-1">
+            <RadzenCard class="p-4 shadow radzen-card-responsive">
+                <div class="row align-items-center justify-content-between">
+
+                    <!-- Left: Title -->
+                    <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                        <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                            @_localizer["Category_Add_Title"]
+                        </h2>
+                    </div>
+
+                </div>
+            </RadzenCard>
+        </div>
+
+        <div class="col-12 col-md-12 pt-1">
+            <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["GeneralInformations"]</h4>
+                <RadzenTemplateForm Data="@category" TItem="CategoryDto" Submit="@AddCategory">
+                    <DataAnnotationsValidator />
+                    <RadzenStack>
+                        <RadzenRow Gap="1rem">
+                            <RadzenColumn Size="12" SizeSM="12">
+                                <RadzenStack>
+                                    <RadzenFormField Text=@_localizer["Name"] Variant="Variant.Filled">
+                                        <RadzenTextBox @bind-Value="@category.Name" />
+                                        <ValidationMessage For="@(() => category.Name)" />
+                                    </RadzenFormField>
+
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                    <div class="d-flex flex-wrap gap-2 justify-content-end  pt-3">
+
+                        <RadzenButton Text=@_localizer["Save"]
+                                      Icon="check"
+                                      Style="min-width: 150px;"
+                                      ButtonType="ButtonType.Submit"
+                                      ButtonStyle="ButtonStyle.Primary" />
+                    </div>
+                </RadzenTemplateForm>
+            </RadzenCard>
+        </div>
+
+        <div class="col-12 col-md-12 pt-1">
+            <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                <div class="d-flex flex-wrap justify-content-between align-items-center">
+
+                    <!-- Left-aligned Back button -->
+                    <RadzenButton Text=@_localizer["BackToCategories"]
+                                  Icon="arrow_back"
+                                  Style="min-width: 160px;"
+                                  ButtonStyle="ButtonStyle.Light"
+                                  Click="@OnBackToCategories" />
+
+                    <!-- Right-aligned action buttons -->
+
+                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+                    </div>
+
+                </div>
+            </RadzenCard>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+    public CategoryDto category { get; set; } = new CategoryDto();
+    void OnBackToCategories()
+    {
+        _NavigationManager.NavigateTo(Routes.Inventory_Categories);
+    }
+
+    private async Task AddCategory()
+    {
+        try
+        {
+
+            
+            var query = new CreateCategoryCommand(category);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    category = result.CategoryDto;
+                    await _IJSRuntime.ToastrSuccess("Category Created Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+
+
+                _NavigationManager.NavigateTo(Routes.GetCategoryEditUrl(category.Id));
+            
+        }
+        catch (ValidationException ex)
+        {
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while Adding new category");
+            await _IJSRuntime.ToastrError("An error occurred while saving the category. Please try again.");
+        }
+        finally
+        {
+
+        }
+    }
+}

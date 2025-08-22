@@ -2,7 +2,6 @@
 using SK.Inventory.Application.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using SK.Inventory.Application.Features.Products.Services;
 
 namespace SK.Inventory.Application.Features.Products.Commands
 {

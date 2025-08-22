@@ -226,7 +226,15 @@
     private async Task LoadCategories()
     {
         var getCategoriesQuery = new GetAllCategoriesQuery();
-        _categories = await Mediator.Send(getCategoriesQuery);
+        var result = await Mediator.Send(getCategoriesQuery);
+        if (result.IsSuccess)
+        {
+            _categories = result.CategoriesDto;
+        }
+        else
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+        }
     }
 
     private async Task LoadProduct()
