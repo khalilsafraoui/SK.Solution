@@ -28,4 +28,19 @@
     <ProjectReference Include="..\SK.Solution.Shared\SK.Solution.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\InventoryTextRessources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>InventoryTextRessources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\InventoryTextRessources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>InventoryTextRessources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

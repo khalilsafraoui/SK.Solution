@@ -107,7 +107,7 @@ else
                         <p class="text-secondary">Try adjusting your search or adding new products.</p>
                     </div>
                 }
-                      
+
             </div>
 
 
@@ -141,14 +141,24 @@ else
     private async Task LoadProducts()
     {
         var query = new GetAllProductsQuery();
-        products = _mapper.Map<List<ProductDto>>(await Mediator.Send(query)); 
-        FilterProducts(0);
+        var result = await Mediator.Send(query);
+        if (result.IsSuccess)
+        {
+            products = _mapper.Map<List<ProductDto>>(result.ProductsDto);
+            FilterProducts(0);
+        }
+        else
+        {
+            await _JSRuntime.ToastrError(result.ErrorMessage);
+        }
+
     }
 
     private async Task LoadCategories()
     {
         var query = new GetAllCategoriesQuery();
-        categories = _mapper.Map<List<CategoryDto>>(await Mediator.Send(query));
+        var result = await Mediator.Send(query);
+        categories = _mapper.Map<List<CategoryDto>>(result);
     }
 
     private void FilterProducts(int categoryId)

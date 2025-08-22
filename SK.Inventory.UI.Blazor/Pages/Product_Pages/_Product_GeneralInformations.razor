@@ -1,0 +1,261 @@
+﻿@using Microsoft.Extensions.Localization
+@using Microsoft.Extensions.Logging
+@using SK.Inventory.Application.Features.Products.Dtos
+@using SK.Inventory.UI.Blazor.Resources
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime _IJSRuntime
+@inject NavigationManager _NavigationManager
+@inject ILogger<_Product_GeneralInformations> Logger
+@inject IStringLocalizer<InventoryTextRessources> _localizer
+@inject IWebHostEnvironment _IWebHostEnvironment
+@inject IOptions<InventorySettings> options
+	@using Radzen
+<RadzenCard Class="p-4 shadow radzen-card-responsive">
+    <h4 class="fw-bold" style="color: purple; letter-spacing: 1px;">📝 @_localizer["GeneralInformations"]</h4>
+    <RadzenTemplateForm Data="@product_GeneralInformationsDto" TItem="Product_GeneralInformations" Submit="@UpsertProduct">
+        <DataAnnotationsValidator />
+        <RadzenStack>
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+                        <RadzenFormField Text=@_localizer["Name"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@product_GeneralInformationsDto.Name" />
+                            <ValidationMessage For="@(() => product_GeneralInformationsDto.Name)" />
+                        </RadzenFormField>
+                        <RadzenFormField Text=@_localizer["Description"] Variant="Variant.Filled">
+                            <RadzenTextArea @bind-Value="@product_GeneralInformationsDto.Description" Style="width: 100%" aria-label="TextArea" />
+                            <ValidationMessage For="@(() => product_GeneralInformationsDto.Description)" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text=@_localizer["Category"] Variant="Variant.Filled">
+                            <RadzenDropDown @bind-Value="product_GeneralInformationsDto.CategoryId" Data="_categories" TextProperty="@nameof(CategoryDto.Name)" ValueProperty="@nameof(CategoryDto.Id)" />
+                            <ValidationMessage For="@(() => product_GeneralInformationsDto.CategoryId)" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text=@_localizer["Price"] Variant="Variant.Filled">
+                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.Price" min="0" max="1000000" step="0.01" />
+                            <ValidationMessage For="@(() => product_GeneralInformationsDto.Price)" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text=@_localizer["DiscountRate"] Variant="Variant.Filled">
+                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.DiscountRate" min="0" max="1" step="0.01" />
+                            <p>@(Math.Round(product_GeneralInformationsDto.DiscountRate * 100)) %</p>
+                            <ValidationMessage For="@(() => product_GeneralInformationsDto.DiscountRate)" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text=@_localizer["TaxRate"] Variant="Variant.Filled">
+                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.TaxRate" min="0" max="1" step="0.01" />
+                            <p>@(Math.Round(product_GeneralInformationsDto.TaxRate * 100)) %</p>
+                            <ValidationMessage For="@(() => product_GeneralInformationsDto.TaxRate)" />
+                        </RadzenFormField>
+
+                        <RadzenFormField Text=@_localizer["SpecialTag"] Variant="Variant.Filled">
+                            <RadzenTextBox @bind-Value="@product_GeneralInformationsDto.SpecialTag" />
+                            <ValidationMessage For="@(() => product_GeneralInformationsDto.SpecialTag)" />
+                        </RadzenFormField>
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+                        @if (product_GeneralInformationsDto.ImageUrl is null)
+                        {
+                            <RadzenFormField Variant="Variant.Filled">
+                                <InputFile OnChange="LoadFiles" class="form-control" id="customFile" accesskey="image/x-png,image/jpeg"></InputFile>
+                            </RadzenFormField>
+                        }
+                        @if (product_GeneralInformationsDto.ImageUrl != null)
+                        {
+                            <RadzenFormField Text=@_localizer["Image"] Variant="Variant.Filled">
+                                <RadzenImage Path="@product_GeneralInformationsDto.ImageUrl" Style="width: 15rem; height: 25rem;" />
+                            </RadzenFormField>
+                            <RadzenButton Text=@_localizer["Remove"]
+                                          Icon="check"
+                                          Style="min-width: 150px;"
+                                          ButtonStyle="ButtonStyle.Primary"
+                                          Click="DeleteImage" />
+
+                        }
+
+
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow Gap="1rem">
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+
+                       
+                    </RadzenStack>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeSM="6">
+                    <RadzenStack>
+
+
+                       
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+        <div class="d-flex flex-wrap gap-2 justify-content-end  pt-3">
+
+            <RadzenButton Text=@_localizer["Save"]
+                          Icon="check"
+                          Style="min-width: 150px;"
+                          ButtonType="ButtonType.Submit"
+                          ButtonStyle="ButtonStyle.Primary" />
+        </div>
+    </RadzenTemplateForm>
+</RadzenCard>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    public Product_GeneralInformations product_GeneralInformationsDto { get; set; } = new Product_GeneralInformations();
+    private string? _directoryPath { get; set; }
+    private IEnumerable<CategoryDto> _categories { get; set; } = new List<CategoryDto>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var productPathFromSettings = options.Value.ProductsImagesPath;
+        _directoryPath = Path.Combine(_IWebHostEnvironment.WebRootPath, productPathFromSettings);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Id != 0)
+            {
+                await LoadProduct();
+            }
+
+            await LoadCategories();
+            StateHasChanged();
+        }
+    }
+    private async Task UpsertProduct()
+    {
+        try
+        {
+            if (product_GeneralInformationsDto.DiscountRate > 1)
+            {
+                product_GeneralInformationsDto.DiscountRate = 1;
+            }
+            if (product_GeneralInformationsDto.DiscountRate < 0)
+            {
+                product_GeneralInformationsDto.DiscountRate = 0;
+            }
+            if (product_GeneralInformationsDto.TaxRate > 1)
+            {
+                product_GeneralInformationsDto.TaxRate = 1;
+            }
+            if (product_GeneralInformationsDto.TaxRate < 0)
+            {
+                product_GeneralInformationsDto.TaxRate = 0;
+            }
+            if (product_GeneralInformationsDto.Id != 0)
+            {
+                var query = new UpdateProductCommand(product_GeneralInformationsDto);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    product_GeneralInformationsDto = result.GeneralInformationsDto;
+                    await _IJSRuntime.ToastrSuccess("Product Updated Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+            }
+            else
+            {
+                var query = new CreateProductCommand(product_GeneralInformationsDto);
+                var result = await Mediator.Send(query);
+                if (result.IsSuccess)
+                {
+                    product_GeneralInformationsDto = result.GeneralInformationsDto;
+                    await _IJSRuntime.ToastrSuccess("Product Created Successfully");
+                }
+                else
+                {
+                    await _IJSRuntime.ToastrError(result.ErrorMessage);
+                }
+
+
+                _NavigationManager.NavigateTo(Routes.GetProductEditUrl(product_GeneralInformationsDto.Id));
+            }
+        }
+        catch (ValidationException ex)
+        {
+            await _IJSRuntime.ToastrError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while upserting product");
+            await _IJSRuntime.ToastrError("An error occurred while saving the product. Please try again.");
+        }
+        finally
+        {
+
+        }
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        
+        var file = e.File;
+        System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
+        var newFileName = $"{Guid.NewGuid()}.{fileInfo.Extension}";
+
+        if (!Directory.Exists(_directoryPath))
+        {
+            Directory.CreateDirectory(_directoryPath);
+        }
+        var filePath = Path.Combine(_directoryPath, newFileName);
+        await using FileStream fileStream = new(filePath, FileMode.Create);
+        await file.OpenReadStream(file.Size).CopyToAsync(fileStream);
+        fileStream.Close();
+        var path = options.Value.ProductsImagesPath;
+        product_GeneralInformationsDto.ImageUrl = $"{path}/{newFileName}";
+       
+    }
+
+    private async Task LoadCategories()
+    {
+        var getCategoriesQuery = new GetAllCategoriesQuery();
+        _categories = await Mediator.Send(getCategoriesQuery);
+    }
+
+    private async Task LoadProduct()
+    {
+
+        var query = new GetProduct_GeneralInformationsByIdQuery(Id);
+        var result = await Mediator.Send(query);
+        if (!result.IsSuccess)
+        {
+            await _IJSRuntime.ToastrError(result.ErrorMessage);
+            _NavigationManager.NavigateTo(Routes.Inventory_products);
+        }
+        product_GeneralInformationsDto = result.product_GeneralInformations;
+    }
+
+    void DeleteImage()
+    {
+        if (product_GeneralInformationsDto.ImageUrl == null)
+        {
+            return;
+        }
+        var fileToDelete = product_GeneralInformationsDto.ImageUrl.Split('/').Reverse().First();
+        var filePath = Path.Combine(_directoryPath, fileToDelete);
+        if (!File.Exists(filePath))
+        {
+            product_GeneralInformationsDto.ImageUrl = null;
+            return;
+        }
+        File.Delete(filePath);
+        product_GeneralInformationsDto.ImageUrl = null;
+        return;
+    }
+}

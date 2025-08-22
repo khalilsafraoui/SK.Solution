@@ -94,7 +94,13 @@ else
         foreach (var cart in shoppingCarts)
         {
             var queryProductById = new GetProductByIdQuery(cart.ProductId);
-            cart.Product = _mapper.Map<ProductDto>(await Mediator.Send(queryProductById));
+            var result = await Mediator.Send(queryProductById);
+            if (!result.IsSuccess)
+            {
+                await _JSRuntime.ToastrError(result.ErrorMessage);
+                continue;
+            }
+            cart.Product = _mapper.Map<ProductDto>(result.ProductDto);
             cart.newCount = cart.Count;
         }
         shoppingCarts = shoppingCarts.OrderBy(c => c.Product.Name).ToList();

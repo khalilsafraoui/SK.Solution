@@ -1,12 +1,15 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using SK.Inventory.Application.Dtos;
 using SK.Inventory.Application.Exceptions;
 using SK.Inventory.Application.Features.Products.Commands;
+using SK.Inventory.Application.Features.Products.Dtos;
 using SK.Inventory.Application.Features.Products.Queries;
 using SK.Inventory.Application.Interfaces;
+using SK.Inventory.Application.Interfaces.Common;
 using SK.Inventory.Domain.Entities.Product;
 using SK.Inventory.Infrastructure.SqlServer.Persistence;
 using SK.Inventory.Infrastructure.SqlServer.Repositories;
@@ -28,17 +31,22 @@ namespace SK.Inventory.IntegrationTests
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Product, ProductDto>().ReverseMap();
+                cfg.CreateMap<Product, Product_GeneralInformations>().ReverseMap();
                 cfg.CreateMap<Category, CategoryDto>().ReverseMap();
             });
             _mapper = config.CreateMapper();
+            // Exemple avec Moq
+            var mockCurrentUserService = new Mock<ICurrentUserService>();
+            mockCurrentUserService.Setup(s => s.GetUserIdAsync()).ReturnsAsync(Guid.NewGuid());
 
+            // Ensuite, injecte ce mock dans ton DbContext ou via t
 
             // Use InMemoryDatabase for EF Core
             var _dbOptions = new DbContextOptionsBuilder<InventoryDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDb_" + Guid.NewGuid())
                 .Options;
 
-            Context = new InventoryDbContext(_dbOptions);
+            Context = new InventoryDbContext(_dbOptions, mockCurrentUserService.Object);
             // Mock the IWebHostEnvironment
             _mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
             _mockWebHostEnvironment.Setup(env => env.WebRootPath).Returns(Path.GetTempPath());
@@ -60,10 +68,11 @@ namespace SK.Inventory.IntegrationTests
 
             var handler = new CreateProductCommandHandler(
                 _unitOfWork,
-                _mapper
+                _mapper,
+                NullLogger<CreateProductCommandHandler>.Instance
             );
 
-            var productDto = new ProductDto { Name = "Laptop", Price = 1000, CategoryId = 1 };
+            var productDto = new Product_GeneralInformations { Name = "Laptop", Price = 1000, CategoryId = 1 };
             var command = new CreateProductCommand(productDto);
 
             // Act
@@ -71,10 +80,11 @@ namespace SK.Inventory.IntegrationTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(productDto.Name, result.Name);
-            Assert.True(result.Id > 0);
+            Assert.True(result.IsSuccess);
+            Assert.Equal(productDto.Name, result.GeneralInformationsDto.Name);
+            Assert.True(result.GeneralInformationsDto.Id > 0);
 
-            var saved = await Context.Products.FindAsync(result.Id);
+            var saved = await Context.Products.FindAsync(result.GeneralInformationsDto.Id);
             Assert.NotNull(saved);
             Assert.Equal("Laptop", saved.Name);
         }
@@ -90,10 +100,30 @@ namespace SK.Inventory.IntegrationTests
             Context.Categories.Add(new Category { Id = 1, Name = "Electronics" });
             await Context.SaveChangesAsync();
            
-            var handler = new CreateProductCommandHandler(_unitOfWork, _mapper);
+            var handler = new CreateProductCommandHandler(_unitOfWork, _mapper, NullLogger<CreateProductCommandHandler>.Instance);
 
-            var dto = new ProductDto { Name = name, Price = price, CategoryId = categoryId };
-            await Assert.ThrowsAsync<ValidationException>(() => handler.Handle(new CreateProductCommand(dto), CancellationToken.None));
+            var dto = new Product_GeneralInformations { Name = name, Price = price, CategoryId = categoryId };
+            var result = await handler.Handle(new CreateProductCommand(dto), CancellationToken.None);
+            // Assert that the result is not successful and contains an error message
+            Assert.False(result.IsSuccess);
+            Assert.NotEmpty(result.ErrorMessage);
+            // Assert that a ValidationException is thrown  
+            if (string.IsNullOrEmpty(name))
+            {
+                Assert.Equal("Product name is required.", result.ErrorMessage);
+            }
+            else if (price <= 0)
+            {
+                Assert.Equal("Product price must be between 0.01 and 1000.", result.ErrorMessage);
+            }
+            else if (categoryId <= 0)
+            {
+                Assert.Equal("Category ID must be greater than 0.", result.ErrorMessage);
+            }
+            else
+            {
+                Assert.Equal("Category with ID " + categoryId + " does not exist.", result.ErrorMessage);
+            }
         }
         #endregion
 
@@ -106,23 +136,28 @@ namespace SK.Inventory.IntegrationTests
             Context.Products.Add(new Product { Id = 1, Name = "Old Laptop", Price = 500, CategoryId = 1 });
             await Context.SaveChangesAsync();
 
-            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper);
+            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper, NullLogger<UpdateProductCommandHandler>.Instance);
 
-            var updatedDto = new ProductDto { Id = 1, Name = "New Laptop", Price = 1000, CategoryId = 1 };
+            var updatedDto = new Product_GeneralInformations { Id = 1, Name = "New Laptop", Price = 1000, CategoryId = 1 };
             var result = await handler.Handle(new UpdateProductCommand(updatedDto), CancellationToken.None);
 
             Assert.NotNull(result);
-            Assert.Equal("New Laptop", result.Name);
-            Assert.Equal(1000, result.Price);
+            Assert.True(result.IsSuccess);
+            Assert.Equal("New Laptop", result.GeneralInformationsDto.Name);
+            Assert.Equal(1000, result.GeneralInformationsDto.Price);
         }
 
         [Fact]
         public async Task Handle_ShouldThrowNotFoundException_WhenProductDoesNotExist()
         {
-            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper);
+            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper, NullLogger<UpdateProductCommandHandler>.Instance);
 
-            var dto = new ProductDto { Id = 999, Name = "Laptop", Price = 1000, CategoryId = 1 };
-            await Assert.ThrowsAsync<NotFoundException>(() => handler.Handle(new UpdateProductCommand(dto), CancellationToken.None));
+            var dto = new Product_GeneralInformations { Id = 999, Name = "Laptop", Price = 1000, CategoryId = 1 };
+
+            var result = await handler.Handle(new UpdateProductCommand(dto), CancellationToken.None);
+            // Assert that the result is not successful and contains an error message
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Product with key 999 was not found.", result.ErrorMessage);
         }
 
         [Theory]
@@ -138,13 +173,14 @@ namespace SK.Inventory.IntegrationTests
             await Context.Products.AddAsync(product);
             await Context.SaveChangesAsync();
 
-            var productDto = new ProductDto { Id = 1, Name = "Laptop", Price = price, CategoryId = 1 };
+            var productDto = new Product_GeneralInformations { Id = 1, Name = "Laptop", Price = price, CategoryId = 1 };
 
-            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper);
+            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper, NullLogger<UpdateProductCommandHandler>.Instance);
 
-            // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(() =>
-                handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
+            var result = await handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None);
+            // Assert that the result is not successful and contains an error message
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Product price must be between 0.01 and 1000.", result.ErrorMessage);
         }
 
         [Fact]
@@ -157,13 +193,14 @@ namespace SK.Inventory.IntegrationTests
             await Context.Products.AddAsync(product);
             await Context.SaveChangesAsync();
 
-            var productDto = new ProductDto { Id = 1, Name = "", Price = 800, CategoryId = 1 };
+            var productDto = new Product_GeneralInformations { Id = 1, Name = "", Price = 800, CategoryId = 1 };
 
-            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper);
+            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper, NullLogger<UpdateProductCommandHandler>.Instance);
 
-            // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(() =>
-                handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
+            var result = await handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None);
+            // Assert that the result is not successful and contains an error message
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Product name is required.", result.ErrorMessage);
         }
 
         [Fact]
@@ -176,13 +213,14 @@ namespace SK.Inventory.IntegrationTests
             await Context.Products.AddAsync(product);
             await Context.SaveChangesAsync();
 
-            var productDto = new ProductDto { Id = 1, Name = "Laptop", Price = 800, CategoryId = 0 };
+            var productDto = new Product_GeneralInformations { Id = 1, Name = "Laptop", Price = 800, CategoryId = 0 };
 
-            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper);
+            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper, NullLogger<UpdateProductCommandHandler>.Instance);
 
-            // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(() =>
-                handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
+            var result = await handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None);
+            // Assert that the result is not successful and contains an error message
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Category ID must be greater than 0.", result.ErrorMessage);
         }
 
         [Fact]
@@ -195,13 +233,12 @@ namespace SK.Inventory.IntegrationTests
             await Context.Products.AddAsync(product);
             await Context.SaveChangesAsync();
 
-            var productDto = new ProductDto { Id = 1, Name = "Laptop", Price = 800, CategoryId = 2 };
+            var productDto = new Product_GeneralInformations { Id = 1, Name = "Laptop", Price = 800, CategoryId = 2 };
 
-            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<ValidationException>(() =>
-                handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None));
+            var handler = new UpdateProductCommandHandler(_unitOfWork, _mapper, NullLogger<UpdateProductCommandHandler>.Instance);
+            var result = await handler.Handle(new UpdateProductCommand(productDto), CancellationToken.None);
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Category with ID 2 does not exist.", result.ErrorMessage);
         }
         #endregion
 
@@ -216,13 +253,13 @@ namespace SK.Inventory.IntegrationTests
             await Context.Products.AddAsync(product);
             await Context.SaveChangesAsync();
 
-            var handler = new DeleteProductCommandHandler(_unitOfWork, _mockWebHostEnvironment.Object);
+            var handler = new DeleteProductCommandHandler(_unitOfWork, _mockWebHostEnvironment.Object, NullLogger<DeleteProductCommandHandler>.Instance);
 
             // Act
             var result = await handler.Handle(new DeleteProductCommand(product.Id), CancellationToken.None);
 
             // Assert
-            Assert.True(result);
+            Assert.True(result.IsSuccess);
             var deletedProduct = await Context.Products.FindAsync(product.Id);
             Assert.Null(deletedProduct);
         }
@@ -231,13 +268,13 @@ namespace SK.Inventory.IntegrationTests
         public async Task Handle_ShouldReturnFalse_WhenProductDoesNotExist()
         {
             // Arrange
-            var handler = new DeleteProductCommandHandler(_unitOfWork, _mockWebHostEnvironment.Object);
+            var handler = new DeleteProductCommandHandler(_unitOfWork, _mockWebHostEnvironment.Object, NullLogger<DeleteProductCommandHandler>.Instance);
 
             // Act
             var result = await handler.Handle(new DeleteProductCommand(999), CancellationToken.None);
 
             // Assert
-            Assert.False(result);
+            Assert.False(result.IsSuccess);
         }
 
         #endregion
@@ -261,7 +298,7 @@ namespace SK.Inventory.IntegrationTests
             await Context.Products.AddAsync(product);
             await Context.SaveChangesAsync();
 
-            var handler = new GetProductByIdQueryHandler(_unitOfWork, _mapper);
+            var handler = new GetProductByIdQueryHandler(_unitOfWork, _mapper, NullLogger<GetProductByIdQueryHandler>.Instance);
             var query = new GetProductByIdQuery(product.Id);
 
             // Act
@@ -269,24 +306,25 @@ namespace SK.Inventory.IntegrationTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(product.Id, result.Id);
-            Assert.Equal(product.Name, result.Name);
-            Assert.Equal(product.Price, result.Price);
-            Assert.Equal(product.CategoryId, result.CategoryId);
+            Assert.True(result.IsSuccess);
+            Assert.Equal(product.Id, result.ProductDto.Id);
+            Assert.Equal(product.Name, result.ProductDto.Name);
+            Assert.Equal(product.Price, result.ProductDto.Price);
+            Assert.Equal(product.CategoryId, result.ProductDto.CategoryId);
         }
 
         [Fact]
         public async Task Handle_ShouldReturnNull_WhenProductDoesNotExist()
         {
             // Arrange
-            var handler = new GetProductByIdQueryHandler(_unitOfWork, _mapper);
+            var handler = new GetProductByIdQueryHandler(_unitOfWork, _mapper, NullLogger<GetProductByIdQueryHandler>.Instance);
             var query = new GetProductByIdQuery(999); // non-existent ID
 
             // Act
             var result = await handler.Handle(query, CancellationToken.None);
 
             // Assert
-            Assert.Null(result);
+            Assert.Null(result.ProductDto);
         }
 
         #endregion
@@ -306,7 +344,7 @@ namespace SK.Inventory.IntegrationTests
             await Context.Products.AddRangeAsync(product1, product2);
             await Context.SaveChangesAsync();
 
-            var handler = new GetAllProductsQueryHandler(_unitOfWork, _mapper);
+            var handler = new GetAllProductsQueryHandler(_unitOfWork, _mapper, NullLogger<GetAllProductsQueryHandler>.Instance);
             var query = new GetAllProductsQuery();
 
             // Act
@@ -314,16 +352,17 @@ namespace SK.Inventory.IntegrationTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-            Assert.Contains(result, p => p.Name == "Laptop");
-            Assert.Contains(result, p => p.Name == "Phone");
+            Assert.True(result.IsSuccess);
+            Assert.Equal(2, result.ProductsDto.Count);
+            Assert.Contains(result.ProductsDto, p => p.Name == "Laptop");
+            Assert.Contains(result.ProductsDto, p => p.Name == "Phone");
         }
 
         [Fact]
         public async Task Handle_ShouldReturnEmptyList_WhenNoProductsExist()
         {
             // Arrange
-            var handler = new GetAllProductsQueryHandler(_unitOfWork, _mapper);
+            var handler = new GetAllProductsQueryHandler(_unitOfWork, _mapper, NullLogger<GetAllProductsQueryHandler>.Instance);
             var query = new GetAllProductsQuery();
 
             // Act
@@ -331,7 +370,8 @@ namespace SK.Inventory.IntegrationTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Empty(result);
+            Assert.True(!result.IsSuccess);
+            Assert.Empty(result.ProductsDto);
         }
 
         #endregion

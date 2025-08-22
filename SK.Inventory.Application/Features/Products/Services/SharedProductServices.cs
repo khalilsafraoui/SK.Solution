@@ -21,12 +21,12 @@ namespace SK.Inventory.Application.Features.Products.Services
         {
             try
             {
-                var products = await _unitOfWork.Products.GetAllAsync();
-                if (products == null || products.Count == 0)
+                var result = await _unitOfWork.Products.GetAllAsync();
+                if (result.TotalCount == 0)
                 {
                     return (false, null, "No products found.");
                 }
-                var productDtos = _mapper.Map<List<SharedProductForCrmDto>>(products);
+                var productDtos = _mapper.Map<List<SharedProductForCrmDto>>(result.products);
                 return (true, productDtos, string.Empty);
             }
             catch (Exception ex)

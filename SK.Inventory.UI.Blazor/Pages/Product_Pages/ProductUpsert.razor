@@ -1,4 +1,4 @@
-﻿@attribute [Route(Routes.Inventory_Product_Create)]
+﻿@* 
 @attribute [Route(Routes.Inventory_Product_Edit)]
 @attribute [Authorize(Roles = RoleType.Inventory_Manager + "," + RoleType.Inventory_Viewer + "," + RoleType.Inventory_Coordinator)]
 @rendermode InteractiveServer
@@ -183,19 +183,19 @@ else
         {
             product.TaxRate = 0;
         }
-        if(product.Id > 0)
-        {
-            var query = new UpdateProductCommand(product);
-            product = await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccessWithDelay("Product Updated Successfully");
+        // if(product.Id > 0)
+        // {
+        //     var query = new UpdateProductCommand(product);
+        //     product = await Mediator.Send(query);
+        //     await _IJSRuntime.ToastrSuccessWithDelay("Product Updated Successfully");
+        // }
+        // else
+        // {
+        //     var query = new CreateProductCommand(product);
+        //     product = await Mediator.Send(query);
+        //     await _IJSRuntime.ToastrSuccessWithDelay("Product Created Successfully");
         }
-        else
-        {
-            var query = new CreateProductCommand(product);
-            product = await Mediator.Send(query);
-            await _IJSRuntime.ToastrSuccessWithDelay("Product Created Successfully");
-        }
-        IsProcessing = false;
+        // IsProcessing = false;
     }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
@@ -236,3 +236,4 @@ else
         return;
     }
 }
+ *@

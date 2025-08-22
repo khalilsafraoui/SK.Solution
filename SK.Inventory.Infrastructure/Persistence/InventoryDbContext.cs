@@ -35,11 +35,11 @@ namespace SK.Inventory.Infrastructure.SqlServer.Persistence
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedDate = DateTime.Now;
-                        entry.Entity.CreatedBy = await _currentUserService.GetUserIdAsync();
+                        entry.Entity.CreatedBy = await _currentUserService?.GetUserIdAsync();
                         break;
                     case EntityState.Modified:
                         entry.Entity.LastModifiedDate = DateTime.Now;
-                        entry.Entity.LastModifiedBy = await _currentUserService.GetUserIdAsync();
+                        entry.Entity.LastModifiedBy = await _currentUserService?.GetUserIdAsync();
                         break;
                 }
             }

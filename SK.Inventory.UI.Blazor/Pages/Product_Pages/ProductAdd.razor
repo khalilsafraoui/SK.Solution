@@ -1,0 +1,62 @@
+﻿@using Microsoft.Extensions.Localization
+@using SK.Inventory.UI.Blazor.Resources
+@attribute [Route(Routes.Inventory_Product_Create)]
+@attribute [Authorize(Roles = RoleType.Inventory_Manager + "," + RoleType.Inventory_Viewer)]
+@inject IStringLocalizer<InventoryTextRessources> _localizer
+@inject NavigationManager _NavigationManager
+@rendermode InteractiveServer
+<PageTitle>@_localizer["ProductAdd_PageTitle"]</PageTitle>
+
+
+<div class="container py-4">
+    <div class="row justify-content-center mb-4">
+
+        <div class="col-12 pt-1">
+            <RadzenCard class="p-4 shadow radzen-card-responsive">
+                <div class="row align-items-center justify-content-between">
+
+                    <!-- Left: Title -->
+                    <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
+                        <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                            @_localizer["Product_Add_Title"]
+                        </h2>
+                    </div>
+
+                </div>
+            </RadzenCard>
+        </div>
+
+        <div class="col-12 col-md-12 pt-1">
+            <_Product_GeneralInformations></_Product_GeneralInformations>
+        </div>
+
+        <div class="col-12 col-md-12 pt-1">
+            <RadzenCard Class="p-4 shadow radzen-card-responsive">
+                <div class="d-flex flex-wrap justify-content-between align-items-center">
+
+                    <!-- Left-aligned Back button -->
+                    <RadzenButton Text=@_localizer["BackToProducts"]
+                                  Icon="arrow_back"
+                                  Style="min-width: 160px;"
+                                  ButtonStyle="ButtonStyle.Light"
+                                  Click="@OnBackToProducts" />
+
+                    <!-- Right-aligned action buttons -->
+
+                    <div class="d-flex flex-wrap gap-2 justify-content-end">
+                    </div>
+
+                </div>
+            </RadzenCard>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    void OnBackToProducts()
+    {
+        _NavigationManager.NavigateTo(Routes.Inventory_products);
+    }
+}

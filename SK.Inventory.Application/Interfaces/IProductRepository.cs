@@ -6,5 +6,6 @@ namespace SK.Inventory.Application.Interfaces
         IIntEntityRepository<Product>
     {
         // You can add custom methods specific to Customer, if needed
+        Task<(List<Product> products, int TotalCount)> GetAllAsync(int pageIndex = 0, int pageSize = 0);
     }
 }

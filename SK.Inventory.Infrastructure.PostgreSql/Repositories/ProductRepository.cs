@@ -23,6 +23,25 @@ namespace SK.Inventory.Infrastructure.PostgreSql.Repositories
             return await _context.Products.Include(x => x.Category).ToListAsync();
         }
 
+        public async Task<(List<Product> products, int TotalCount)> GetAllAsync(int pageIndex = 0, int pageSize = 0)
+        {
+            var query = _context.Products.Include(x => x.Category).AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+            if(pageSize != 0)
+            {
+                var pagedProducts = await query
+               .OrderBy(q => q.Id) // Always order before skip/take
+               .Skip(pageIndex * pageSize)
+               .Take(pageSize)
+               .ToListAsync();
+                return (pagedProducts, totalCount);
+            }
+
+            return (await query.OrderBy(q => q.Id).ToListAsync(), totalCount);
+            
+        }
+
         public async Task<Product?> GetByIdAsync(int Id)
         {
             return await _context.Products.FirstOrDefaultAsync(c => c.Id == Id);
