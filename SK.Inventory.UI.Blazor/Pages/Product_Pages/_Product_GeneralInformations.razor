@@ -34,22 +34,23 @@
                             <ValidationMessage For="@(() => product_GeneralInformationsDto.CategoryId)" />
                         </RadzenFormField>
 
-                        <RadzenFormField Text=@_localizer["Price"] Variant="Variant.Filled">
-                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.Price" min="0" max="1000000" step="0.01" />
+                       @*  <RadzenFormField Text=@_localizer["Price"] Variant="Variant.Filled">
+                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.Price" Min="0m" Max="1000000m" Step="0.01" />
                             <ValidationMessage For="@(() => product_GeneralInformationsDto.Price)" />
                         </RadzenFormField>
 
                         <RadzenFormField Text=@_localizer["DiscountRate"] Variant="Variant.Filled">
-                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.DiscountRate" min="0" max="1" step="0.01" />
+                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.DiscountRate"  Min="0" Max="1" Step="0.01" />
                             <p>@(Math.Round(product_GeneralInformationsDto.DiscountRate * 100)) %</p>
                             <ValidationMessage For="@(() => product_GeneralInformationsDto.DiscountRate)" />
                         </RadzenFormField>
 
                         <RadzenFormField Text=@_localizer["TaxRate"] Variant="Variant.Filled">
-                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.TaxRate" min="0" max="1" step="0.01" />
+                            <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.TaxRate" Min="0" Max="1" Step="0.01" />
                             <p>@(Math.Round(product_GeneralInformationsDto.TaxRate * 100)) %</p>
                             <ValidationMessage For="@(() => product_GeneralInformationsDto.TaxRate)" />
-                        </RadzenFormField>
+                        </RadzenFormField> *@
+
 
                         <RadzenFormField Text=@_localizer["SpecialTag"] Variant="Variant.Filled">
                             <RadzenTextBox @bind-Value="@product_GeneralInformationsDto.SpecialTag" />
