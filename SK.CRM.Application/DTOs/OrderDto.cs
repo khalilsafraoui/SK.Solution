@@ -16,7 +16,7 @@ namespace SK.CRM.Application.DTOs
         public string UserId { get; set; }
         [Required]
         [Display(Name = "Order Total")]
-        public double OrderTotal { get; set; }
+        public decimal OrderTotal { get; set; }
         [Required]
         public DateTime OrderDate { get; set; }
 

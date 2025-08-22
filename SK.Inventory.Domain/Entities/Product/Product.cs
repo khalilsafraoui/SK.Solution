@@ -16,8 +16,8 @@
 
         public string? ImageUrl { get; set; }
 
-        public double DiscountRate { get; set; }
+        public decimal DiscountRate { get; set; }
 
-        public double TaxRate { get; set; }
+        public decimal TaxRate { get; set; }
     }
 }

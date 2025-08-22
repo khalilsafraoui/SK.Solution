@@ -25,8 +25,8 @@ namespace SK.Inventory.Application.Dtos
 
         public string? ImageUrl { get; set; }
 
-        public double DiscountRate { get; set; } = 0;
+        public decimal DiscountRate { get; set; } = 0;
 
-        public double TaxRate { get; set; } = 0;
+        public decimal TaxRate { get; set; } = 0;
     }
 }

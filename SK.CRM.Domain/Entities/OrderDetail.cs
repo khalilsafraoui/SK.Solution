@@ -10,12 +10,12 @@
 
         public int Quantity { get; set; }
 
-        public double Price { get; set; }
+        public decimal Price { get; set; }
 
         public string ProductName { get; set; }
 
-        public double DiscountRate { get; set; }
+        public decimal DiscountRate { get; set; }
 
-        public double TaxRate { get; set; }
+        public decimal TaxRate { get; set; }
     }
 }

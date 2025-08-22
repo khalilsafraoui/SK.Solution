@@ -17,7 +17,7 @@ namespace SK.CRM.Domain.Entities
 
         
         [Display(Name = "Order Total")]
-        public double OrderTotal { get; set; }
+        public decimal OrderTotal { get; set; }
         
         public DateTime OrderDate { get; set; }
 

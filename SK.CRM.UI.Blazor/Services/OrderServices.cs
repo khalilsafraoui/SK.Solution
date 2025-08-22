@@ -13,7 +13,7 @@ namespace SK.CRM.UI.Blazor.Services
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Count,
-                    Price = Convert.ToDouble(item.Product.Price),
+                    Price = item.Product.Price,
                     ProductName = item.Product.Name
                 };
                 orderDetails.Add(orderDetail);

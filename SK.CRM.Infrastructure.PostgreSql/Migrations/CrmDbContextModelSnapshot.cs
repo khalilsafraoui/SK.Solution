@@ -189,8 +189,8 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasAnnotation("ErrorMessage", "Please Select order date..");
 
-                    b.Property<double>("OrderTotal")
-                        .HasColumnType("double precision")
+                    b.Property<decimal>("OrderTotal")
+                        .HasColumnType("numeric")
                         .HasAnnotation("ErrorMessage", "Total order is missing..");
 
                     b.Property<string>("PaymentIntentId")
@@ -233,10 +233,10 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double>("DiscountRate")
+                    b.Property<decimal>("DiscountRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("double precision")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("numeric")
+                        .HasDefaultValue(0m);
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
@@ -247,9 +247,9 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
-                    b.Property<double>("Price")
+                    b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
-                        .HasColumnType("double precision");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
@@ -261,10 +261,10 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<double>("TaxRate")
+                    b.Property<decimal>("TaxRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("double precision")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("numeric")
+                        .HasDefaultValue(0m);
 
                     b.HasKey("Id");
 
@@ -310,10 +310,10 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
-                    b.Property<double>("GlobalDiscountRate")
+                    b.Property<decimal>("GlobalDiscountRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("double precision")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("numeric")
+                        .HasDefaultValue(0m);
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
@@ -330,10 +330,10 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                         .HasColumnType("text")
                         .HasAnnotation("ErrorMessage", "Status is missing..");
 
-                    b.Property<double>("TaxRate")
+                    b.Property<decimal>("TaxRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("double precision")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("numeric")
+                        .HasDefaultValue(0m);
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -355,10 +355,10 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double>("DiscountRate")
+                    b.Property<decimal>("DiscountRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("double precision")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("numeric")
+                        .HasDefaultValue(0m);
 
                     b.Property<Guid?>("LastModifiedBy")
                         .HasColumnType("uuid");
@@ -379,15 +379,15 @@ namespace SK.CRM.Infrastructure.PostgreSql.Migrations
                     b.Property<Guid>("QuoteId")
                         .HasColumnType("uuid");
 
-                    b.Property<double>("TaxRate")
+                    b.Property<decimal>("TaxRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("double precision")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("numeric")
+                        .HasDefaultValue(0m);
 
-                    b.Property<double?>("UnitPrice")
+                    b.Property<decimal?>("UnitPrice")
                         .IsRequired()
                         .HasPrecision(18, 2)
-                        .HasColumnType("double precision");
+                        .HasColumnType("numeric(18,2)");
 
                     b.HasKey("Id");
 

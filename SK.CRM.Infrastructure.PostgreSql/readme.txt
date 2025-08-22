@@ -1,2 +1,2 @@
-﻿add-migration deletedcityidfromaddress -context SK.CRM.Infrastructure.PostgreSql.Persistence.CrmDbContext -project SK.CRM.Infrastructure.PostgreSql
+﻿add-migration convertallfieldsrelatedtopricefromdoubletodecimal -context SK.CRM.Infrastructure.PostgreSql.Persistence.CrmDbContext -project SK.CRM.Infrastructure.PostgreSql
 update-database -context SK.CRM.Infrastructure.PostgreSql.Persistence.CrmDbContext -project SK.CRM.Infrastructure.PostgreSql

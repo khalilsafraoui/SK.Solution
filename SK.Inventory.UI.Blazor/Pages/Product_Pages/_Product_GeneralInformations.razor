@@ -39,7 +39,7 @@
                             <ValidationMessage For="@(() => product_GeneralInformationsDto.Price)" />
                         </RadzenFormField>
 
-                        @* <RadzenFormField Text=@_localizer["DiscountRate"] Variant="Variant.Filled">
+                        <RadzenFormField Text=@_localizer["DiscountRate"] Variant="Variant.Filled">
                             <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.DiscountRate"  Min="0" Max="1" Step="0.01" />
                             <p>@(Math.Round(product_GeneralInformationsDto.DiscountRate * 100)) %</p>
                             <ValidationMessage For="@(() => product_GeneralInformationsDto.DiscountRate)" />
@@ -49,7 +49,7 @@
                             <RadzenNumeric @bind-Value="@product_GeneralInformationsDto.TaxRate" Min="0" Max="1" Step="0.01" />
                             <p>@(Math.Round(product_GeneralInformationsDto.TaxRate * 100)) %</p>
                             <ValidationMessage For="@(() => product_GeneralInformationsDto.TaxRate)" />
-                        </RadzenFormField> *@
+                        </RadzenFormField>
 
 
                         <RadzenFormField Text=@_localizer["SpecialTag"] Variant="Variant.Filled">

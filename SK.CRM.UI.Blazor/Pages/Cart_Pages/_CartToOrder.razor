@@ -204,9 +204,9 @@ else
         IsProcessing = false;
     }
 
-    private double TotalDiscount => shoppingCarts.Sum(c => c.DiscountAmount)??0;
-    private double TotalTax => shoppingCarts.Sum(c => c.TaxAmount)??0;
-    private double TotalPrice => shoppingCarts.Sum(c => c.TotalAfterDiscountAndTax)??0;
+    private decimal TotalDiscount => shoppingCarts.Sum(c => c.DiscountAmount) ?? 0;
+    private decimal TotalTax => shoppingCarts.Sum(c => c.TaxAmount) ?? 0;
+    private decimal TotalPrice => shoppingCarts.Sum(c => c.TotalAfterDiscountAndTax) ?? 0;
 
 
     private async Task UpdateOrderItem(int productId, int updateBy)
@@ -293,7 +293,7 @@ else
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Count,
-                    Price = Convert.ToDouble(item.Product.Price),
+                    Price = item.Product.Price,
                     ProductName = item.Product.Name,
                     DiscountRate = item.Product.DiscountRate,
                     TaxRate = item.Product.TaxRate,

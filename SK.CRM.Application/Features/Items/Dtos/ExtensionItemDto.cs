@@ -4,14 +4,14 @@
     {
         public Guid ExtensionItemId { get; set; }
         public int Quantity { get; set; } = 1;
-        public double? TotalBeforeDiscount => Quantity * (double)Price;
+        public decimal? TotalBeforeDiscount => Quantity * Price;
 
-        public double? DiscountAmount => TotalBeforeDiscount * DiscountRate;
+        public decimal? DiscountAmount => TotalBeforeDiscount * DiscountRate;
 
-        public double? TotalAfterDiscount => TotalBeforeDiscount - DiscountAmount;
+        public decimal? TotalAfterDiscount => TotalBeforeDiscount - DiscountAmount;
 
-        public double? TaxAmount => TotalAfterDiscount * TaxRate;
+        public decimal? TaxAmount => TotalAfterDiscount * TaxRate;
 
-        public double? TotalAfterDiscountAndTax => TotalAfterDiscount + TaxAmount;
+        public decimal? TotalAfterDiscountAndTax => TotalAfterDiscount + TaxAmount;
     }
 }

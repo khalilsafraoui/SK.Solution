@@ -27,16 +27,16 @@ namespace SK.CRM.Application.DTOs.Quote
         public string Currency { get; set; } = "EUR";
 
         // Global discount applied to the whole quote (in percentage, e.g., 0.10 for 10%)
-        public double GlobalDiscountRate { get; set; } = 0;
+        public decimal GlobalDiscountRate { get; set; } = 0;
 
-        public double? Subtotal => Items.Sum(i => i.TotalAfterDiscountAndTax);
+        public decimal? Subtotal => Items.Sum(i => i.TotalAfterDiscountAndTax);
 
-        public double? DiscountAmount => Subtotal * GlobalDiscountRate;
+        public decimal? DiscountAmount => Subtotal * GlobalDiscountRate;
 
-        public double TaxRate { get; set; } = 0; // Example: 20%
-        public double? TaxAmount => (Subtotal - DiscountAmount) * TaxRate;
+        public decimal TaxRate { get; set; } = 0; // Example: 20%
+        public decimal? TaxAmount => (Subtotal - DiscountAmount) * TaxRate;
 
-        public double? Total => (Subtotal - DiscountAmount) + TaxAmount;
+        public decimal? Total => (Subtotal - DiscountAmount) + TaxAmount;
 
         public string? Notes { get; set; }
     }

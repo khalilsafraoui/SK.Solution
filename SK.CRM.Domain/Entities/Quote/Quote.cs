@@ -20,9 +20,9 @@
         public string Currency { get; set; } = "EUR";
 
         // Global discount applied to the whole quote (in percentage, e.g., 0.10 for 10%)
-        public double GlobalDiscountRate { get; set; } = 0;
+        public decimal GlobalDiscountRate { get; set; } = 0;
 
-        public double TaxRate { get; set; } = 0; // Example: 20%
+        public decimal TaxRate { get; set; } = 0; // Example: 20%
 
         public string? Notes { get; set; }
     }

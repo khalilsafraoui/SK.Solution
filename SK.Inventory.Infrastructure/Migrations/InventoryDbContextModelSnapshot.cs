@@ -73,10 +73,10 @@ namespace SK.Inventory.Infrastructure.SqlServer.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("DiscountRate")
+                    b.Property<decimal>("DiscountRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
@@ -102,10 +102,10 @@ namespace SK.Inventory.Infrastructure.SqlServer.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<double>("TaxRate")
+                    b.Property<decimal>("TaxRate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0);
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.HasKey("Id");
 

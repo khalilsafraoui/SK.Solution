@@ -1,2 +1,2 @@
-﻿add-migration adddiscountandtaxrate -context SK.Inventory.Infrastructure.SqlServer.Persistence.InventoryDbContext -project SK.Inventory.Infrastructure.SqlServer
+﻿add-migration convertallfieldsrelatedtopricefromdoubletodecimal -context SK.Inventory.Infrastructure.SqlServer.Persistence.InventoryDbContext -project SK.Inventory.Infrastructure.SqlServer
 update-database -context SK.Inventory.Infrastructure.SqlServer.Persistence.InventoryDbContext -project SK.Inventory.Infrastructure.SqlServer

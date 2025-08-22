@@ -8,12 +8,12 @@
 
         public required string ProductName { get; set; }
         public int Quantity { get; set; } = 1;
-        public double? UnitPrice { get; set; }
+        public decimal? UnitPrice { get; set; }
 
         // Discount for this item (in percentage, e.g., 0.05 for 5%)
-        public double DiscountRate { get; set; } = 0;
+        public decimal DiscountRate { get; set; } = 0;
 
-        public double TaxRate { get; set; }
+        public decimal TaxRate { get; set; }
 
     }
 }
