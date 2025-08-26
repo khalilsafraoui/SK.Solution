@@ -59,5 +59,320 @@ namespace SK.Inventory.UI.Blazor.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Action.
+        /// </summary>
+        internal static string Action {
+            get {
+                return ResourceManager.GetString("Action", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Back To Categories.
+        /// </summary>
+        internal static string BackToCategories {
+            get {
+                return ResourceManager.GetString("BackToCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Back To Products.
+        /// </summary>
+        internal static string BackToProducts {
+            get {
+                return ResourceManager.GetString("BackToProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à No Category to display.
+        /// </summary>
+        internal static string Categories_NoCategoriesToDisplay {
+            get {
+                return ResourceManager.GetString("Categories_NoCategoriesToDisplay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Category.
+        /// </summary>
+        internal static string Category {
+            get {
+                return ResourceManager.GetString("Category", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Category.
+        /// </summary>
+        internal static string Category_Add_Title {
+            get {
+                return ResourceManager.GetString("Category_Add_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Category.
+        /// </summary>
+        internal static string Category_Edit_Title {
+            get {
+                return ResourceManager.GetString("Category_Edit_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Category.
+        /// </summary>
+        internal static string CategoryAdd_PageTitle {
+            get {
+                return ResourceManager.GetString("CategoryAdd_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Category.
+        /// </summary>
+        internal static string CategoryEdit_PageTitle {
+            get {
+                return ResourceManager.GetString("CategoryEdit_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Create.
+        /// </summary>
+        internal static string Create {
+            get {
+                return ResourceManager.GetString("Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Delete.
+        /// </summary>
+        internal static string Delete {
+            get {
+                return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Description.
+        /// </summary>
+        internal static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Discount(%).
+        /// </summary>
+        internal static string DiscountRate {
+            get {
+                return ResourceManager.GetString("DiscountRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit.
+        /// </summary>
+        internal static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à General Informations.
+        /// </summary>
+        internal static string GeneralInformations {
+            get {
+                return ResourceManager.GetString("GeneralInformations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Id.
+        /// </summary>
+        internal static string Id {
+            get {
+                return ResourceManager.GetString("Id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Image.
+        /// </summary>
+        internal static string Image {
+            get {
+                return ResourceManager.GetString("Image", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Categories.
+        /// </summary>
+        internal static string Inventory_Categories_Menu {
+            get {
+                return ResourceManager.GetString("Inventory_Categories_Menu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Categories.
+        /// </summary>
+        internal static string Inventory_Categories_PageTitle {
+            get {
+                return ResourceManager.GetString("Inventory_Categories_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Categories.
+        /// </summary>
+        internal static string Inventory_Categories_Title {
+            get {
+                return ResourceManager.GetString("Inventory_Categories_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Inventory.
+        /// </summary>
+        internal static string Inventory_Menu {
+            get {
+                return ResourceManager.GetString("Inventory_Menu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Products.
+        /// </summary>
+        internal static string Inventory_product_PageTitle {
+            get {
+                return ResourceManager.GetString("Inventory_product_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Products.
+        /// </summary>
+        internal static string Inventory_product_Title {
+            get {
+                return ResourceManager.GetString("Inventory_product_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Products.
+        /// </summary>
+        internal static string Inventory_Products_Menu {
+            get {
+                return ResourceManager.GetString("Inventory_Products_Menu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Name.
+        /// </summary>
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Unit Price.
+        /// </summary>
+        internal static string Price {
+            get {
+                return ResourceManager.GetString("Price", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Product.
+        /// </summary>
+        internal static string Product_Add_Title {
+            get {
+                return ResourceManager.GetString("Product_Add_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Product.
+        /// </summary>
+        internal static string Product_Edit_Title {
+            get {
+                return ResourceManager.GetString("Product_Edit_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Add Product.
+        /// </summary>
+        internal static string ProductAdd_PageTitle {
+            get {
+                return ResourceManager.GetString("ProductAdd_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Edit Product.
+        /// </summary>
+        internal static string ProductEdit_PageTitle {
+            get {
+                return ResourceManager.GetString("ProductEdit_PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à No Product to display.
+        /// </summary>
+        internal static string Products_NoProductsToDisplay {
+            get {
+                return ResourceManager.GetString("Products_NoProductsToDisplay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Remove.
+        /// </summary>
+        internal static string Remove {
+            get {
+                return ResourceManager.GetString("Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Save.
+        /// </summary>
+        internal static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Special Tag.
+        /// </summary>
+        internal static string SpecialTag {
+            get {
+                return ResourceManager.GetString("SpecialTag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Tax(%).
+        /// </summary>
+        internal static string TaxRate {
+            get {
+                return ResourceManager.GetString("TaxRate", resourceCulture);
+            }
+        }
     }
 }

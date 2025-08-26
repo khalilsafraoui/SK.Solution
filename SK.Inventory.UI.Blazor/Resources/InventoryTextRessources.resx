@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
 		Microsoft ResX Schema
 
 		Version 1.3
@@ -58,44 +58,148 @@
 			: using a System.ComponentModel.TypeConverter
 			: and then encoded with base64 encoding.
 	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Inventory_Categories_PageTitle" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Inventory_Categories_Title" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Categories_NoCategoriesToDisplay" xml:space="preserve">
+    <value>No Category to display</value>
+  </data>
+  <data name="CategoryAdd_PageTitle" xml:space="preserve">
+    <value>Add Category</value>
+  </data>
+  <data name="Category_Add_Title" xml:space="preserve">
+    <value>Add Category</value>
+  </data>
+  <data name="GeneralInformations" xml:space="preserve">
+    <value>General Informations</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="BackToCategories" xml:space="preserve">
+    <value>Back To Categories</value>
+  </data>
+  <data name="CategoryEdit_PageTitle" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="Category_Edit_Title" xml:space="preserve">
+    <value>Edit Category</value>
+  </data>
+  <data name="ProductEdit_PageTitle" xml:space="preserve">
+    <value>Edit Product</value>
+  </data>
+  <data name="Product_Edit_Title" xml:space="preserve">
+    <value>Edit Product</value>
+  </data>
+  <data name="BackToProducts" xml:space="preserve">
+    <value>Back To Products</value>
+  </data>
+  <data name="ProductAdd_PageTitle" xml:space="preserve">
+    <value>Add Product</value>
+  </data>
+  <data name="Product_Add_Title" xml:space="preserve">
+    <value>Add Product</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Unit Price</value>
+  </data>
+  <data name="DiscountRate" xml:space="preserve">
+    <value>Discount(%)</value>
+  </data>
+  <data name="TaxRate" xml:space="preserve">
+    <value>Tax(%)</value>
+  </data>
+  <data name="SpecialTag" xml:space="preserve">
+    <value>Special Tag</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Inventory_product_Title" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="Inventory_product_PageTitle" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="Products_NoProductsToDisplay" xml:space="preserve">
+    <value>No Product to display</value>
+  </data>
+  <data name="Inventory_Menu" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
+  <data name="Inventory_Products_Menu" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="Inventory_Categories_Menu" xml:space="preserve">
+    <value>Categories</value>
+  </data>
 </root>

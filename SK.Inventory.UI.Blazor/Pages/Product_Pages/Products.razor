@@ -12,7 +12,7 @@
 @inject NavigationManager _NavigationManager
 @inject IStringLocalizer<InventoryTextRessources> _localizer
 @attribute [Authorize(Roles = RoleType.Inventory_Manager + "," + RoleType.Inventory_Viewer)]
-<PageTitle>@_localizer["Inventory_PageTitle"]</PageTitle>
+<PageTitle>@_localizer["Inventory_product_PageTitle"]</PageTitle>
 
 <BsModal OnModalConfirmation="ConfirmDelete_Click"
          ButtonBootsrapStyle="btn-danger"
@@ -37,7 +37,7 @@ else
                         <!-- Left: Title -->
                         <div class="col-12 col-md-auto mb-2 mb-md-0 text-center text-md-start">
                             <h2 class="m-0 fw-bold" style="color: purple; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                                @_localizer["Inventory_Title"]
+                                @_localizer["Inventory_product_Title"]
                             </h2>
                         </div>
 
@@ -111,7 +111,7 @@ else
                         <!-- Empty state -->
                         <EmptyTemplate>
                             <div class="text-center text-muted p-4">
-                                @_localizer["Customers_NoCustomersToDisplay"]
+                                @_localizer["Products_NoProductsToDisplay"]
                             </div>
                         </EmptyTemplate>
 
